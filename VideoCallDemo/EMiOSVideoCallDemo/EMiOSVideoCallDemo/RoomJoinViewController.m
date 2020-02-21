@@ -199,6 +199,7 @@ int kHeightStart = 300;
 {
     if(!g_IsLogin){
         self.errorLable.text = @"当前尚未登录";
+        [self autoLogin];
         return;
     }
     NSString* roomName = [self.nameField.text lowercaseString];

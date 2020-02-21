@@ -673,6 +673,7 @@
 - (void)conferenceAttributeUpdated:(EMCallConference *)aConference
                         attributes:(NSArray <EMConferenceAttribute *>*)attrs
 {
+    __weak typeof(self) weakself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         EMConferenceRole currole = [EMDemoOption sharedOptions].conference.role;
         if([aConference.confId isEqualToString:[EMDemoOption sharedOptions].conference.confId] && currole == EMConferenceRoleAdmin)
@@ -688,7 +689,7 @@
                     }];
                     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
                     [alert addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        if([aConference.speakerIds count] >= 2){
+                        if([weakself.streamItemDict count] >= 2){
                             UIAlertController* alert2 = [UIAlertController alertControllerWithTitle:@"" message:@"主播已满，选人下麦？" preferredStyle:UIAlertControllerStyleAlert];
                             [alert2 addAction:[UIAlertAction actionWithTitle:@"返回" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                                 // 下麦一个主播
@@ -697,6 +698,7 @@
                                 //弹出ViewController
                                 KickSpeakerViewController *xVC = [[KickSpeakerViewController alloc] init];
                                 xVC.view.frame = CGRectMake(0, 200, self.view.bounds.size.width, self.view.bounds.size.height-200);
+                                [xVC setNewSpeaker:userid];
                                 //设置ViewController的模态模式，即ViewController的显示方式
                                 //xVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
                                 //self.modalPresentationStyle = UIModalPresentationCurrentContext;
@@ -764,11 +766,17 @@
         self.microphoneButton.enabled = NO;
         self.videoButton.enabled = NO;
         //self.vkbpsButton.enabled = NO;
-        
-        [self removeStreamWithId:self.pubStreamId];
-        self.pubStreamId = nil;
         [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
         [self.roleButton setTintColor:[UIColor blueColor]];
+        [[EMClient sharedClient].conferenceManager unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
+            weakself.roleButton.selected = NO;
+            weakself.switchCameraButton.enabled = NO;
+            weakself.microphoneButton.enabled = NO;
+            weakself.videoButton.enabled = NO;
+            
+            [weakself removeStreamWithId:weakself.pubStreamId];
+            weakself.pubStreamId = nil;
+        }];
     }else if(aConference.role == EMConferenceRoleAdmin){
         [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"become_admin" completion:^(EMError *aError) {
             if(aError){

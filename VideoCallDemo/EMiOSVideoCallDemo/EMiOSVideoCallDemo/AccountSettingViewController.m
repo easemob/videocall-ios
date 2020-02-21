@@ -14,7 +14,8 @@
 #import "UIViewController+HUD.h"
 #import "XDSDropDownMenu.h"
 
-@interface AccountSettingViewController ()
+@interface AccountSettingViewController ()<MFMailComposeViewControllerDelegate>
+
 @property (nonatomic) NSString* logPath;
 @property (nonatomic) XDSDropDownMenu *sexDropDownMenu;
 @property (nonatomic) UIButton* btn;
@@ -260,6 +261,34 @@ return view ;
         }
     }];
 }
+
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(nullable NSError *)error
+{
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            [EMAlertController showInfoAlert:@"邮件保存成功"];
+            break;
+        case MFMailComposeResultSaved:
+            [EMAlertController showSuccessAlert:@"邮件保存成功"];
+            break;
+        case MFMailComposeResultSent:
+            [EMAlertController showSuccessAlert:@"邮件发送成功"];
+            break;
+        case MFMailComposeResultFailed:
+            [EMAlertController showErrorAlert:@"邮件发送失败"];
+            break;
+        default:
+            break;
+    }
+    
+    [[NSFileManager defaultManager] removeItemAtPath:self.logPath error:nil];
+    self.logPath = nil;
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 
 /*
 #pragma mark - Navigation

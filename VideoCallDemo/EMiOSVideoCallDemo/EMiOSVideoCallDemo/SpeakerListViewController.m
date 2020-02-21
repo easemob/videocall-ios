@@ -70,10 +70,10 @@
     if(section == 0) {
         
         if(row == 0){
-            UILabel * description = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 165, 10, 165, 40)];
+            UILabel * description = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, self.view.bounds.size.width, 40)];
             NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.memberCount - [EMDemoOption sharedOptions].conference.speakerIds.count;
             description.text = [NSString stringWithFormat:@"观众人数：%ld",auduinceCount];
-            description.textAlignment = NSTextAlignmentRight;
+            description.textAlignment = NSTextAlignmentCenter;
             [cell addSubview:description];
         }
     }

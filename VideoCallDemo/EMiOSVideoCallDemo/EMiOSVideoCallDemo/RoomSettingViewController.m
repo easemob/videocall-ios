@@ -12,7 +12,7 @@
 #import <MessageUI/MessageUI.h>
 #import "EMAlertController/EMAlertController.h"
 
-@interface RoomSettingViewController ()
+@interface RoomSettingViewController ()<MFMailComposeViewControllerDelegate>
 @property (nonatomic) NSString* logPath;
 @end
 
@@ -164,6 +164,32 @@ return view ;
             [self presentViewController:mailCompose animated:YES completion:nil];
         }
     }];
+}
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(nullable NSError *)error
+{
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            [EMAlertController showInfoAlert:@"邮件保存成功"];
+            break;
+        case MFMailComposeResultSaved:
+            [EMAlertController showSuccessAlert:@"邮件保存成功"];
+            break;
+        case MFMailComposeResultSent:
+            [EMAlertController showSuccessAlert:@"邮件发送成功"];
+            break;
+        case MFMailComposeResultFailed:
+            [EMAlertController showErrorAlert:@"邮件发送失败"];
+            break;
+        default:
+            break;
+    }
+    
+    [[NSFileManager defaultManager] removeItemAtPath:self.logPath error:nil];
+    self.logPath = nil;
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 /*
