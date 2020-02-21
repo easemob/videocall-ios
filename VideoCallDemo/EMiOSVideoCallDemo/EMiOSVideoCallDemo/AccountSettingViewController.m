@@ -31,18 +31,21 @@
 
 - (void)setupSubview
 {
-    self.title = @"个人设置";
+    self.title = @"设置";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _sexDropDownMenu = [[XDSDropDownMenu alloc] init];
+    [self.navigationController setNavigationBarHidden:YES];
+}
 
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:NO];
 }
 
 #pragma mark - Table View Data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if(section == 0)
-        return 4;
     if(section == 1)
-        return 1;
+        return 4;
     return 1;
 }
 
@@ -57,7 +60,17 @@
         cell = [[UITableViewCell alloc]initWithStyle:
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    if(section == 0) {
+    if(section == 0){
+        cell.textLabel.text = @"设置";
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        //[button setTitle:@"上传日志" forState:UIControlStateNormal];
+        button.frame = CGRectMake(5, 5, 40, 40);
+        [button setImage:[UIImage imageNamed:@"24 ／ icon"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:button];
+    }else
+    if(section == 1) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         if(row == 0){
             UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 200, 10, 200, 40)];
@@ -106,7 +119,7 @@
             [cell addSubview:button];
         }
     }
-    if(section == 1) {
+    if(section == 2) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = @"遇到问题";
         UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -117,6 +130,12 @@
     }
     
     return cell;
+}
+
+-(void)backAction
+{
+    [self.navigationController setNavigationBarHidden:NO];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 -(void)setResolutionAction:(UIButton*)button
@@ -176,9 +195,9 @@
 - (void)cellSwitchValueChanged:(UISwitch *)aSwitch
 {
     NSInteger tag = aSwitch.tag;
-    if (tag == 1 + 10000) {
+    if (tag == 1 + 10000 + 10) {
         [EMDemoOption sharedOptions].openCamera = [aSwitch isOn];
-    } else if (tag == 2 + 10000) {
+    } else if (tag == 2 + 10000 + 10) {
         [EMDemoOption sharedOptions].openMicrophone = [aSwitch isOn];
     }
     [[EMDemoOption sharedOptions] archive];
@@ -186,7 +205,7 @@
 
 // Default is 1 if not implemented
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 3;
 }
 
 

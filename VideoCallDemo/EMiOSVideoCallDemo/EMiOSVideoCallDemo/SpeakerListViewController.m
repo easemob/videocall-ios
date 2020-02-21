@@ -28,23 +28,25 @@
 
 -(void)setupSubView
 {
-    self.title = @"主播列表";
-    [self.navigationController setNavigationBarHidden:NO];
-}
--(void)dealloc
-{
+    //self.title = @"主播列表";
     [self.navigationController setNavigationBarHidden:YES];
 }
+
+-(void)backAction
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Incomplete implementation, return the number of sections
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #warning Incomplete implementation, return the number of rows
-    if(section == 0){
+    if(section == 0 || section == 1){
         return 1;
     }
     ConferenceViewController* confVC = [self getConfVC];
@@ -68,7 +70,16 @@
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0) {
-        
+        cell.textLabel.text = @"主播列表";
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        //[button setTitle:@"上传日志" forState:UIControlStateNormal];
+        button.frame = CGRectMake(5, 5, 40, 40);
+        [button setImage:[UIImage imageNamed:@"24 ／ icon"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:button];
+    }else
+    if(section == 1){
         if(row == 0){
             UILabel * description = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, self.view.bounds.size.width, 40)];
             NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.memberCount - [EMDemoOption sharedOptions].conference.speakerIds.count;
@@ -76,8 +87,8 @@
             description.textAlignment = NSTextAlignmentCenter;
             [cell addSubview:description];
         }
-    }
-    if(section == 1)
+    }else
+    if(section == 2)
     {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         UIButton* audioButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -114,7 +125,7 @@
 {
     NSInteger tag = button.tag;
     NSInteger row = (tag-20000)/2;
-    NSInteger section = 1;
+    NSInteger section = 2;
     NSIndexPath* path = [NSIndexPath indexPathForRow:row inSection:section];
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:path];
     if(cell){
@@ -138,11 +149,14 @@
 {
     NSInteger tag = button.tag;
     NSInteger row = (tag-20000)/2;
-    NSInteger section = 1;
+    NSInteger section = 2;
     NSIndexPath* path = [NSIndexPath indexPathForRow:row inSection:section];
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:path];
     if(cell){
         NSString* memName = cell.textLabel.text;
+        if([memName isEqualToString:[EMDemoOption sharedOptions].userid]){
+            return;
+        }
         NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,memName ];
         UIViewController* lastVC =  [self.navigationController.viewControllers objectAtIndex:(self.navigationController.viewControllers.count-2)];
         if([lastVC isKindOfClass:[ConferenceViewController class]]){
@@ -169,6 +183,36 @@
         return confVC;
     }
     return nil;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if(section == 0)
+        return 1;
+    if(section == 1)
+        return 3;
+    return 10;//section头部高度
+}
+//section头部视图
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
+    view.backgroundColor = [UIColor clearColor];
+    return view ;
+}
+//section底部间距
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    if(section == 1)
+        return 1;
+    return 30;
+}
+//section底部视图
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
+    view.backgroundColor = [UIColor clearColor];
+    return view;
 }
 
 

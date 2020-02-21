@@ -22,17 +22,31 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self setupSubview];
+    [self.navigationController setNavigationBarHidden:YES];
 }
 -(void) setupSubview
 {
     [self.navigationController setNavigationBarHidden:NO];
-    self.title = @"房间设置";
+    //self.title = @"房间设置";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.navigationController setNavigationBarHidden:YES];
 }
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:NO];
+}
+
+
+-(void)backAction
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 
 #pragma mark - Table View Data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if(section == 0)
+    if(section == 1)
         return 3;
     else
         return 1;
@@ -49,7 +63,17 @@
         cell = [[UITableViewCell alloc]initWithStyle:
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    if(section == 0) {
+    if(section == 0){
+        cell.textLabel.text = @"房间设置";
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        //[button setTitle:@"上传日志" forState:UIControlStateNormal];
+        button.frame = CGRectMake(5, 5, 40, 40);
+        [button setImage:[UIImage imageNamed:@"24 ／ icon"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:button];
+    }else
+    if(section == 1) {
         if(row == 0){
             cell.textLabel.text = @"房间名称";
             UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 250, 10, 250, 40)];
@@ -76,7 +100,7 @@
             };
         }
     }
-    if(section == 1) {
+    if(section == 2) {
         if(row == 0) {
             cell.textLabel.text = @"遇到问题";
             UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -91,6 +115,8 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
+    if(section == 0)
+        return 1;
     return 30;//section头部高度
 }
 //section头部视图
@@ -115,7 +141,7 @@ return view ;
 
 // Default is 1 if not implemented
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 3;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:

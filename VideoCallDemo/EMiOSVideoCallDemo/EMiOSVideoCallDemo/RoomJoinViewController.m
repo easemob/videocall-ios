@@ -233,7 +233,7 @@ int kHeightStart = 300;
         [EMDemoOption sharedOptions].roomPswd = pswd;
        
         ConferenceViewController* conferenceViewControler = [[ConferenceViewController alloc] initWithConfence:aCall role:role];
-        [weakself.navigationController pushViewController:conferenceViewControler animated:YES];
+        [weakself.navigationController pushViewController:conferenceViewControler animated:NO];
     };
     [[[EMClient sharedClient] conferenceManager] joinRoom:roomName pswd:pswd role:role  completion:block];
 }

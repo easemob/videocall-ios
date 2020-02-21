@@ -103,7 +103,7 @@
     //设置按下状态的颜色
     [self.switchCameraButton setTitleColor:[UIColor orangeColor] forState:UIControlStateHighlighted];
     //设置按钮的风格颜色
-    [self.switchCameraButton setTintColor:[UIColor whiteColor]];
+    [self.switchCameraButton setTintColor:[UIColor blueColor]];
     [self.switchCameraButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
     [self.switchCameraButton setEnabled:NO];
     [self.view addSubview:_switchCameraButton];
@@ -302,11 +302,8 @@
 
 -(void) settingAction
 {
-    __weak typeof(self) weakself = self;
-    [[[EMClient sharedClient] conferenceManager] getConference:[EMDemoOption sharedOptions].conference.confId password:[EMDemoOption sharedOptions].roomPswd completion:^(EMCallConference *aCall, EMError *aError) {
-        RoomSettingViewController* roomSettingViewControler = [[RoomSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
-        [self.navigationController pushViewController:roomSettingViewControler animated:YES];
-    }];
+   RoomSettingViewController* roomSettingViewControler = [[RoomSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    [self.navigationController pushViewController:roomSettingViewControler animated:YES];
     
 }
 
@@ -689,7 +686,7 @@
                     }];
                     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
                     [alert addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        if([weakself.streamItemDict count] >= 2){
+                        if([weakself.streamItemDict count] >= 9){
                             UIAlertController* alert2 = [UIAlertController alertControllerWithTitle:@"" message:@"主播已满，选人下麦？" preferredStyle:UIAlertControllerStyleAlert];
                             [alert2 addAction:[UIAlertAction actionWithTitle:@"返回" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                                 // 下麦一个主播
@@ -711,9 +708,9 @@
                             NSString* memId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
                             [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:aConference.confId memberNames:@[memId] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
                                 if(aError){
-                                    [EMAlertController showErrorAlert:@"修改用户权限失败"];
+                                    [EMAlertController showErrorAlert:@"上麦失败"];
                                 }
-                                [EMAlertController showInfoAlert:@"修改用户权限成功"];
+                                [EMAlertController showInfoAlert:@"上麦成功"];
                             }];
                         }
                     }]];
@@ -728,9 +725,9 @@
                         NSString* memId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
                         [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:aConference.confId memberNames:@[memId] role:EMConferenceRoleAudience completion:^(EMError *aError) {
                             if(aError){
-                                [EMAlertController showErrorAlert:@"修改用户权限失败"];
+                                [EMAlertController showErrorAlert:@"下麦失败"];
                             }
-                            [EMAlertController showInfoAlert:@"修改用户权限成功"];
+                            [EMAlertController showInfoAlert:@"下麦成功"];
                             [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
                                 
                             }];

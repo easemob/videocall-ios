@@ -153,11 +153,16 @@
                 NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,selectName];
                 [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[memid] role:EMConferenceRoleAudience completion:^(EMError *aError) {
                     if(aError){
-                    }
+                        [EMAlertController showErrorAlert:@"下麦失败"];
+                    }else
                     if(weakself.speakerName){
                         NSString* newmemid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,weakself.speakerName];
                         [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[newmemid] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
-                            
+                            if(!aError)
+                            {
+                                [EMAlertController showErrorAlert:@"上麦失败"];
+                            }
+                            [EMAlertController showErrorAlert:@"上麦成功"];
                         }];
                     }
                 }];
