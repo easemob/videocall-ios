@@ -36,6 +36,8 @@ typedef enum {
 
 @property (nonatomic, strong) id ext;
 
+@property (nonatomic) BOOL isAdmin;
+
 @end
 
 @protocol EMStreamViewDelegate <NSObject>

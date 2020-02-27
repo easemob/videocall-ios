@@ -197,7 +197,7 @@ return view ;
     switch (result)
     {
         case MFMailComposeResultCancelled:
-            [EMAlertController showInfoAlert:@"邮件保存成功"];
+            [EMAlertController showInfoAlert:@"邮件发送取消"];
             break;
         case MFMailComposeResultSaved:
             [EMAlertController showSuccessAlert:@"邮件保存成功"];

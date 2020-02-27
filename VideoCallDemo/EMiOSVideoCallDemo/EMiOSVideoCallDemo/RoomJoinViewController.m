@@ -13,7 +13,8 @@
 #import <Hyphenate/EMOptions+PrivateDeploy.h>
 static BOOL gIsInitializedSDK = NO;
 @interface RoomJoinViewController ()
-
+@property (nonatomic) NSString* roomName;
+@property (nonatomic) NSString* password;
 @end
 static BOOL g_IsLogin = NO;
 @implementation RoomJoinViewController
@@ -54,7 +55,11 @@ int kHeightStart = 300;
     self.nameField.layer.cornerRadius = 5;
     self.nameField.layer.borderWidth = 1;
     self.nameField.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange) name:UITextFieldTextDidChangeNotification object:self.nameField];
+    self.nameField.tag = 100;
+    self.nameField.keyboardType = UIKeyboardTypeASCIICapable;
+    self.nameField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    [self.nameField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:self.nameField];
     [self.view addSubview:self.nameField];
     
     self.pswdField = [[UITextField alloc] initWithFrame:CGRectMake(60, kHeightStart+100, mainBounds.size.width-120, 40)];
@@ -70,7 +75,12 @@ int kHeightStart = 300;
     self.pswdField.layer.cornerRadius = 5;
     self.pswdField.layer.borderWidth = 1;
     self.pswdField.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange) name:UITextFieldTextDidChangeNotification object:self.pswdField];
+    self.pswdField.secureTextEntry = YES;
+    self.pswdField.tag = 101;
+    //self.pswdField.keyboardType = UIKeyboardTypeASCIICapable;
+    self.pswdField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    [self.pswdField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:self.pswdField];
     [self.view addSubview:self.pswdField];
     
     self.errorLable = [[UILabel alloc] initWithFrame:CGRectMake(60, kHeightStart+150, mainBounds.size.width-120, 60)];
@@ -167,6 +177,7 @@ int kHeightStart = 300;
 {
     [[EMClient sharedClient].chatManager addDelegate:self delegateQueue:nil];
     [[EMClient sharedClient].conferenceManager addDelegate:self delegateQueue:nil];
+    [[EMClient sharedClient].conferenceManager enableStatistics:YES];
 }
 
 -(void)settingAction
@@ -175,10 +186,10 @@ int kHeightStart = 300;
     [self.navigationController pushViewController:settingViewController animated:YES];
 }
 
--(void)textChange {
-    NSString* roomName = self.nameField.text;
-    NSString* roomPswd = self.pswdField.text;
-    if([roomName length] > 0 && [roomPswd length] > 0)
+-(void)textChange:(UITextField*)field {
+    _roomName = self.nameField.text;
+    _password = self.pswdField.text;
+    if([_roomName length] > 0 && [_password length] > 0)
     {
         [self.joinAsSpeaker setEnabled:YES];
         [self.joinAsAudience setEnabled:YES];
@@ -191,6 +202,8 @@ int kHeightStart = 300;
 
 - (void)joinRoomAsSpeakerAction
 {
+    self.joinAsSpeaker.enabled = NO;
+    self.joinAsAudience.enabled = NO;
     self.errorLable.text = @"";
     [self _joinWithRole:EMConferenceRoleSpeaker];
 }
@@ -200,10 +213,38 @@ int kHeightStart = 300;
     if(!g_IsLogin){
         self.errorLable.text = @"当前尚未登录";
         [self autoLogin];
+        self.joinAsSpeaker.enabled = YES;
+        self.joinAsAudience.enabled = YES;
         return;
     }
-    NSString* roomName = [self.nameField.text lowercaseString];
-    NSString* pswd = [self.pswdField.text lowercaseString];
+    NSString* roomName = self.nameField.text;
+    NSString* pswd = self.pswdField.text;
+    if([roomName length] < 3){
+        self.errorLable.text = @"房间名称不能少于3位";
+        self.joinAsSpeaker.enabled = YES;
+        self.joinAsAudience.enabled = YES;
+        return;
+    }
+    if(![self validateString:roomName])
+    {
+        self.errorLable.text = @"房间名称不符合规范";
+        self.joinAsSpeaker.enabled = YES;
+        self.joinAsAudience.enabled = YES;
+        return;
+    }
+    if([pswd length] < 3 || [pswd length] > 18){
+        self.errorLable.text = @"房间密码应在3位到18位之间";
+        self.joinAsSpeaker.enabled = YES;
+        self.joinAsAudience.enabled = YES;
+        return;
+    }
+    if(![self validateString:pswd])
+    {
+        self.errorLable.text = @"房间密码仅允许中英文";
+        self.joinAsSpeaker.enabled = YES;
+        self.joinAsAudience.enabled = YES;
+        return;
+    }
     __weak typeof(self) weakself = self;
     void (^block)(EMCallConference *aCall, EMError *aError) = ^(EMCallConference *aCall, EMError *aError) {
         if (aError) {
@@ -226,6 +267,8 @@ int kHeightStart = 300;
                 [alert addAction:cancelAction];
                 [self presentViewController:alert animated:YES completion:nil];
             }
+            self.joinAsSpeaker.enabled = YES;
+            self.joinAsAudience.enabled = YES;
             return ;
         }
         [EMDemoOption sharedOptions].conference = aCall;
@@ -234,12 +277,16 @@ int kHeightStart = 300;
        
         ConferenceViewController* conferenceViewControler = [[ConferenceViewController alloc] initWithConfence:aCall role:role];
         [weakself.navigationController pushViewController:conferenceViewControler animated:NO];
+        self.joinAsSpeaker.enabled = YES;
+        self.joinAsAudience.enabled = YES;
     };
-    [[[EMClient sharedClient] conferenceManager] joinRoom:roomName pswd:pswd role:role  completion:block];
+    [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:pswd role:role completion:block];
 }
 
 - (void)joinAsAudienceAction
 {
+    self.joinAsSpeaker.enabled = NO;
+    self.joinAsAudience.enabled = NO;
     self.errorLable.text = @"";
     [self _joinWithRole:EMConferenceRoleAudience];
 }
@@ -248,6 +295,37 @@ int kHeightStart = 300;
     [self.view endEditing:YES];
 }
 
+- (void)textFieldDidChange:(UITextField *)textField
+{
+    NSString *toBeString = textField.text;
+    if([toBeString length] == 0)
+        return;
+    
+    int kmaxLength = 18;//设置最大输入值
+    
+    if([toBeString length] > kmaxLength){
+        if(textField.tag == 100)
+            textField.text = _roomName;
+    }
+    if(![self validateString:toBeString])
+    {
+        if(textField.tag == 100)
+            textField.text = _roomName;
+        else if(textField.tag == 101)
+            textField.text = _password;
+    }
+}
+
+-(BOOL)validateString:(NSString*)str
+{
+    // 编写正则表达式，验证mobilePhone是否为手机号码
+    NSString *regex = @"^[\u4e00-\u9fa5A-Za-z0-9_-]+$";
+    // 创建谓词对象并设定条件表达式
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
+    // 字符串判断，然后BOOL值
+    BOOL result = [predicate evaluateWithObject:str];
+    return result;
+}
 /*
 #pragma mark - Navigation
 
