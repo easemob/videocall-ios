@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0773481ED2F14ED39E0D492C /* libPods-EMiOSVideoCallDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */; };
-		C00F1FE123FF771B007174DE /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C00F1FE023FF771B007174DE /* Hyphenate.framework */; };
-		C00F1FE223FF771B007174DE /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C00F1FE023FF771B007174DE /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C00F1FE623FF81EC007174DE /* XDSDropDownMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = C00F1FE523FF81EC007174DE /* XDSDropDownMenu.m */; };
 		C00F1FEE23FFBA15007174DE /* 编组@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F1FEB23FFBA14007174DE /* 编组@3x.png */; };
 		C00F1FEF23FFBA15007174DE /* 编组@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F1FEC23FFBA14007174DE /* 编组@2x.png */; };
@@ -20,6 +18,12 @@
 		C00F1FFA23FFBA25007174DE /* 编组 8.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F1FF423FFBA25007174DE /* 编组 8.png */; };
 		C00F1FFB23FFBA25007174DE /* 编组 8@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F1FF523FFBA25007174DE /* 编组 8@2x.png */; };
 		C00F1FFC23FFBA25007174DE /* 编组 8@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F1FF623FFBA25007174DE /* 编组 8@3x.png */; };
+		C00F201024002933007174DE /* 视频2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F200D24002932007174DE /* 视频2@3x.png */; };
+		C00F201124002933007174DE /* 视频2.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F200E24002932007174DE /* 视频2.png */; };
+		C00F201224002933007174DE /* 视频2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F200F24002933007174DE /* 视频2@2x.png */; };
+		C00F20162400294F007174DE /* 03-视频通话@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20132400294E007174DE /* 03-视频通话@3x.png */; };
+		C00F20172400294F007174DE /* 03-视频通话.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20142400294F007174DE /* 03-视频通话.png */; };
+		C00F20182400294F007174DE /* 03-视频通话@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20152400294F007174DE /* 03-视频通话@2x.png */; };
 		C06572E223F285C600532B27 /* EMDemoOption.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E123F285C600532B27 /* EMDemoOption.m */; };
 		C06572E523F2ACA400532B27 /* RoomSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E423F2ACA400532B27 /* RoomSettingViewController.m */; };
 		C06572E823F2BCF000532B27 /* SpeakerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E723F2BCF000532B27 /* SpeakerListViewController.m */; };
@@ -155,6 +159,7 @@
 		C070FA7E23FB78F900DC0F57 /* minimize_white@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C070FA0623FB78F900DC0F57 /* minimize_white@3x.png */; };
 		C0720AE723F641FC00E1FEC3 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */; };
 		C0720AF023F6454900E1FEC3 /* EMStreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AEF23F6454900E1FEC3 /* EMStreamView.m */; };
+		C08470962405292B00B3771D /* admin.png in Resources */ = {isa = PBXBuildFile; fileRef = C08470952405292B00B3771D /* admin.png */; };
 		C095A28023F0F1B300A09CAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A27F23F0F1B300A09CAA /* AppDelegate.m */; };
 		C095A28923F0F1B300A09CAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C095A28723F0F1B300A09CAA /* Main.storyboard */; };
 		C095A28B23F0F1B700A09CAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C095A28A23F0F1B700A09CAA /* Assets.xcassets */; };
@@ -164,6 +169,9 @@
 		C095A2AC23F1408B00A09CAA /* ConferenceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A2AB23F1408B00A09CAA /* ConferenceViewController.m */; };
 		C095A2AE23F1412500A09CAA /* Images in Resources */ = {isa = PBXBuildFile; fileRef = C095A2AD23F1412500A09CAA /* Images */; };
 		C095A2B123F14CCD00A09CAA /* AccountSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A2B023F14CCD00A09CAA /* AccountSettingViewController.m */; };
+		C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0A7748B240767B300E44315 /* MessageUI.framework */; };
+		C0A774A92407F18F00E44315 /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0A774A82407F18E00E44315 /* Hyphenate.framework */; };
+		C0A774AA2407F18F00E44315 /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0A774A82407F18E00E44315 /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C0BD177023FF62DF005E3B67 /* Fill 1@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD176D23FF62DF005E3B67 /* Fill 1@3x.png */; };
 		C0BD177123FF62DF005E3B67 /* Fill 1.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD176E23FF62DF005E3B67 /* Fill 1.png */; };
 		C0BD177223FF62DF005E3B67 /* Fill 1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD176F23FF62DF005E3B67 /* Fill 1@2x.png */; };
@@ -212,13 +220,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C063D89D23F41F770090EEEE /* Embed Frameworks */ = {
+		C0A774AB2407F18F00E44315 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C00F1FE223FF771B007174DE /* Hyphenate.framework in Embed Frameworks */,
+				C0A774AA2407F18F00E44315 /* Hyphenate.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -228,7 +236,6 @@
 /* Begin PBXFileReference section */
 		0777C600A6E30C563B00F11D /* Pods-EMiOSVideoCallDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EMiOSVideoCallDemo.release.xcconfig"; path = "Target Support Files/Pods-EMiOSVideoCallDemo/Pods-EMiOSVideoCallDemo.release.xcconfig"; sourceTree = "<group>"; };
 		2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EMiOSVideoCallDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C00F1FE023FF771B007174DE /* Hyphenate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Hyphenate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C00F1FE423FF81EC007174DE /* XDSDropDownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XDSDropDownMenu.h; sourceTree = "<group>"; };
 		C00F1FE523FF81EC007174DE /* XDSDropDownMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XDSDropDownMenu.m; sourceTree = "<group>"; };
 		C00F1FEB23FFBA14007174DE /* 编组@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "编组@3x.png"; sourceTree = "<group>"; };
@@ -240,6 +247,12 @@
 		C00F1FF423FFBA25007174DE /* 编组 8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "编组 8.png"; sourceTree = "<group>"; };
 		C00F1FF523FFBA25007174DE /* 编组 8@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "编组 8@2x.png"; sourceTree = "<group>"; };
 		C00F1FF623FFBA25007174DE /* 编组 8@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "编组 8@3x.png"; sourceTree = "<group>"; };
+		C00F200D24002932007174DE /* 视频2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "视频2@3x.png"; sourceTree = "<group>"; };
+		C00F200E24002932007174DE /* 视频2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "视频2.png"; sourceTree = "<group>"; };
+		C00F200F24002933007174DE /* 视频2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "视频2@2x.png"; sourceTree = "<group>"; };
+		C00F20132400294E007174DE /* 03-视频通话@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-视频通话@3x.png"; sourceTree = "<group>"; };
+		C00F20142400294F007174DE /* 03-视频通话.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-视频通话.png"; sourceTree = "<group>"; };
+		C00F20152400294F007174DE /* 03-视频通话@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-视频通话@2x.png"; sourceTree = "<group>"; };
 		C06572E023F285C600532B27 /* EMDemoOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMDemoOption.h; path = Helper/EMDemoOption.h; sourceTree = "<group>"; };
 		C06572E123F285C600532B27 /* EMDemoOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EMDemoOption.m; path = Helper/EMDemoOption.m; sourceTree = "<group>"; };
 		C06572E323F2ACA400532B27 /* RoomSettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomSettingViewController.h; sourceTree = "<group>"; };
@@ -383,6 +396,7 @@
 		C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
 		C0720AEE23F6454900E1FEC3 /* EMStreamView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMStreamView.h; sourceTree = "<group>"; };
 		C0720AEF23F6454900E1FEC3 /* EMStreamView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMStreamView.m; sourceTree = "<group>"; };
+		C08470952405292B00B3771D /* admin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = admin.png; sourceTree = "<group>"; };
 		C095A27B23F0F1B300A09CAA /* EMiOSVideoCallDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EMiOSVideoCallDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C095A27E23F0F1B300A09CAA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		C095A27F23F0F1B300A09CAA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -398,6 +412,9 @@
 		C095A2AD23F1412500A09CAA /* Images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Images; sourceTree = "<group>"; };
 		C095A2AF23F14CCD00A09CAA /* AccountSettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccountSettingViewController.h; sourceTree = "<group>"; };
 		C095A2B023F14CCD00A09CAA /* AccountSettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AccountSettingViewController.m; sourceTree = "<group>"; };
+		C0A7748B240767B300E44315 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		C0A774A52407F17E00E44315 /* Hyphenate */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Hyphenate; path = EMiOSVideoCallDemo/Hyphenate.framework/Hyphenate; sourceTree = "<group>"; };
+		C0A774A82407F18E00E44315 /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hyphenate.framework; path = EMiOSVideoCallDemo/Hyphenate.framework; sourceTree = "<group>"; };
 		C0BD176D23FF62DF005E3B67 /* Fill 1@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Fill 1@3x.png"; sourceTree = "<group>"; };
 		C0BD176E23FF62DF005E3B67 /* Fill 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Fill 1.png"; sourceTree = "<group>"; };
 		C0BD176F23FF62DF005E3B67 /* Fill 1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Fill 1@2x.png"; sourceTree = "<group>"; };
@@ -453,8 +470,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */,
+				C0A774A92407F18F00E44315 /* Hyphenate.framework in Frameworks */,
 				0773481ED2F14ED39E0D492C /* libPods-EMiOSVideoCallDemo.a in Frameworks */,
-				C00F1FE123FF771B007174DE /* Hyphenate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,7 +482,9 @@
 		7B300057D44D5796FAA0433A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C00F1FE023FF771B007174DE /* Hyphenate.framework */,
+				C0A774A82407F18E00E44315 /* Hyphenate.framework */,
+				C0A774A52407F17E00E44315 /* Hyphenate */,
+				C0A7748B240767B300E44315 /* MessageUI.framework */,
 				2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */,
 			);
 			name = Frameworks;
@@ -694,6 +714,7 @@
 				C0BD176F23FF62DF005E3B67 /* Fill 1@2x.png */,
 				C0BD176D23FF62DF005E3B67 /* Fill 1@3x.png */,
 				C0DB9CD223FEA9090057BA4C /* cbu(3).png */,
+				C08470952405292B00B3771D /* admin.png */,
 				C0DB9CD323FEA9090057BA4C /* 24 ／ icon.png */,
 				C0DB9CD423FEA9090057BA4C /* 编组 6@3x.png */,
 				C0DB9CD523FEA9090057BA4C /* cbu@2x(1).png */,
@@ -701,6 +722,12 @@
 				C0DB9CD723FEA9090057BA4C /* cbu@3x(1).png */,
 				C0DB9CD823FEA9090057BA4C /* 24 ／ icon@3x.png */,
 				C0DB9CD923FEA9090057BA4C /* 编组 6@2x.png */,
+				C00F200E24002932007174DE /* 视频2.png */,
+				C00F20142400294F007174DE /* 03-视频通话.png */,
+				C00F20152400294F007174DE /* 03-视频通话@2x.png */,
+				C00F20132400294E007174DE /* 03-视频通话@3x.png */,
+				C00F200F24002933007174DE /* 视频2@2x.png */,
+				C00F200D24002932007174DE /* 视频2@3x.png */,
 				C00F1FED23FFBA15007174DE /* 编组.png */,
 				C00F1FEC23FFBA14007174DE /* 编组@2x.png */,
 				C00F1FEB23FFBA14007174DE /* 编组@3x.png */,
@@ -770,7 +797,7 @@
 				C095A27723F0F1B300A09CAA /* Sources */,
 				C095A27823F0F1B300A09CAA /* Frameworks */,
 				C095A27923F0F1B300A09CAA /* Resources */,
-				C063D89D23F41F770090EEEE /* Embed Frameworks */,
+				C0A774AB2407F18F00E44315 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -891,6 +918,7 @@
 				C0DB9CFC23FEA9090057BA4C /* 成员@2x.png in Resources */,
 				C070FA3B23FB78F900DC0F57 /* animate_00072.png in Resources */,
 				C0BD177223FF62DF005E3B67 /* Fill 1@2x.png in Resources */,
+				C00F20182400294F007174DE /* 03-视频通话@2x.png in Resources */,
 				C0BD178D23FF658B005E3B67 /* 形状结合@2x.png in Resources */,
 				C070FA1223FB78F900DC0F57 /* animate_00031.png in Resources */,
 				C0DB9D0323FEA9090057BA4C /* 视频@2x.png in Resources */,
@@ -901,6 +929,7 @@
 				C070FA2323FB78F900DC0F57 /* animate_00085.png in Resources */,
 				C070FA4023FB78F900DC0F57 /* animate_00088.png in Resources */,
 				C0DB9CFB23FEA9090057BA4C /* cbu(2).png in Resources */,
+				C00F201024002933007174DE /* 视频2@3x.png in Resources */,
 				C070FA1323FB78F900DC0F57 /* animate_00025.png in Resources */,
 				C070FA5523FB78F900DC0F57 /* role_gray@2x.png in Resources */,
 				C070FA4E23FB78F900DC0F57 /* talking_green@3x.png in Resources */,
@@ -909,6 +938,7 @@
 				C070FA5623FB78F900DC0F57 /* kbps_gray@2x.png in Resources */,
 				C070FA5A23FB78F900DC0F57 /* grid_gray@3x.png in Resources */,
 				C070FA2D23FB78F900DC0F57 /* animate_00041.png in Resources */,
+				C08470962405292B00B3771D /* admin.png in Resources */,
 				C070FA5223FB78F900DC0F57 /* role_gray@3x.png in Resources */,
 				C070FA3023FB78F900DC0F57 /* animate_00083.png in Resources */,
 				C070FA5323FB78F900DC0F57 /* answer@3x.png in Resources */,
@@ -935,6 +965,7 @@
 				C070FA1623FB78F900DC0F57 /* animate_00036.png in Resources */,
 				C070FA3E23FB78F900DC0F57 /* animate_00063.png in Resources */,
 				C070FA6123FB78F900DC0F57 /* kbps_white@3x.png in Resources */,
+				C00F20162400294F007174DE /* 03-视频通话@3x.png in Resources */,
 				C0DB9D1123FEA9090057BA4C /* cbu@3x(3).png in Resources */,
 				C070FA5923FB78F900DC0F57 /* talking_green@2x.png in Resources */,
 				C0DB9CF323FEA9090057BA4C /* cbu(3).png in Resources */,
@@ -973,9 +1004,11 @@
 				C070FA0A23FB78F900DC0F57 /* floating_voice@2x.png in Resources */,
 				C070FA1923FB78F900DC0F57 /* animate_00050.png in Resources */,
 				C070FA7823FB78F900DC0F57 /* mute_red@3x.png in Resources */,
+				C00F201224002933007174DE /* 视频2@2x.png in Resources */,
 				C070F98623FB78CD00DC0F57 /* alert_default@3x.png in Resources */,
 				C0BD178E23FF658B005E3B67 /* 上麦@3x.png in Resources */,
 				C0DB9CF723FEA9090057BA4C /* 24 ／ icon@2x.png in Resources */,
+				C00F201124002933007174DE /* 视频2.png in Resources */,
 				C070FA7A23FB78F900DC0F57 /* hangup@2x.png in Resources */,
 				C0DB9CF523FEA9090057BA4C /* 编组 6@3x.png in Resources */,
 				C070FA2823FB78F900DC0F57 /* animate_00081.png in Resources */,
@@ -1003,6 +1036,7 @@
 				C070FA3A23FB78F900DC0F57 /* animate_00066.png in Resources */,
 				C070F98523FB78CD00DC0F57 /* alert_error@3x.png in Resources */,
 				C00F1FEF23FFBA15007174DE /* 编组@2x.png in Resources */,
+				C00F20172400294F007174DE /* 03-视频通话.png in Resources */,
 				C070FA4623FB78F900DC0F57 /* animate_00049.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1113,6 +1147,11 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo/**",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1171,6 +1210,11 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo/**",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1192,13 +1236,15 @@
 			baseConfigurationReference = C28A254B531F8735693459A3 /* Pods-EMiOSVideoCallDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 499WYUV8Q2;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/EMiOSVideoCallDemo",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo/**",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/EMiOSVideoCallDemo/PrefixHeader.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1213,8 +1259,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1224,13 +1275,15 @@
 			baseConfigurationReference = 0777C600A6E30C563B00F11D /* Pods-EMiOSVideoCallDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 499WYUV8Q2;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/EMiOSVideoCallDemo",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo/**",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/EMiOSVideoCallDemo/PrefixHeader.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1245,8 +1298,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
