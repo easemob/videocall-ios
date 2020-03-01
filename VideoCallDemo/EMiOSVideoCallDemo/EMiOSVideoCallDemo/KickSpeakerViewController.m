@@ -162,7 +162,7 @@
                             {
                                 [EMAlertController showErrorAlert:@"上麦失败"];
                             }
-                            [EMAlertController showErrorAlert:@"上麦成功"];
+                            [EMAlertController showSuccessAlert:@"上麦成功"];
                         }];
                     }
                 }];

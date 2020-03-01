@@ -48,10 +48,12 @@
         self.nameLabel = [[UILabel alloc] init];
         self.nameLabel.textColor = [UIColor redColor];
         self.nameLabel.font = [UIFont systemFontOfSize:13];
+        self.nameLabel.numberOfLines = 0;
         [self addSubview:self.nameLabel];
         [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self).offset(5);
+            make.top.equalTo(self).offset(10);
             make.left.equalTo(self).offset(5);
+            make.width.equalTo(@140);
         }];
         
         self.adminView = [[UIImageView alloc] init];

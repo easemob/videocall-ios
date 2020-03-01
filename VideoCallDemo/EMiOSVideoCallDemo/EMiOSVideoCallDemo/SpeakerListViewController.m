@@ -122,6 +122,8 @@
                 NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:item.videoView.nameLabel.text];
                 [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
                 cell.textLabel.attributedText = attributedString;
+                if([[EMDemoOption sharedOptions].userid isEqualToString:item.videoView.nameLabel.text] )
+                    cell.textLabel.textColor = [UIColor blueColor];
                 if(!item.videoView.enableVideo && !item.videoView.enableVoice){
                     videoButton.hidden = YES;
                     audioButton.hidden = YES;

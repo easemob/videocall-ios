@@ -298,8 +298,6 @@ int kHeightStart = 300;
 - (void)textFieldDidChange:(UITextField *)textField
 {
     NSString *toBeString = textField.text;
-    if([toBeString length] == 0)
-        return;
     
     int kmaxLength = 18;//设置最大输入值
     
@@ -318,8 +316,8 @@ int kHeightStart = 300;
 
 -(BOOL)validateString:(NSString*)str
 {
-    // 编写正则表达式，验证mobilePhone是否为手机号码
-    NSString *regex = @"^[\u4e00-\u9fa5A-Za-z0-9_-]+$";
+    // 编写正则表达式
+    NSString *regex = @"^[\u4e00-\u9fa5A-Za-z0-9_-]*$";
     // 创建谓词对象并设定条件表达式
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
     // 字符串判断，然后BOOL值

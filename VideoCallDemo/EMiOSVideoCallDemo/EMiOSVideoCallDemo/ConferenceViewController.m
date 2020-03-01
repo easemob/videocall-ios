@@ -105,7 +105,7 @@
     
     self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 240, self.view.bounds.size.width, 150)];
     self.scrollView.showsHorizontalScrollIndicator = NO;
-    self.scrollView.contentSize = CGSizeMake(150*9, 150);
+    self.scrollView.contentSize = CGSizeMake(150*8, 150);
     [self.view addSubview:self.scrollView];
     
     self.switchCameraButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -303,16 +303,12 @@
 -(void) roleChangeAction
 {
     if([EMDemoOption sharedOptions].conference.role >= EMConferenceRoleSpeaker) {
+        if(self.streamItemDict.count == 1){
+            [EMAlertController showInfoAlert:@"您是唯一主播，当前禁止下播"];
+            return;
+        }
         [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"request_tobe_audience" completion:^(EMError *aError) {
             if(!aError){
-                __weak typeof(self) weakself = self;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:@"下麦申请已提交" preferredStyle:UIAlertControllerStyleAlert];
-                    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        
-                    }]];
-                    [weakself presentViewController:alert animated:YES completion:nil];
-                });
             }
         }];
     }else{
@@ -419,7 +415,7 @@
     pubConfig.isMute = ![EMDemoOption sharedOptions].openMicrophone;
     
     EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-    pubConfig.maxVideoKbps = (int)options.maxVideoKbps;
+    pubConfig.maxVideoKbps = 200;
     pubConfig.maxAudioKbps = (int)options.maxAudioKbps;
     switch ([EMDemoOption sharedOptions].resolutionrate) {
         case ResolutionRate_720p:
@@ -588,6 +584,10 @@
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
         [self _subStream:aStream];
+        __weak typeof(self) weakself = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakself updateScrollView];
+        });
     }
 }
 
@@ -596,7 +596,11 @@
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
         [self removeStreamWithId:aStream.streamId];
-        [self updateScrollView];
+        __weak typeof(self) weakself = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakself updateScrollView];
+        });
+        
     }
 }
 
@@ -746,7 +750,7 @@
                                 if(aError){
                                     [EMAlertController showErrorAlert:@"上麦失败"];
                                 }
-                                [EMAlertController showInfoAlert:@"上麦成功"];
+                                [EMAlertController showSuccessAlert:@"上麦成功"];
                             }];
                         }
                     }]];
@@ -765,7 +769,7 @@
                             if(aError){
                                 [EMAlertController showErrorAlert:@"下麦失败"];
                             }
-                            [EMAlertController showInfoAlert:@"下麦成功"];
+                            [EMAlertController showSuccessAlert:@"下麦成功"];
                             [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
                                 
                             }];
@@ -815,11 +819,14 @@
             
             [weakself removeStreamWithId:weakself.pubStreamId];
             weakself.pubStreamId = nil;
+            [weakself updateScrollView];
         }];
     }else if(aConference.role == EMConferenceRoleAdmin){
         [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"become_admin" completion:^(EMError *aError) {
             if(aError){
-                [EMAlertController showErrorAlert:@"管理员变更广播失败"];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [EMAlertController showErrorAlert:@"管理员变更广播失败"];
+                });
             }
         }];
     }
