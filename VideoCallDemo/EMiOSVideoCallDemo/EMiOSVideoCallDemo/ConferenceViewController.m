@@ -93,95 +93,176 @@
     [self.view addSubview:self.roomNameLable];
     
     self.settingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.settingButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
+    self.settingButton.frame = CGRectMake(self.view.bounds.size.width - 50, 50, 40, 40);
     //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
-    [self.settingButton setImage:[UIImage imageNamed:@"形状"] forState:UIControlStateNormal];
+    [self.settingButton setImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
     [self.settingButton addTarget:self action:@selector(settingAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.settingButton setTintColor:[UIColor whiteColor]];
     [self.view addSubview:self.settingButton];
     
     self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 80, 100, 30)];
     [self.view addSubview:self.timeLabel];
     [self startTimer];
     
-    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 240, self.view.bounds.size.width, 150)];
+    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 180, self.view.bounds.size.width, 100)];
     self.scrollView.showsHorizontalScrollIndicator = NO;
-    self.scrollView.contentSize = CGSizeMake(150*8, 150);
+    self.scrollView.contentSize = CGSizeMake(100*8, 100);
     [self.view addSubview:self.scrollView];
     
     self.switchCameraButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.switchCameraButton.frame = CGRectMake(self.view.bounds.size.width - 50, 50, 40, 40);
+    self.switchCameraButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
     self.switchCameraButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.switchCameraButton setTitle:@"" forState:UIControlStateNormal];
-    [self.switchCameraButton setImage:[UIImage imageNamed:@"形状结合"] forState:UIControlStateNormal];
-    [self.switchCameraButton setImage:[UIImage imageNamed:@"形状结合"] forState:UIControlStateDisabled];
-    [self.switchCameraButton setImage:[UIImage imageNamed:@"形状结合"] forState:UIControlStateSelected];
-    [self.switchCameraButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    [self.switchCameraButton setTintColor:[UIColor redColor]];
+    [self.switchCameraButton setImage:[UIImage imageNamed:@"swtichcamera"] forState:UIControlStateNormal];
+    [self.switchCameraButton setImage:[UIImage imageNamed:@"swtichcamera"] forState:UIControlStateDisabled];
+    [self.switchCameraButton setImage:[UIImage imageNamed:@"swtichcamera"] forState:UIControlStateSelected];
+    //[self.switchCameraButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    //[self.switchCameraButton setTintColor:[UIColor redColor]];
     [self.switchCameraButton addTarget:self action:@selector(switchCamaraAction) forControlEvents:UIControlEventTouchUpInside];
     //设置按下状态的颜色
     [self.switchCameraButton setTitleColor:[UIColor orangeColor] forState:UIControlStateHighlighted];
     //设置按钮的风格颜色
-    [self.switchCameraButton setTintColor:[UIColor blueColor]];
+    //[self.switchCameraButton setTintColor:[UIColor blueColor]];
     [self.switchCameraButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
     [self.switchCameraButton setEnabled:NO];
+    [self.switchCameraButton setTintColor:[UIColor whiteColor] ];
     [self.view addSubview:_switchCameraButton];
     
-    int padding = 20;
-    int top = self.view.bounds.size.height - 80;
-    int size = (self.view.bounds.size.width - 20*6)/5;
-    self.microphoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.microphoneButton.frame = CGRectMake(padding, top, size, size);
-    //[self.microphoneButton setTitle:@"" forState:UIControlStateNormal];
-    [self.microphoneButton addTarget:self action:@selector(microphoneButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    //[self.microphoneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [self.microphoneButton setImage:[UIImage imageNamed:@"编组 6"] forState:UIControlStateSelected];
-    [self.microphoneButton setImage:[UIImage imageNamed:@"03-视频通话"] forState:UIControlStateNormal];
-    [self.view addSubview:self.microphoneButton];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-75, self.view.bounds.size.width, 75) style:UITableViewStylePlain];
+    _tableView.backgroundColor = [UIColor grayColor];
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    [self.view addSubview:_tableView];
+    self.view.backgroundColor = [UIColor grayColor];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 75;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0;
+}
+
+// Default is 1 if not implemented
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return 1;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSInteger section = indexPath.section;
+    NSInteger row = indexPath.row;
+    static NSString *cellIdentifier = @"cellID";
     
-    self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.videoButton.frame = CGRectMake(padding + (padding+size), top, size, size);
-    [self.videoButton setTitle:@"" forState:UIControlStateNormal];
-    [self.videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.videoButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    [self.videoButton setImage:[UIImage imageNamed:@"视频"] forState:UIControlStateSelected];
-    [self.videoButton setImage:[UIImage imageNamed:@"视频2"] forState:UIControlStateNormal];
-    [self.view addSubview:self.videoButton];
-    
-    self.hangupButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.hangupButton.frame = CGRectMake(padding + (padding+size) * 2, top, size, size);
-    //[self.hangupButton setTitle:@"挂断" forState:UIControlStateNormal];
-    self.hangupButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    [self.hangupButton setImage:[UIImage imageNamed:@"视频备份"] forState:UIControlStateNormal];
-    [self.hangupButton setTintColor:[UIColor redColor]];
-    [self.hangupButton addTarget:self action:@selector(hangupAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.hangupButton];
-    
-    self.membersButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.membersButton.frame = CGRectMake(padding + (padding+size) * 3, top, size, size);
-    //[self.membersButton setTitle:@"成员" forState:UIControlStateNormal];
-    [self.membersButton setImage:[UIImage imageNamed:@"成员"] forState:UIControlStateNormal];
-    //self.membersButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    //[self.membersButton setImage:[UIImage imageNamed:@"成员"] forState:UIControlStateNormal];
-    [self.membersButton addTarget:self action:@selector(membersAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.membersButton];
-    
-    self.roleButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.roleButton.frame = CGRectMake(padding + (padding+size) * 4, top, size, size);
-    EMConferenceRole currole = [EMDemoOption sharedOptions].conference.role;
-    if(currole == EMConferenceRoleAudience)
-    {
-        [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
-        [self.roleButton setTintColor:[UIColor blueColor]];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:
+    cellIdentifier];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]initWithStyle:
+        UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    else
-    {
-        [self.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
-        [self.roleButton setTintColor:[UIColor redColor]];
+    if(section == 0){
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.backgroundColor = [UIColor colorWithRed:20/255.0 green:20/255.0 blue:20/255.0 alpha:1.0];
+        int padding = 20;
+        int top = 5;
+        int size = (self.view.bounds.size.width - 20*6)/5;
+        int iconsize = 24;
+        int offset = (size-iconsize)/2;
+        self.microphoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.microphoneButton.frame = CGRectMake(padding+offset, top, iconsize, iconsize);
+        //[self.microphoneButton setTitle:@"" forState:UIControlStateNormal];
+        [self.microphoneButton addTarget:self action:@selector(microphoneButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        //[self.microphoneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [self.microphoneButton setImage:[UIImage imageNamed:@"编组 6"] forState:UIControlStateSelected];
+        [self.microphoneButton setImage:[UIImage imageNamed:@"03-视频通话"] forState:UIControlStateNormal];
+        self.microphoneLable = [[UILabel alloc] initWithFrame:CGRectMake(padding, top+iconsize+2, size, 20)];
+        self.microphoneLable.text = @"解除静音";
+        self.microphoneLable.textAlignment = NSTextAlignmentCenter;
+        [self.microphoneLable setFont:[UIFont fontWithName:@"Arial" size:10]];
+        self.microphoneLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
+        [cell addSubview:self.microphoneButton];
+        [cell addSubview:self.microphoneLable];
+        
+        self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.videoButton.frame = CGRectMake(padding + (padding+size) + offset, top, iconsize, iconsize);
+        [self.videoButton setTitle:@"" forState:UIControlStateNormal];
+        [self.videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.videoButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        [self.videoButton setImage:[UIImage imageNamed:@"视频"] forState:UIControlStateSelected];
+        [self.videoButton setImage:[UIImage imageNamed:@"视频2"] forState:UIControlStateNormal];
+        self.videoLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size), top+iconsize+2, size, 20)];
+        self.videoLable.text = @"打开视频";
+        self.videoLable.textAlignment = NSTextAlignmentCenter;
+        [self.videoLable setFont:[UIFont fontWithName:@"Arial" size:10]];
+        self.videoLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
+        [cell addSubview:self.videoButton];
+        [cell addSubview:self.videoLable];
+        
+        self.hangupButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        self.hangupButton.frame = CGRectMake(padding + (padding+size) * 2 + offset, top, iconsize, iconsize);
+        //[self.hangupButton setTitle:@"挂断" forState:UIControlStateNormal];
+        self.hangupButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.hangupButton setImage:[UIImage imageNamed:@"视频备份"] forState:UIControlStateNormal];
+        [self.hangupButton setTintColor:[UIColor redColor]];
+        [self.hangupButton addTarget:self action:@selector(hangupAction) forControlEvents:UIControlEventTouchUpInside];
+        self.hangupLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*2, top+iconsize+2, size, 20)];
+        self.hangupLable.text = @"挂断";
+        self.hangupLable.textAlignment = NSTextAlignmentCenter;
+        self.hangupLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
+        [self.hangupLable setFont:[UIFont fontWithName:@"Arial" size:10]];
+        [cell addSubview:self.hangupButton];
+        [cell addSubview:self.hangupLable];
+        
+        self.membersButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        self.membersButton.frame = CGRectMake(padding + (padding+size) * 3 + offset, top, iconsize, iconsize);
+        //[self.membersButton setTitle:@"成员" forState:UIControlStateNormal];
+        [self.membersButton setImage:[UIImage imageNamed:@"成员"] forState:UIControlStateNormal];
+        [self.membersButton setTintColor:[UIColor whiteColor]];
+        //self.membersButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        //[self.membersButton setImage:[UIImage imageNamed:@"成员"] forState:UIControlStateNormal];
+        [self.membersButton addTarget:self action:@selector(membersAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:self.membersButton];
+        self.membersLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*3, top+iconsize+2, size, 20)];
+        self.membersLable.text = @"成员";
+        self.membersLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
+        self.membersLable.textAlignment = NSTextAlignmentCenter;
+        [self.membersLable setFont:[UIFont fontWithName:@"Arial" size:10]];
+        [cell addSubview:self.membersLable];
+        
+        self.roleButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        self.roleButton.frame = CGRectMake(padding + (padding+size) * 4 + offset, top, iconsize, iconsize);
+        EMConferenceRole currole = [EMDemoOption sharedOptions].conference.role;
+        self.roleLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*4, top+iconsize+2, size, 20)];
+        self.roleLable.textAlignment = NSTextAlignmentCenter;
+        self.roleLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
+        [self.roleLable setFont:[UIFont fontWithName:@"Arial" size:10]];
+        [cell addSubview:self.membersLable];
+        if(currole == EMConferenceRoleAudience)
+        {
+            [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
+            [self.roleButton setTintColor:[UIColor whiteColor]];
+            self.roleLable.text = @"上麦";
+        }
+        else
+        {
+            [self.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
+            [self.roleButton setTintColor:[UIColor redColor]];
+            self.roleLable.text = @"下麦";
+        }
+        self.roleButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        //[self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
+        [self.roleButton addTarget:self action:@selector(roleChangeAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:self.roleButton];
+        [cell addSubview:self.roleLable];
     }
-    self.roleButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    //[self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
-    [self.roleButton addTarget:self action:@selector(roleChangeAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.roleButton];
+    return cell;
 }
      
 -(void)microphoneButtonAction
@@ -201,6 +282,7 @@
     if (!self.microphoneButton.isSelected && self.videoButton.isSelected) {
         [self playWithSpeaker];
     }
+    [self updateMicrophoneLable];
 }
 
 - (void)playWithSpeaker
@@ -222,6 +304,24 @@
             self.switchCameraButton.enabled = self.videoButton.isSelected;
         }
     }
+    [self updateVidelLable];
+}
+
+-(void)updateMicrophoneLable
+{
+    if(!self.microphoneButton.selected){
+        self.microphoneLable.text = @"解除静音";
+    }else{
+        self.microphoneLable.text = @"静音";
+    }
+}
+
+-(void)updateVidelLable
+{
+    if(!self.videoButton.selected){
+        self.videoLable.text = @"打开视频";
+    }else
+        self.videoLable.text = @"关闭视频";
 }
 
 - (void)switchCamaraAction
@@ -351,7 +451,7 @@
 - (CGRect)getNewVideoViewFrame
 {
     NSInteger count = [self.streamItemDict count];
-    int viewSize = 150;
+    int viewSize = 100;
     CGRect frame = CGRectMake(self.scrollView.bounds.origin.x + viewSize*(count-1), self.scrollView.bounds.origin.y, viewSize, viewSize);
     
     return frame;
@@ -381,8 +481,10 @@
     if([self.streamItemDict count] == 0 || !self.curBigView)
     {
         self.curBigView = videoView;
+        
         [self.view addSubview:self.curBigView];
         [self.view sendSubviewToBack:self.curBigView];
+        [self updateCurBigViewFrame];
     }else
         [self.scrollView addSubview:videoView];
     
@@ -460,6 +562,8 @@
         weakself.videoButton.enabled = YES;
         weakself.videoButton.selected = aEnableVideo;
         weakself.microphoneButton.selected = [EMDemoOption sharedOptions].openMicrophone;
+        [weakself updateMicrophoneLable];
+        [weakself updateVidelLable];
         weakself.switchCameraButton.enabled = aEnableVideo;
         
         weakself.pubStreamId = aPubStreamId;
@@ -501,6 +605,19 @@
     }];
 }
 
+-(void)updateCurBigViewFrame
+{
+//    if(self.curBigView != nil){
+//        if([[EMDemoOption sharedOptions].userid isEqualToString:self.curBigView.nameLabel.text]) {
+//            [self.curBigView mas_makeConstraints:^(MASConstraintMaker *make) {
+//                make.edges.equalTo(self);
+//            }];
+//        }else{
+//            self.curBigView.frame = CGRectMake(0, self.view.bounds.size.height/2-self.view.bounds.size.width/2, self.view.bounds.size.width, self.view.bounds.size.width);
+//        }
+//    }
+}
+
 - (void)removeStreamWithId:(NSString *)aStreamId
 {
     NSInteger index = [self.streamIds indexOfObject:aStreamId];
@@ -533,6 +650,8 @@
 - (void)streamViewDidTap:(EMStreamView *)aVideoView
 {
     if (aVideoView == _curBigView) {
+        [_tableView setHidden:!_tableView.hidden];
+        [self updateScrollViewPos];
         return;
     }
     
@@ -555,9 +674,22 @@
 //    }];
     self.curBigView.frame = self.view.frame;
     self.curBigView.displayView.frame = self.view.frame;
+//    if([self.curBigView.displayView isKindOfClass:[EMCallRemoteView class]]){
+//        EMCallRemoteView*view = (EMCallRemoteView*)self.curBigView.displayView;
+//        view.scaleMode = EMCallViewScaleModeAspectFit;
+//    }
     [self updateScrollView];
+    [self updateCurBigViewFrame];
 }
 
+-(void)updateScrollViewPos
+{
+    if(_tableView.hidden){
+        _scrollView.frame = CGRectMake(0, self.view.bounds.size.height - 105, self.view.bounds.size.width, 150);
+    }else{
+        _scrollView.frame = CGRectMake(0, self.view.bounds.size.height - 180, self.view.bounds.size.width, 150);
+    }
+}
 
 #pragma mark - EMConferenceManagerDelegate
 
@@ -797,6 +929,7 @@
         [self pubLocalStreamWithEnableVideo:[EMDemoOption sharedOptions].openCamera completion:^(NSString *aPubStreamId, EMError *aError) {
             //[weakself _updateViewsAfterPubWithEnableVideo:YES error:aError];
             //weakself.vkbpsButton.enabled = YES;
+            self.roleLable.text = @"下麦";
             [self.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
             [self.roleButton setTintColor:[UIColor redColor]];
             self.videoButton.enabled = YES;
@@ -810,7 +943,8 @@
         self.videoButton.enabled = NO;
         //self.vkbpsButton.enabled = NO;
         [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
-        [self.roleButton setTintColor:[UIColor blueColor]];
+        self.roleLable.text = @"上麦";
+        [self.roleButton setTintColor:[UIColor whiteColor]];
         [[EMClient sharedClient].conferenceManager unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
             weakself.roleButton.selected = NO;
             weakself.switchCameraButton.enabled = NO;
@@ -838,10 +972,18 @@
     for(NSString* key in self.streamItemDict){
         EMStreamItem* item = [self.streamItemDict objectForKey:key];
         if(self.curBigView != item.videoView) {
-            item.videoView.frame = CGRectMake(150*index, 0, 150, 150);
+//            if([item.videoView.displayView isKindOfClass:[EMCallRemoteView class]]){
+//                EMCallRemoteView*view = (EMCallRemoteView*)item.videoView.displayView;
+//                view.scaleMode = EMCallViewScaleModeAspectFill;
+//            }
+            item.videoView.frame = CGRectMake(100*index, 0, 100, 100);
             index++;
         }
     }
+    if(self.streamItemDict.count * 100 > self.view.bounds.size.width){
+        self.scrollView.contentSize = CGSizeMake(self.streamItemDict.count*100,100);
+    }else
+        self.scrollView.contentSize = CGSizeMake(self.view.bounds.size.width, 100);
 }
 
 -(void)updateAdminView

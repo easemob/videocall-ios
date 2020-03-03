@@ -47,13 +47,13 @@
         
         self.nameLabel = [[UILabel alloc] init];
         self.nameLabel.textColor = [UIColor redColor];
-        self.nameLabel.font = [UIFont systemFontOfSize:13];
+        self.nameLabel.font = [UIFont systemFontOfSize:10];
         self.nameLabel.numberOfLines = 0;
         [self addSubview:self.nameLabel];
         [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(self).offset(10);
             make.left.equalTo(self).offset(5);
-            make.width.equalTo(@140);
+            make.width.equalTo(@90);
         }];
         
         self.adminView = [[UIImageView alloc] init];
@@ -63,8 +63,8 @@
         self.adminView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:191/255.0 blue:0/255.0 alpha:1.0].CGColor;
         [self addSubview:self.adminView];
         [self.adminView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.equalTo(self).offset(10);
-            make.bottom.equalTo(self).offset(-20);
+            make.left.equalTo(self).offset(5);
+            make.top.equalTo(self).offset(45);
             make.height.equalTo(@20);
             make.width.equalTo(@20);
             //make.right.equalTo(self.statusView.mas_left).offset(-5);

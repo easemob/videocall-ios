@@ -250,7 +250,7 @@ int kHeightStart = 300;
         if (aError) {
             if(aError.code == EMErrorInvalidPassword){
                 weakself.errorLable.text = @"密码错误";
-            }
+            }else
             if(aError.code == EMErrorCallSpeakerFull){
                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"" message:@"主播人数已满，以观众身份进入" preferredStyle:UIAlertControllerStyleAlert];
                 
@@ -266,6 +266,8 @@ int kHeightStart = 300;
                 [alert addAction:defaultAction];
                 [alert addAction:cancelAction];
                 [self presentViewController:alert animated:YES completion:nil];
+            }else{
+                weakself.errorLable.text = aError.errorDescription;
             }
             self.joinAsSpeaker.enabled = YES;
             self.joinAsAudience.enabled = YES;
