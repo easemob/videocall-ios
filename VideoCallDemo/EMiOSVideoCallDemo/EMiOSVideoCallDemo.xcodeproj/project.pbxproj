@@ -24,6 +24,12 @@
 		C00F20162400294F007174DE /* 03-视频通话@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20132400294E007174DE /* 03-视频通话@3x.png */; };
 		C00F20172400294F007174DE /* 03-视频通话.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20142400294F007174DE /* 03-视频通话.png */; };
 		C00F20182400294F007174DE /* 03-视频通话@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20152400294F007174DE /* 03-视频通话@2x.png */; };
+		C05FE5DF240D1E3000E5B7D1 /* switchcamera.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5D9240D1E2F00E5B7D1 /* switchcamera.png */; };
+		C05FE5E0240D1E3000E5B7D1 /* switchcamera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DA240D1E2F00E5B7D1 /* switchcamera@2x.png */; };
+		C05FE5E1240D1E3000E5B7D1 /* setting.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DB240D1E2F00E5B7D1 /* setting.png */; };
+		C05FE5E2240D1E3000E5B7D1 /* swtichcamera@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DC240D1E3000E5B7D1 /* swtichcamera@3x.png */; };
+		C05FE5E3240D1E3000E5B7D1 /* setting@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DD240D1E3000E5B7D1 /* setting@3x.png */; };
+		C05FE5E4240D1E3000E5B7D1 /* setting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DE240D1E3000E5B7D1 /* setting@2x.png */; };
 		C06572E223F285C600532B27 /* EMDemoOption.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E123F285C600532B27 /* EMDemoOption.m */; };
 		C06572E523F2ACA400532B27 /* RoomSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E423F2ACA400532B27 /* RoomSettingViewController.m */; };
 		C06572E823F2BCF000532B27 /* SpeakerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E723F2BCF000532B27 /* SpeakerListViewController.m */; };
@@ -159,6 +165,8 @@
 		C070FA7E23FB78F900DC0F57 /* minimize_white@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C070FA0623FB78F900DC0F57 /* minimize_white@3x.png */; };
 		C0720AE723F641FC00E1FEC3 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */; };
 		C0720AF023F6454900E1FEC3 /* EMStreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AEF23F6454900E1FEC3 /* EMStreamView.m */; };
+		C080AA37240B5F0D0034BAEB /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C080AA36240B5F0D0034BAEB /* Hyphenate.framework */; };
+		C080AA38240B5F0D0034BAEB /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C080AA36240B5F0D0034BAEB /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C08470962405292B00B3771D /* admin.png in Resources */ = {isa = PBXBuildFile; fileRef = C08470952405292B00B3771D /* admin.png */; };
 		C095A28023F0F1B300A09CAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A27F23F0F1B300A09CAA /* AppDelegate.m */; };
 		C095A28923F0F1B300A09CAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C095A28723F0F1B300A09CAA /* Main.storyboard */; };
@@ -170,8 +178,6 @@
 		C095A2AE23F1412500A09CAA /* Images in Resources */ = {isa = PBXBuildFile; fileRef = C095A2AD23F1412500A09CAA /* Images */; };
 		C095A2B123F14CCD00A09CAA /* AccountSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A2B023F14CCD00A09CAA /* AccountSettingViewController.m */; };
 		C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0A7748B240767B300E44315 /* MessageUI.framework */; };
-		C0A774A92407F18F00E44315 /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0A774A82407F18E00E44315 /* Hyphenate.framework */; };
-		C0A774AA2407F18F00E44315 /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0A774A82407F18E00E44315 /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C0BD177023FF62DF005E3B67 /* Fill 1@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD176D23FF62DF005E3B67 /* Fill 1@3x.png */; };
 		C0BD177123FF62DF005E3B67 /* Fill 1.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD176E23FF62DF005E3B67 /* Fill 1.png */; };
 		C0BD177223FF62DF005E3B67 /* Fill 1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD176F23FF62DF005E3B67 /* Fill 1@2x.png */; };
@@ -220,13 +226,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C0A774AB2407F18F00E44315 /* Embed Frameworks */ = {
+		C0A774B82408F5E800E44315 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C0A774AA2407F18F00E44315 /* Hyphenate.framework in Embed Frameworks */,
+				C080AA38240B5F0D0034BAEB /* Hyphenate.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -253,6 +259,12 @@
 		C00F20132400294E007174DE /* 03-视频通话@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-视频通话@3x.png"; sourceTree = "<group>"; };
 		C00F20142400294F007174DE /* 03-视频通话.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-视频通话.png"; sourceTree = "<group>"; };
 		C00F20152400294F007174DE /* 03-视频通话@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-视频通话@2x.png"; sourceTree = "<group>"; };
+		C05FE5D9240D1E2F00E5B7D1 /* switchcamera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = switchcamera.png; sourceTree = "<group>"; };
+		C05FE5DA240D1E2F00E5B7D1 /* switchcamera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switchcamera@2x.png"; sourceTree = "<group>"; };
+		C05FE5DB240D1E2F00E5B7D1 /* setting.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = setting.png; sourceTree = "<group>"; };
+		C05FE5DC240D1E3000E5B7D1 /* swtichcamera@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "swtichcamera@3x.png"; sourceTree = "<group>"; };
+		C05FE5DD240D1E3000E5B7D1 /* setting@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "setting@3x.png"; sourceTree = "<group>"; };
+		C05FE5DE240D1E3000E5B7D1 /* setting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "setting@2x.png"; sourceTree = "<group>"; };
 		C06572E023F285C600532B27 /* EMDemoOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMDemoOption.h; path = Helper/EMDemoOption.h; sourceTree = "<group>"; };
 		C06572E123F285C600532B27 /* EMDemoOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EMDemoOption.m; path = Helper/EMDemoOption.m; sourceTree = "<group>"; };
 		C06572E323F2ACA400532B27 /* RoomSettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomSettingViewController.h; sourceTree = "<group>"; };
@@ -396,8 +408,9 @@
 		C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
 		C0720AEE23F6454900E1FEC3 /* EMStreamView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMStreamView.h; sourceTree = "<group>"; };
 		C0720AEF23F6454900E1FEC3 /* EMStreamView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMStreamView.m; sourceTree = "<group>"; };
+		C080AA36240B5F0D0034BAEB /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hyphenate.framework; path = EMiOSVideoCallDemo/Hyphenate.framework; sourceTree = "<group>"; };
 		C08470952405292B00B3771D /* admin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = admin.png; sourceTree = "<group>"; };
-		C095A27B23F0F1B300A09CAA /* EMiOSVideoCallDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EMiOSVideoCallDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C095A27B23F0F1B300A09CAA /* 环信RTC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "环信RTC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C095A27E23F0F1B300A09CAA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		C095A27F23F0F1B300A09CAA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		C095A28823F0F1B300A09CAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -413,8 +426,6 @@
 		C095A2AF23F14CCD00A09CAA /* AccountSettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccountSettingViewController.h; sourceTree = "<group>"; };
 		C095A2B023F14CCD00A09CAA /* AccountSettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AccountSettingViewController.m; sourceTree = "<group>"; };
 		C0A7748B240767B300E44315 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
-		C0A774A52407F17E00E44315 /* Hyphenate */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Hyphenate; path = EMiOSVideoCallDemo/Hyphenate.framework/Hyphenate; sourceTree = "<group>"; };
-		C0A774A82407F18E00E44315 /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hyphenate.framework; path = EMiOSVideoCallDemo/Hyphenate.framework; sourceTree = "<group>"; };
 		C0BD176D23FF62DF005E3B67 /* Fill 1@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Fill 1@3x.png"; sourceTree = "<group>"; };
 		C0BD176E23FF62DF005E3B67 /* Fill 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Fill 1.png"; sourceTree = "<group>"; };
 		C0BD176F23FF62DF005E3B67 /* Fill 1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Fill 1@2x.png"; sourceTree = "<group>"; };
@@ -471,7 +482,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */,
-				C0A774A92407F18F00E44315 /* Hyphenate.framework in Frameworks */,
+				C080AA37240B5F0D0034BAEB /* Hyphenate.framework in Frameworks */,
 				0773481ED2F14ED39E0D492C /* libPods-EMiOSVideoCallDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -482,8 +493,7 @@
 		7B300057D44D5796FAA0433A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C0A774A82407F18E00E44315 /* Hyphenate.framework */,
-				C0A774A52407F17E00E44315 /* Hyphenate */,
+				C080AA36240B5F0D0034BAEB /* Hyphenate.framework */,
 				C0A7748B240767B300E44315 /* MessageUI.framework */,
 				2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */,
 			);
@@ -664,7 +674,7 @@
 		C095A27C23F0F1B300A09CAA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C095A27B23F0F1B300A09CAA /* EMiOSVideoCallDemo.app */,
+				C095A27B23F0F1B300A09CAA /* 环信RTC.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -728,6 +738,12 @@
 				C00F20132400294E007174DE /* 03-视频通话@3x.png */,
 				C00F200F24002933007174DE /* 视频2@2x.png */,
 				C00F200D24002932007174DE /* 视频2@3x.png */,
+				C05FE5DB240D1E2F00E5B7D1 /* setting.png */,
+				C05FE5DE240D1E3000E5B7D1 /* setting@2x.png */,
+				C05FE5DD240D1E3000E5B7D1 /* setting@3x.png */,
+				C05FE5D9240D1E2F00E5B7D1 /* switchcamera.png */,
+				C05FE5DA240D1E2F00E5B7D1 /* switchcamera@2x.png */,
+				C05FE5DC240D1E3000E5B7D1 /* swtichcamera@3x.png */,
 				C00F1FED23FFBA15007174DE /* 编组.png */,
 				C00F1FEC23FFBA14007174DE /* 编组@2x.png */,
 				C00F1FEB23FFBA14007174DE /* 编组@3x.png */,
@@ -797,7 +813,7 @@
 				C095A27723F0F1B300A09CAA /* Sources */,
 				C095A27823F0F1B300A09CAA /* Frameworks */,
 				C095A27923F0F1B300A09CAA /* Resources */,
-				C0A774AB2407F18F00E44315 /* Embed Frameworks */,
+				C0A774B82408F5E800E44315 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -805,7 +821,7 @@
 			);
 			name = EMiOSVideoCallDemo;
 			productName = EMiOSVideoCallDemo;
-			productReference = C095A27B23F0F1B300A09CAA /* EMiOSVideoCallDemo.app */;
+			productReference = C095A27B23F0F1B300A09CAA /* 环信RTC.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -861,6 +877,7 @@
 				C070FA7C23FB78F900DC0F57 /* video_white@2x.png in Resources */,
 				C070FA4923FB78F900DC0F57 /* animate_00039.png in Resources */,
 				C070FA5D23FB78F900DC0F57 /* role_white@2x.png in Resources */,
+				C05FE5DF240D1E3000E5B7D1 /* switchcamera.png in Resources */,
 				C070FA2B23FB78F900DC0F57 /* animate_00043.png in Resources */,
 				C070FA7D23FB78F900DC0F57 /* switchCamera_white@2x.png in Resources */,
 				C070FA1E23FB78F900DC0F57 /* animate_00051.png in Resources */,
@@ -948,6 +965,7 @@
 				C070F98723FB78CD00DC0F57 /* alert_success@3x.png in Resources */,
 				C0DB9CFA23FEA9090057BA4C /* 编组 6@2x.png in Resources */,
 				C070FA4523FB78F900DC0F57 /* animate_00048.png in Resources */,
+				C05FE5E2240D1E3000E5B7D1 /* swtichcamera@3x.png in Resources */,
 				C070FA2C23FB78F900DC0F57 /* animate_00055.png in Resources */,
 				C0BD179A23FF658B005E3B67 /* 形状@2x.png in Resources */,
 				C070FA4D23FB78F900DC0F57 /* grid_gray@2x.png in Resources */,
@@ -987,6 +1005,7 @@
 				C0BD179923FF658B005E3B67 /* 形状结合.png in Resources */,
 				C070FA7123FB78F900DC0F57 /* video_white@3x.png in Resources */,
 				C070FA6323FB78F900DC0F57 /* speaker_white@2x.png in Resources */,
+				C05FE5E3240D1E3000E5B7D1 /* setting@3x.png in Resources */,
 				C070FA2A23FB78F900DC0F57 /* animate_00057.png in Resources */,
 				C070FA0C23FB78F900DC0F57 /* bg_micro@2x.png in Resources */,
 				C070FA6423FB78F900DC0F57 /* ring_gray@2x.png in Resources */,
@@ -1026,6 +1045,7 @@
 				C070FA1023FB78F900DC0F57 /* animate_00032.png in Resources */,
 				C070FA5123FB78F900DC0F57 /* kbps_gray@3x.png in Resources */,
 				C070F98B23FB78CD00DC0F57 /* alert_info@3x.png in Resources */,
+				C05FE5E4240D1E3000E5B7D1 /* setting@2x.png in Resources */,
 				C070FA3D23FB78F900DC0F57 /* animate_00067.png in Resources */,
 				C0DB9CF823FEA9090057BA4C /* cbu@3x(1).png in Resources */,
 				C070FA2423FB78F900DC0F57 /* animate_00052.png in Resources */,
@@ -1033,8 +1053,10 @@
 				C070FA3623FB78F900DC0F57 /* animate_00065.png in Resources */,
 				C070FA7323FB78F900DC0F57 /* hangup@3x.png in Resources */,
 				C070FA1423FB78F900DC0F57 /* animate_00035.png in Resources */,
+				C05FE5E0240D1E3000E5B7D1 /* switchcamera@2x.png in Resources */,
 				C070FA3A23FB78F900DC0F57 /* animate_00066.png in Resources */,
 				C070F98523FB78CD00DC0F57 /* alert_error@3x.png in Resources */,
+				C05FE5E1240D1E3000E5B7D1 /* setting.png in Resources */,
 				C00F1FEF23FFBA15007174DE /* 编组@2x.png in Resources */,
 				C00F20172400294F007174DE /* 03-视频通话.png in Resources */,
 				C070FA4623FB78F900DC0F57 /* animate_00049.png in Resources */,
@@ -1264,7 +1286,7 @@
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "环信RTC";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1303,7 +1325,7 @@
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "环信RTC";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
