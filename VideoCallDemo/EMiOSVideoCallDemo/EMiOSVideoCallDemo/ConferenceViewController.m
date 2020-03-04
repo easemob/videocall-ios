@@ -249,12 +249,16 @@
             [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
             [self.roleButton setTintColor:[UIColor whiteColor]];
             self.roleLable.text = @"上麦";
+            self.microphoneButton.enabled = NO;
+            self.videoButton.enabled = NO;
         }
         else
         {
             [self.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
             [self.roleButton setTintColor:[UIColor redColor]];
             self.roleLable.text = @"下麦";
+            self.microphoneButton.enabled = YES;
+            self.videoButton.enabled = YES;
         }
         self.roleButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
         //[self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
@@ -650,8 +654,6 @@
 - (void)streamViewDidTap:(EMStreamView *)aVideoView
 {
     if (aVideoView == _curBigView) {
-        [_tableView setHidden:!_tableView.hidden];
-        [self updateScrollViewPos];
         return;
     }
     
@@ -1004,6 +1006,11 @@
             }
         }
     }
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self.tableView setHidden:!self.tableView.hidden];
+    [self updateScrollViewPos];
 }
 
 /*
