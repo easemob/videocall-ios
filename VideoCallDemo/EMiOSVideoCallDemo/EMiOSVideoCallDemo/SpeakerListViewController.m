@@ -28,13 +28,15 @@
 
 -(void)setupSubView
 {
-    self.title = @"主播列表";
-    [self.navigationController setNavigationBarHidden:NO];
-}
--(void)dealloc
-{
+    //self.title = @"主播列表";
     [self.navigationController setNavigationBarHidden:YES];
 }
+
+-(void)backAction
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -68,15 +70,20 @@
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0) {
+        //cell.textLabel.text = @"主播列表";
         
-        if(row == 0){
-            UILabel * description = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 165, 10, 165, 40)];
-            NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.memberCount - [EMDemoOption sharedOptions].conference.speakerIds.count;
-            description.text = [NSString stringWithFormat:@"观众人数：%ld",auduinceCount];
-            description.textAlignment = NSTextAlignmentRight;
-            [cell addSubview:description];
-        }
-    }
+        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"主播列表"];
+        [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:66/255.0 green:66/255.0 blue:66/255.0 alpha:1.0] range:NSMakeRange(0,4)]; //设置字体颜色
+        [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial" size:18] range:NSMakeRange(0, 4)]; //设置字体字号和字体类别
+        cell.textLabel.attributedText = str;
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        //[button setTitle:@"上传日志" forState:UIControlStateNormal];
+        button.frame = CGRectMake(5, 5, 40, 40);
+        [button setImage:[UIImage imageNamed:@"24 ／ icon"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:button];
+    }else
     if(section == 1)
     {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -90,8 +97,8 @@
         videoButton.tag = 20000+row*2 + 1;
         //[videoButton setTitle:@"视频" forState:UIControlStateNormal];
         [videoButton setImage:[UIImage imageNamed:@"编组 8备份"] forState:UIControlStateNormal];
-        [audioButton addTarget:self action:@selector(audioAction:) forControlEvents:UIControlEventTouchUpInside];
-        [videoButton addTarget:self action:@selector(videoAction:) forControlEvents:UIControlEventTouchUpInside];
+        //[audioButton addTarget:self action:@selector(audioAction:) forControlEvents:UIControlEventTouchUpInside];
+        //[videoButton addTarget:self action:@selector(videoAction:) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:videoButton];
         [cell addSubview:audioButton];
         ConferenceViewController* confVC = [self getConfVC];
@@ -99,7 +106,37 @@
             NSArray* keys = [confVC.streamItemDict allKeys];
             EMStreamItem*item = [confVC.streamItemDict objectForKey:keys[row]];
             if(item){
-                cell.textLabel.text = item.videoView.nameLabel.text;
+                //cell.textLabel.text = item.videoView.nameLabel.text;
+                cell.textLabel.numberOfLines = 0;
+                //设置Attachment
+                NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+                //使用一张图片作为Attachment数据
+                NSString* memName = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,item.videoView.nameLabel.text];
+                if([[EMDemoOption sharedOptions].conference.adminIds count] > 0){
+                    if([[[EMDemoOption sharedOptions].conference.adminIds objectAtIndex:0] isEqualToString:memName]){
+                        attachment.image = [UIImage imageNamed:@"admin"];
+                    }
+                }
+                //这里bounds的x值并不会产生影响
+                attachment.bounds = CGRectMake(-600, -5, 20, 20);
+                NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:item.videoView.nameLabel.text];
+                [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+                cell.textLabel.attributedText = attributedString;
+                if([[EMDemoOption sharedOptions].userid isEqualToString:item.videoView.nameLabel.text] )
+                    cell.textLabel.textColor = [UIColor blueColor];
+                if(!item.videoView.enableVideo && !item.videoView.enableVoice){
+                    videoButton.hidden = YES;
+                    audioButton.hidden = YES;
+                }else{
+                    if(item.videoView.enableVoice && !item.videoView.enableVideo){
+                        videoButton.hidden = YES;
+                        audioButton.frame = videoButton.frame;
+                    }else{
+                        if(item.videoView.enableVideo && !item.videoView.enableVoice){
+                            audioButton.hidden = YES;
+                        }
+                    }
+                }
             }
         }else
             cell.textLabel.text = [[[EMDemoOption sharedOptions].conference.speakerIds objectAtIndex:row] substringFromIndex:([[EMDemoOption sharedOptions].appkey length]+1)];
@@ -114,7 +151,7 @@
 {
     NSInteger tag = button.tag;
     NSInteger row = (tag-20000)/2;
-    NSInteger section = 1;
+    NSInteger section = 2;
     NSIndexPath* path = [NSIndexPath indexPathForRow:row inSection:section];
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:path];
     if(cell){
@@ -138,11 +175,14 @@
 {
     NSInteger tag = button.tag;
     NSInteger row = (tag-20000)/2;
-    NSInteger section = 1;
+    NSInteger section = 2;
     NSIndexPath* path = [NSIndexPath indexPathForRow:row inSection:section];
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:path];
     if(cell){
         NSString* memName = cell.textLabel.text;
+        if([memName isEqualToString:[EMDemoOption sharedOptions].userid]){
+            return;
+        }
         NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,memName ];
         UIViewController* lastVC =  [self.navigationController.viewControllers objectAtIndex:(self.navigationController.viewControllers.count-2)];
         if([lastVC isKindOfClass:[ConferenceViewController class]]){
@@ -169,6 +209,67 @@
         return confVC;
     }
     return nil;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if(section == 0)
+        return 1;
+    if(section == 1)
+        return 3;
+    return 10;//section头部高度
+}
+//section头部视图
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
+    view.backgroundColor = [UIColor clearColor];
+    return view ;
+}
+//section底部间距
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 30;
+}
+//section底部视图
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    if(section == 0){
+        NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.memberCount - [EMDemoOption sharedOptions].conference.speakerIds.count;
+       //UILabel* text = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, self.view.bounds.size.width, 20)];
+//        text.textAlignment = NSTextAlignmentCenter;
+//        //设置Attachment
+//        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+//        //使用一张图片作为Attachment数据
+//        attachment.image = [UIImage imageNamed:@"编组"];
+//        //这里bounds的x值并不会产生影响
+//        attachment.bounds = CGRectMake(-600, 0, 20, 10);
+//        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前观众人数：%ld",auduinceCount]];
+//        [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+        //text.attributedText = attributedString;
+        //创建一个普通的Label
+        UILabel *testLabel = [[UILabel alloc] init];
+        //中央对齐
+        testLabel.textAlignment = NSTextAlignmentCenter;
+        testLabel.numberOfLines = 0;
+        testLabel.frame = CGRectMake(0, 0, self.view.frame.size.width, 30);
+        [self.view addSubview:testLabel];
+        
+        //设置Attachment
+        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+        //使用一张图片作为Attachment数据
+        attachment.image = [UIImage imageNamed:@"编组"];
+        //这里bounds的x值并不会产生影响
+        attachment.bounds = CGRectMake(-600, -5, 20, 20);
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前观众人数：%ld",auduinceCount]];
+        [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial" size:12] range:NSMakeRange(0, attributedString.mutableString.length)];
+        [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+        testLabel.attributedText = attributedString;
+        return testLabel;
+    }
+    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
+    view.backgroundColor = [UIColor clearColor];
+    return view;
 }
 
 

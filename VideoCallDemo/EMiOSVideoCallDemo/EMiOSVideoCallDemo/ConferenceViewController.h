@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ConferenceViewController : UIViewController<EMConferenceManagerDelegate,EMStreamViewDelegate>
+@interface ConferenceViewController : UIViewController<EMConferenceManagerDelegate,EMStreamViewDelegate,UITableViewDelegate,UITableViewDataSource>
 @property(nonatomic,strong) UILabel* roomNameLable;
 @property(nonatomic,strong) UILabel* timeLabel;
 @property(nonatomic,strong) UIButton* settingButton;
@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIButton *hangupButton;
 @property (nonatomic, strong) UIButton *membersButton;
 @property (nonatomic, strong) UIButton *roleButton;
+@property (nonatomic, strong) UILabel *microphoneLable;
+@property (nonatomic, strong) UILabel *videoLable;
+@property (nonatomic, strong) UILabel *hangupLable;
+@property (nonatomic, strong) UILabel *membersLable;
+@property (nonatomic, strong) UILabel *roleLable;
 
 @property (nonatomic, copy) NSString* roomName;
 
@@ -36,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSMutableArray *talkingStreamIds;
 @property (nonatomic) BOOL isSetSpeaker;
 @property (nonatomic) EMConferenceRole role;
+@property (nonatomic) UITableView* tableView;
 - (void)microphoneButtonAction;
 
 - (void)videoButtonAction;

@@ -28,6 +28,9 @@ NSString* kResolution = @"resoltionrate";
     self.chatServer = @"39.107.54.56";
     self.chatPort = 6717;
     self.restServer = @"a1-hsb.easemob.com";
+    self.openCamera = YES;
+    self.openMicrophone = YES;
+    self.resolutionrate = ResolutionRate_480p;
 }
 
 - (void)archive

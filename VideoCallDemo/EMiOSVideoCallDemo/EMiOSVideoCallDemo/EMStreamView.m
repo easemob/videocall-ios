@@ -12,6 +12,8 @@
 
 @property (nonatomic, strong) UIImageView *statusView;
 
+@property (nonatomic, strong) UIImageView* adminView;
+
 @end
 
 @implementation EMStreamView
@@ -44,20 +46,38 @@
         }];
         
         self.nameLabel = [[UILabel alloc] init];
-        self.nameLabel.textColor = [UIColor whiteColor];
-        self.nameLabel.font = [UIFont systemFontOfSize:13];
+        self.nameLabel.textColor = [UIColor redColor];
+        self.nameLabel.font = [UIFont systemFontOfSize:10];
+        self.nameLabel.numberOfLines = 0;
         [self addSubview:self.nameLabel];
         [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self).offset(5);
+            make.top.equalTo(self).offset(10);
             make.left.equalTo(self).offset(5);
-            make.right.equalTo(self.statusView.mas_left).offset(-5);
-            make.height.equalTo(@20);
+            make.width.equalTo(@90);
         }];
+        
+        self.adminView = [[UIImageView alloc] init];
+        self.adminView.image = [UIImage imageNamed:@"admin"];
+        [self.adminView setTintColor:[UIColor blueColor]];
+
+        self.adminView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:191/255.0 blue:0/255.0 alpha:1.0].CGColor;
+        [self addSubview:self.adminView];
+        [self.adminView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self).offset(5);
+            make.top.equalTo(self).offset(45);
+            make.height.equalTo(@20);
+            make.width.equalTo(@20);
+            //make.right.equalTo(self.statusView.mas_left).offset(-5);
+            //make.height.equalTo(@20);
+        }];
+        self.adminView.hidden = YES;
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapAction:)];
         [self addGestureRecognizer:tap];
         
         [self bringSubviewToFront:_nameLabel];
+        
+        [self bringSubviewToFront:_adminView];
         
         _isLockedBgView = NO;
     }
@@ -131,6 +151,12 @@
     } else {
         [self sendSubviewToBack:_displayView];
     }
+}
+
+-(void)setIsAdmin:(BOOL)isAdmin
+{
+    _isAdmin = isAdmin;
+    self.adminView.hidden = !isAdmin;
 }
 
 #pragma mark - UITapGestureRecognizer

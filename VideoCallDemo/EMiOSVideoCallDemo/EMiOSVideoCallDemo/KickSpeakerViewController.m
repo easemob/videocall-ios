@@ -138,23 +138,31 @@
         long row = self.selectButton.tag - 30000;
         ConferenceViewController* confVC = [self getConfVC];
         if(confVC) {
+            NSIndexPath* path = [NSIndexPath indexPathForItem:(self.selectButton.tag-30000) inSection:1];
+            UITableViewCell*cell = [self.tableView cellForRowAtIndexPath:path];
+            NSString* selectName = cell.textLabel.text;
             NSArray* keys = [confVC.streamItemDict allKeys];
             EMStreamItem*item = [confVC.streamItemDict objectForKey:keys[row]];
             if(item){
-                if([self.speakerName isEqualToString:[EMDemoOption sharedOptions].userid])
+                if([selectName isEqualToString:[EMDemoOption sharedOptions].userid])
                 {
                     [EMAlertController showErrorAlert:@"不能选择管理员自己"];
                     return;
                 }
                 __weak typeof(self) weakself = self;
-                NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,weakself.speakerName];
+                NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,selectName];
                 [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[memid] role:EMConferenceRoleAudience completion:^(EMError *aError) {
                     if(aError){
-                    }
+                        [EMAlertController showErrorAlert:@"下麦失败"];
+                    }else
                     if(weakself.speakerName){
-                        
-                        [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[memid] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
-                            
+                        NSString* newmemid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,weakself.speakerName];
+                        [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[newmemid] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
+                            if(!aError)
+                            {
+                                [EMAlertController showErrorAlert:@"上麦失败"];
+                            }
+                            [EMAlertController showSuccessAlert:@"上麦成功"];
                         }];
                     }
                 }];
