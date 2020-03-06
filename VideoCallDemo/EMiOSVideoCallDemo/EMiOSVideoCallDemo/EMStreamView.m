@@ -25,7 +25,7 @@
         _enableVoice = YES;
         
         self.bgView = [[UIImageView alloc] init];
-        self.bgView.contentMode = UIViewContentModeScaleAspectFit;
+        self.bgView.contentMode = UIViewContentModeScaleAspectFill;
         self.bgView.userInteractionEnabled = YES;
         self.bgView.layer.borderWidth = 0.5;
         self.bgView.layer.borderColor = [UIColor grayColor].CGColor;
@@ -51,7 +51,7 @@
         self.nameLabel.numberOfLines = 0;
         [self addSubview:self.nameLabel];
         [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self).offset(10);
+            make.top.equalTo(self).offset(12);
             make.left.equalTo(self).offset(5);
             make.width.equalTo(@90);
         }];
@@ -60,11 +60,13 @@
         self.adminView.image = [UIImage imageNamed:@"admin"];
         [self.adminView setTintColor:[UIColor blueColor]];
 
-        self.adminView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:191/255.0 blue:0/255.0 alpha:1.0].CGColor;
+        //self.adminView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:191/255.0 blue:0/255.0 alpha:1.0].CGColor;
         [self addSubview:self.adminView];
         [self.adminView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.equalTo(self).offset(5);
-            make.top.equalTo(self).offset(45);
+            //make.left.equalTo(self).offset(5);
+            //make.top.equalTo(self).offset(45);
+            make.centerX.equalTo(self).multipliedBy(0.1);
+            make.centerY.equalTo(self);
             make.height.equalTo(@20);
             make.width.equalTo(@20);
             //make.right.equalTo(self.statusView.mas_left).offset(-5);

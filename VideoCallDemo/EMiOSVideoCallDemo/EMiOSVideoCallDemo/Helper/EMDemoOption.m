@@ -24,7 +24,7 @@ NSString* kResolution = @"resoltionrate";
 - (void)initServerOptions
 {
     self.appkey = @"easemob-demo#chatdemoui";
-    self.specifyServer = YES;
+    self.specifyServer = NO;
     self.chatServer = @"39.107.54.56";
     self.chatPort = 6717;
     self.restServer = @"a1-hsb.easemob.com";
