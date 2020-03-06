@@ -390,7 +390,7 @@
     [self clearResource];
 
     [self dismissViewControllerAnimated:NO completion:nil];
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:NO];
     [self.navigationController setNavigationBarHidden:NO];
 }
 
@@ -467,8 +467,9 @@
 {
     
     CGRect frame;
-    if([self.streamItemDict count] == 0 || !self.curBigView)
+    if([self.streamItemDict count] == 0 || !self.curBigView){
         frame = self.view.bounds;
+    }
     else
         frame = [self getNewVideoViewFrame];
     
@@ -521,7 +522,6 @@
     pubConfig.isMute = ![EMDemoOption sharedOptions].openMicrophone;
     
     EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-    pubConfig.maxVideoKbps = 200;
     pubConfig.maxAudioKbps = (int)options.maxAudioKbps;
     switch ([EMDemoOption sharedOptions].resolutionrate) {
         case ResolutionRate_720p:
@@ -537,7 +537,6 @@
             pubConfig.videoResolution = options.videoResolution;
             break;
     }
-    
 
     pubConfig.isBackCamera = self.switchCameraButton.isSelected;
 
@@ -611,15 +610,13 @@
 
 -(void)updateCurBigViewFrame
 {
-//    if(self.curBigView != nil){
-//        if([[EMDemoOption sharedOptions].userid isEqualToString:self.curBigView.nameLabel.text]) {
-//            [self.curBigView mas_makeConstraints:^(MASConstraintMaker *make) {
-//                make.edges.equalTo(self);
-//            }];
-//        }else{
-//            self.curBigView.frame = CGRectMake(0, self.view.bounds.size.height/2-self.view.bounds.size.width/2, self.view.bounds.size.width, self.view.bounds.size.width);
-//        }
-//    }
+    if(self.curBigView != nil){
+        if([self.curBigView.displayView isKindOfClass:[EMCallRemoteView class]])
+        {
+            EMCallRemoteView*view = (EMCallRemoteView*)self.curBigView.displayView;
+            view.scaleMode = EMCallViewScaleModeAspectFit;
+        }
+    }
 }
 
 - (void)removeStreamWithId:(NSString *)aStreamId
@@ -974,10 +971,10 @@
     for(NSString* key in self.streamItemDict){
         EMStreamItem* item = [self.streamItemDict objectForKey:key];
         if(self.curBigView != item.videoView) {
-//            if([item.videoView.displayView isKindOfClass:[EMCallRemoteView class]]){
-//                EMCallRemoteView*view = (EMCallRemoteView*)item.videoView.displayView;
-//                view.scaleMode = EMCallViewScaleModeAspectFill;
-//            }
+            if([item.videoView.displayView isKindOfClass:[EMCallRemoteView class]]){
+                EMCallRemoteView*view = (EMCallRemoteView*)item.videoView.displayView;
+                view.scaleMode = EMCallViewScaleModeAspectFill;
+            }
             item.videoView.frame = CGRectMake(100*index, 0, 100, 100);
             index++;
         }

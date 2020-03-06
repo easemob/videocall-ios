@@ -25,6 +25,10 @@ static BOOL g_IsLogin = NO;
     [self initSDK];
     [self initDemo];
 }
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:NO];
+}
 int kHeightStart = 300;
 - (void)initDemo {
     CGRect mainBounds = [[UIScreen mainScreen] bounds];
