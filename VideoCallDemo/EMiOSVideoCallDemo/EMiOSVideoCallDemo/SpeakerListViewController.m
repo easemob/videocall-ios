@@ -80,7 +80,7 @@
         UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         //[button setTitle:@"上传日志" forState:UIControlStateNormal];
         button.frame = CGRectMake(5, 5, 40, 40);
-        [button setImage:[UIImage imageNamed:@"24 ／ icon"] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:button];
     }else
@@ -91,12 +91,12 @@
         audioButton.frame = CGRectMake(self.tableView.frame.size.width - 100, 5, 40, 40);
         audioButton.tag = 20000+row*2;
         //[audioButton setTitle:@"音频" forState:UIControlStateNormal];
-        [audioButton setImage:[UIImage imageNamed:@"编组 8"] forState:UIControlStateNormal];
+        [audioButton setImage:[UIImage imageNamed:@"audiostatus"] forState:UIControlStateNormal];
         UIButton* videoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         videoButton.frame = CGRectMake(self.tableView.frame.size.width - 50, 5, 40, 40);
         videoButton.tag = 20000+row*2 + 1;
         //[videoButton setTitle:@"视频" forState:UIControlStateNormal];
-        [videoButton setImage:[UIImage imageNamed:@"编组 8备份"] forState:UIControlStateNormal];
+        [videoButton setImage:[UIImage imageNamed:@"videostatus"] forState:UIControlStateNormal];
         //[audioButton addTarget:self action:@selector(audioAction:) forControlEvents:UIControlEventTouchUpInside];
         //[videoButton addTarget:self action:@selector(videoAction:) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:videoButton];
@@ -236,17 +236,6 @@
 {
     if(section == 0){
         NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.memberCount - [EMDemoOption sharedOptions].conference.speakerIds.count;
-       //UILabel* text = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, self.view.bounds.size.width, 20)];
-//        text.textAlignment = NSTextAlignmentCenter;
-//        //设置Attachment
-//        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-//        //使用一张图片作为Attachment数据
-//        attachment.image = [UIImage imageNamed:@"编组"];
-//        //这里bounds的x值并不会产生影响
-//        attachment.bounds = CGRectMake(-600, 0, 20, 10);
-//        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前观众人数：%ld",auduinceCount]];
-//        [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
-        //text.attributedText = attributedString;
         //创建一个普通的Label
         UILabel *testLabel = [[UILabel alloc] init];
         //中央对齐
@@ -258,7 +247,7 @@
         //设置Attachment
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         //使用一张图片作为Attachment数据
-        attachment.image = [UIImage imageNamed:@"编组"];
+        attachment.image = [UIImage imageNamed:@"hot"];
         //这里bounds的x值并不会产生影响
         attachment.bounds = CGRectMake(-600, -5, 20, 20);
         NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前观众人数：%ld",auduinceCount]];

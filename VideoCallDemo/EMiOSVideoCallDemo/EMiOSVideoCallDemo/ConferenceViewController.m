@@ -180,8 +180,8 @@
         //[self.microphoneButton setTitle:@"" forState:UIControlStateNormal];
         [self.microphoneButton addTarget:self action:@selector(microphoneButtonAction) forControlEvents:UIControlEventTouchUpInside];
         //[self.microphoneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [self.microphoneButton setImage:[UIImage imageNamed:@"编组 6"] forState:UIControlStateSelected];
-        [self.microphoneButton setImage:[UIImage imageNamed:@"03-视频通话"] forState:UIControlStateNormal];
+        [self.microphoneButton setImage:[UIImage imageNamed:@"microphoneselect"] forState:UIControlStateSelected];
+        [self.microphoneButton setImage:[UIImage imageNamed:@"microphonenclose"] forState:UIControlStateNormal];
         self.microphoneLable = [[UILabel alloc] initWithFrame:CGRectMake(padding, top+iconsize+2, size, 20)];
         self.microphoneLable.text = @"解除静音";
         self.microphoneLable.textAlignment = NSTextAlignmentCenter;
@@ -195,8 +195,8 @@
         [self.videoButton setTitle:@"" forState:UIControlStateNormal];
         [self.videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
         [self.videoButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.videoButton setImage:[UIImage imageNamed:@"视频"] forState:UIControlStateSelected];
-        [self.videoButton setImage:[UIImage imageNamed:@"视频2"] forState:UIControlStateNormal];
+        [self.videoButton setImage:[UIImage imageNamed:@"videoopen"] forState:UIControlStateSelected];
+        [self.videoButton setImage:[UIImage imageNamed:@"videoclose"] forState:UIControlStateNormal];
         self.videoLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size), top+iconsize+2, size, 20)];
         self.videoLable.text = @"打开视频";
         self.videoLable.textAlignment = NSTextAlignmentCenter;
@@ -209,7 +209,7 @@
         self.hangupButton.frame = CGRectMake(padding + (padding+size) * 2 + offset, top, iconsize, iconsize);
         //[self.hangupButton setTitle:@"挂断" forState:UIControlStateNormal];
         self.hangupButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.hangupButton setImage:[UIImage imageNamed:@"视频备份"] forState:UIControlStateNormal];
+        [self.hangupButton setImage:[UIImage imageNamed:@"leaveconfr"] forState:UIControlStateNormal];
         [self.hangupButton setTintColor:[UIColor redColor]];
         [self.hangupButton addTarget:self action:@selector(hangupAction) forControlEvents:UIControlEventTouchUpInside];
         self.hangupLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*2, top+iconsize+2, size, 20)];
