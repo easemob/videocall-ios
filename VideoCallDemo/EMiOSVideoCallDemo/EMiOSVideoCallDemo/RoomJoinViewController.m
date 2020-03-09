@@ -35,7 +35,7 @@ int kHeightStart = 300;
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"设置" style:UIBarButtonItemStyleDone target:self action:@selector(settingAction)];
     
-    UIImage* image = [UIImage imageNamed:@"Fill 1"];
+    UIImage* image = [UIImage imageNamed:@"APP"];
     self.conferencelogo = [[UIImageView alloc] initWithImage:image];
     self.conferencelogo.frame = CGRectMake(100, 130, mainBounds.size.width-200, 100);
     [self.conferencelogo setContentMode:UIViewContentModeScaleAspectFit];
@@ -44,6 +44,7 @@ int kHeightStart = 300;
     UILabel* lable = [[UILabel alloc] initWithFrame:CGRectMake(100, 230, mainBounds.size.width-200, 40)];
     lable.text = @"环信多人会议";
     lable.textAlignment = NSTextAlignmentCenter;
+    lable.hidden = YES;
     [self.view addSubview:lable];
     
     self.nameField = [[UITextField alloc] initWithFrame:CGRectMake(60, kHeightStart, mainBounds.size.width - 120, 40)];

@@ -66,7 +66,7 @@
         UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         //[button setTitle:@"上传日志" forState:UIControlStateNormal];
         button.frame = CGRectMake(5, 5, 40, 40);
-        [button setImage:[UIImage imageNamed:@"24 ／ icon"] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:button];
     }else
