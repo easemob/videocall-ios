@@ -22,13 +22,21 @@ pod install
 
 ## 代码结构
 多人音视频Demo主要包含的类如下：
+
 RoomJoinViewController 加入房间页面
+
 ConferenceViewController 视频展示页面
+
 AccountSettingViewController 个人设置页面
+
 RoomSettingViewController 房间设置页面
+
 SpeakerListViewController 主播列表页面
+
 KickSpeakerViewController 选人下麦页面
+
 EMStreamView                   视频小窗口类
+
 EMDemoOption                   会议管理类
 
 
