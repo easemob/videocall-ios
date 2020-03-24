@@ -12,9 +12,11 @@
 #import "EMDemoOption.h"
 #import "EMAlertController.h"
 #import "KickSpeakerViewController.h"
+#import "ChangeRoleView.h"
+#import <MediaPlayer/MPVolumeView.h>
 
 @interface ConferenceViewController ()
-
+@property (nonatomic) UIImageView* newtworkView;
 @end
 
 @implementation ConferenceViewController
@@ -24,6 +26,7 @@
     self = [super init];
     if (self) {
         self.streamItemDict = [NSMutableDictionary dictionary];
+        self.membersDict = [NSMutableDictionary dictionary];
         self.role = role;
         __weak typeof(self) weakself = self;
         [[[EMClient sharedClient] conferenceManager] getConference:call.confId password:[EMDemoOption sharedOptions].roomPswd completion:^(EMCallConference *aCall, EMError *aError) {
@@ -31,15 +34,15 @@
             [EMDemoOption sharedOptions].conference.memberCount = aCall.memberCount;
             [EMDemoOption sharedOptions].conference.speakerIds = [aCall.speakerIds copy];
             [weakself updateAdminView];
-            if([aCall.adminIds count] > 0){
-                if([[aCall.adminIds objectAtIndex:0] isEqualToString:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid]]){
-                    [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"become_admin" completion:^(EMError *aError) {
-                        if(aError){
-                            [EMAlertController showErrorAlert:@"管理员变更广播失败"];
-                        }
-                    }];
-                }
-            }
+//            if([aCall.adminIds count] > 0){
+//                if([[aCall.adminIds objectAtIndex:0] isEqualToString:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid]]){
+//                    [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"become_admin" completion:^(EMError *aError) {
+//                        if(aError){
+//                            [EMAlertController showErrorAlert:@"管理员变更广播失败"];
+//                        }
+//                    }];
+//                }
+//            }
         }];
         
         EMConferenceRole currole = call.role;
@@ -60,20 +63,33 @@
     return self;
 }
 
+-(float) getVolumeLevel
+{
+    MPVolumeView *volumeView   = [[MPVolumeView alloc] init];
+    UISlider* volumeViewSlider;
+    for(UIView*view in [volumeView subviews])
+    {
+        if([[[view class] description] isEqualToString:@"MPVolumeSlider"])
+        {
+            volumeViewSlider =(UISlider*) view;
+            
+        }
+        
+    }
+    float val =[volumeViewSlider value];
+    return val;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    [self.navigationController setNavigationBarHidden:YES];
+    // Do any additional setup after loading the view
     [self setupSubViews];
     [[[EMClient sharedClient] conferenceManager] addDelegate:self delegateQueue:nil];
     [[[EMClient sharedClient] conferenceManager] startMonitorSpeaker:[EMDemoOption sharedOptions].conference timeInterval:2 completion:^(EMError *aError) {
         
     }];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.navigationController setNavigationBarHidden:YES];
+    float volume = [self getVolumeLevel];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(systemVolumeDidChangeNoti:) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
 }
 
 -(void)dealloc
@@ -83,24 +99,63 @@
         _timeTimer = nil;
     }
     [[EMClient sharedClient].conferenceManager removeDelegate:self];
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
+-(void)systemVolumeDidChangeNoti:(NSNotification* )noti{
+    //目前手机音量
+    float voiceSize = [[noti.userInfo valueForKey:@"AVSystemController_AudioVolumeNotificationParameter"] floatValue];
+    NSLog(@"VoiceVolume:%f",voiceSize);
+    int volume = 100*voiceSize;
+    if(self.audioVolume)
+        self.audioVolume.text = [NSString stringWithFormat:@"音量：%d",volume ];
+}
+
+- (UIView*)toastView
+{
+    UIView *view = [[UIView alloc] init];
+    view.frame = CGRectMake(16,50,116,40);
+
+    view.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.25].CGColor;
+    view.layer.cornerRadius = 22.5;
+    return view;
 }
 
 -(void) setupSubViews
 {
     self.isSetSpeaker = YES;
-    self.roomNameLable = [[UILabel alloc] initWithFrame:CGRectMake(20,50, 100, 30)];
+    [self.view addSubview:[self toastView]];
+    self.newtworkView = [[UIImageView alloc] initWithFrame:CGRectMake(19,53,34,34)];
+    self.newtworkView.image = [UIImage imageNamed:@"networkinfo"];
+    [self.view addSubview:self.newtworkView];
+    self.roomNameLable = [[UILabel alloc] initWithFrame:CGRectMake(59,53, 48, 20)];
     self.roomNameLable.text = [EMDemoOption sharedOptions].roomName;
+    self.roomNameLable.textColor = [UIColor whiteColor];
+    [self.roomNameLable setFont:[UIFont fontWithName:@"Arial" size:12]];
     [self.view addSubview:self.roomNameLable];
+    
+    self.audioVolume = [[UILabel alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 100, 30, 100, 20)];
+    self.audioVolume.text = @"音量";
+    [self.view addSubview:self.audioVolume];
     
     self.settingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.settingButton.frame = CGRectMake(self.view.bounds.size.width - 50, 50, 40, 40);
     //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
     [self.settingButton setImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
-    [self.settingButton addTarget:self action:@selector(settingAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.settingButton setTintColor:[UIColor whiteColor]];
     [self.view addSubview:self.settingButton];
     
-    self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 80, 100, 30)];
+    UIButton * selectDevice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    selectDevice.frame = CGRectMake(self.view.bounds.size.width - 180, 60, 60, 40);
+    [selectDevice setTitle:@"切设备" forState:UIControlStateNormal];
+    [selectDevice addTarget:self action:@selector(selectDeviceAction) forControlEvents:UIControlEventTouchUpInside];
+    [selectDevice setTintColor:[UIColor whiteColor]];
+    [self.view addSubview:selectDevice];
+    
+    self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59, 73, 33, 10)];
+    self.timeLabel.textColor = [UIColor whiteColor];
+    [self.timeLabel setFont:[UIFont fontWithName:@"Arial" size:10]];
     [self.view addSubview:self.timeLabel];
     [self startTimer];
     
@@ -376,22 +431,49 @@
     
 }
 
-- (void)hangupAction
+- (void)_hangup:(BOOL)isDestroy
 {
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    
-   AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
     [audioSession setActive:YES error:nil];
     if([EMDemoOption sharedOptions].conference) {
         [[EMClient sharedClient].conferenceManager stopMonitorSpeaker:[EMDemoOption sharedOptions].conference];
-        [[EMClient sharedClient].conferenceManager leaveConference:[EMDemoOption sharedOptions].conference completion:nil];
+        if(isDestroy)
+            [[EMClient sharedClient].conferenceManager destroyConferenceWithId:[EMDemoOption sharedOptions].conference.confId completion:nil];
+        else
+            [[EMClient sharedClient].conferenceManager leaveConference:[EMDemoOption sharedOptions].conference completion:nil];
     }
     [self clearResource];
 
     [self dismissViewControllerAnimated:NO completion:nil];
+    while (![self.navigationController.topViewController isKindOfClass:[self class]]) {
+        [self.navigationController popViewControllerAnimated:NO];
+    }
     [self.navigationController popViewControllerAnimated:NO];
-    [self.navigationController setNavigationBarHidden:NO];
+}
+
+- (void)hangupAction
+{
+    if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin){
+        __weak typeof(self) weakself = self;
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"如果您不想结束会议，请在离开前指定新的主持人" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+        UIAlertAction *destroyAction = [UIAlertAction actionWithTitle:@"离开会议" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [weakself _hangup:NO];
+        }];
+        [alertController addAction:destroyAction];
+
+        UIAlertAction *leaveAction = [UIAlertAction actionWithTitle:@"结束会议" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [weakself _hangup:YES];
+        }];
+        [alertController addAction:leaveAction];
+
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"取消", @"Cancel") style: UIAlertActionStyleCancel handler:nil]];
+
+        [self presentViewController:alertController animated:YES completion:nil];
+    }else
+        [self _hangup:NO];
 }
 
 -(void) clearResource
@@ -407,7 +489,7 @@
 -(void) roleChangeAction
 {
     if([EMDemoOption sharedOptions].conference.role >= EMConferenceRoleSpeaker) {
-        if(self.streamItemDict.count == 1){
+        if(self.streamItemDict.count == 1 && [self.pubStreamId length] > 0){
             [EMAlertController showInfoAlert:@"您是唯一主播，当前禁止下播"];
             return;
         }
@@ -431,11 +513,91 @@
     }
 }
 
--(void) settingAction
+-(void) settingAction:(UIButton* )settingButton
 {
-   RoomSettingViewController* roomSettingViewControler = [[RoomSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    settingButton.enabled = NO;
+    RoomSettingViewController* roomSettingViewControler = [[RoomSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
     [self.navigationController pushViewController:roomSettingViewControler animated:YES];
+    settingButton.enabled = YES;
     
+}
+
+- (AVAudioSessionPortDescription*)bluetoothAudioDevice
+{
+    NSArray* bluetoothRoutes = @[AVAudioSessionPortBluetoothA2DP, AVAudioSessionPortBluetoothLE, AVAudioSessionPortBluetoothHFP];
+    return [self audioDeviceFromTypes:bluetoothRoutes];
+}
+
+- (AVAudioSessionPortDescription*)builtinAudioDevice
+{
+    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInMic];
+    return [self audioDeviceFromTypes:builtinRoutes];
+}
+
+- (AVAudioSessionPortDescription*)speakerAudioDevice
+{
+    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInSpeaker];
+    return [self audioDeviceFromTypes:builtinRoutes];
+}
+
+- (AVAudioSessionPortDescription*)audioDeviceFromTypes:(NSArray*)types
+{
+    NSArray* routes = [[AVAudioSession sharedInstance] availableInputs];
+    for(AVAudioSessionPortDescription* route in routes)
+    {
+        if ([types containsObject:route.portType])
+        {
+            return route;
+        }
+        
+    }
+    return nil;
+}
+
+- (BOOL)switchBluetooth:(BOOL)onOrOff
+{
+    NSError* audioError = nil;
+    BOOL changeResult = NO;
+    if(onOrOff)
+    {
+        AVAudioSessionPortDescription* _bluetoothPort = [self bluetoothAudioDevice];
+        changeResult = [[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&audioError];
+    }
+    else
+    {
+        AVAudioSessionPortDescription* builtinPort = [self builtinAudioDevice];
+        changeResult = [[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&audioError];
+    }
+    return changeResult;
+}
+
+-(void)selectDeviceAction
+{
+    __weak typeof(self) weakself = self;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"切换音频设备" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *SpeakerAction = [UIAlertAction actionWithTitle:@"扬声器" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [weakself playWithSpeaker];
+    }];
+    [alertController addAction:SpeakerAction];
+
+    UIAlertAction *IphoneAction = [UIAlertAction actionWithTitle:@"iPhone" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+        [audioSession setActive:YES error:nil];
+    }];
+    [alertController addAction:IphoneAction];
+    
+    UIAlertAction *BlueToothAction = [UIAlertAction actionWithTitle:@"蓝牙耳机" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+        [audioSession setActive:YES error:nil];
+    }];
+    [alertController addAction:BlueToothAction];
+
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"取消", @"Cancel") style: UIAlertActionStyleCancel handler:nil]];
+
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showHint:(NSString *)hint
@@ -476,6 +638,35 @@
     EMStreamView *videoView = [[EMStreamView alloc] initWithFrame:frame];
     videoView.delegate = self;
     videoView.nameLabel.text = aName;
+    if(aStream) {
+        EMCallMember* member = [self.membersDict objectForKey:aStream.memberName];
+        if(member && [member.nickname length] > 0)
+        {
+            videoView.nickNameLabel.text = member.nickname;
+            NSData*jsonData = [member.ext dataUsingEncoding:NSUTF8StringEncoding];
+            NSError *jsonError = nil;
+            NSDictionary* extDic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&jsonError];
+            if(extDic) {
+                NSString* headImage = [extDic objectForKey:@"headImage"];
+                if([headImage length] > 0) {
+                    NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,headImage];
+                    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
+                    videoView.bgView.image = [[UIImage alloc] initWithData:data];
+                }
+            }
+        }else
+            videoView.nickNameLabel.text = aName;
+    }else {
+        if([[EMDemoOption sharedOptions].nickName length] > 0)
+            videoView.nickNameLabel.text = [EMDemoOption sharedOptions].nickName;
+        else
+            videoView.nickNameLabel.text = aName;
+        if([[EMDemoOption sharedOptions].headImage length] > 0) {
+            NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage];
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
+            videoView.bgView.image = [[UIImage alloc] initWithData:data];
+        }
+    }
     videoView.displayView = aDisplayView;
     [videoView addSubview:aDisplayView];
     [videoView sendSubviewToBack:aDisplayView];
@@ -518,7 +709,7 @@
     
     EMStreamParam *pubConfig = [[EMStreamParam alloc] init];
     pubConfig.streamName = [EMClient sharedClient].currentUsername;
-    pubConfig.enableVideo = aEnableVideo;
+    pubConfig.enableVideo = NO;
     pubConfig.isMute = ![EMDemoOption sharedOptions].openMicrophone;
     
     EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
@@ -561,7 +752,8 @@
             
             //TODO: 后续处理是怎么样的
         }
-        
+        if(aEnableVideo)
+           [[EMClient sharedClient].conferenceManager updateConference:[EMDemoOption sharedOptions].conference enableVideo:aEnableVideo];
         weakself.videoButton.enabled = YES;
         weakself.videoButton.selected = aEnableVideo;
         weakself.microphoneButton.selected = [EMDemoOption sharedOptions].openMicrophone;
@@ -696,7 +888,8 @@
                member:(EMCallMember *)aMember
 {
     if ([aConference.callId isEqualToString: [EMDemoOption sharedOptions].conference.callId]) {
-        NSString *message = [NSString stringWithFormat:@"%@ 加入会议", aMember.memberName];
+        [self.membersDict setObject:aMember forKey:aMember.memberName];
+        NSString *message = [NSString stringWithFormat:@"%@ 加入会议", aMember.nickname];
         [self showHint:message];
     }
 }
@@ -705,7 +898,8 @@
                 member:(EMCallMember *)aMember
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
-        NSString *message = [NSString stringWithFormat:@"%@ 离开会议", aMember.memberName];
+        [self.membersDict removeObjectForKey:aMember.memberName];
+        NSString *message = [NSString stringWithFormat:@"%@ 离开会议", aMember.nickname];
         [self showHint:message];
     }
 }
@@ -735,6 +929,99 @@
     }
 }
 
+- (void)adminDidChanged:(EMCallConference *)aConference
+               newAdmin:(NSString*)adminmemid
+{
+    if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
+        NSString* showName = adminmemid;
+        NSString* adminName = nil;
+        for(NSString* memName in self.membersDict) {
+            EMCallMember* member = [self.membersDict objectForKey:memName];
+            if(member && [member.memberId isEqualToString:adminmemid]) {
+                if([member.nickname length] > 0)
+                    showName = member.nickname;
+                else
+                    showName = member.memberName;
+                adminName = memName;
+                break;
+            }
+        }
+        
+        [EMDemoOption sharedOptions].conference.adminIds = [[EMDemoOption sharedOptions].conference.adminIds arrayByAddingObject:adminName];
+        
+        NSString* msg = [NSString stringWithFormat:@"%@ 成为管理员",showName ];
+        [EMAlertController showInfoAlert:msg];
+        [self updateAdminView];
+        UIViewController* topVC = self.navigationController.topViewController;
+        if(topVC && ([topVC isKindOfClass:[RoomSettingViewController class]] || [topVC isKindOfClass:[SpeakerListViewController class]])) {
+            UITableViewController* tableVC = (UITableViewController*)topVC;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [tableVC.tableView reloadData];
+            });
+        }
+    }
+}
+
+- (void)adminDidChanged:(EMCallConference *)aConference
+            removeAdmin:(NSString*)adminmemid
+{
+    if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
+        NSString* showName = adminmemid;
+        NSString* adminName = nil;
+        for(NSString* memName in self.membersDict) {
+            EMCallMember* member = [self.membersDict objectForKey:memName];
+            if(member && [member.memberId isEqualToString:adminmemid]) {
+                if([member.nickname length] > 0)
+                    showName = member.nickname;
+                else
+                    showName = member.memberName;
+                adminName = memName;
+                break;
+            }
+        }
+        
+        NSMutableArray* adminIds = [[EMDemoOption sharedOptions].conference.adminIds mutableCopy];
+        [adminIds removeObject:adminName];
+        [EMDemoOption sharedOptions].conference.adminIds = [adminIds copy];
+        NSString* msg = [NSString stringWithFormat:@"%@ 放弃管理员",showName ];
+        [EMAlertController showInfoAlert:msg];
+        [self updateAdminView];
+        UIViewController* topVC = self.navigationController.topViewController;
+        if(topVC && ([topVC isKindOfClass:[RoomSettingViewController class]] || [topVC isKindOfClass:[SpeakerListViewController class]])) {
+            UITableViewController* tableVC = (UITableViewController*)topVC;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [tableVC.tableView reloadData];
+            });
+        }
+    }
+}
+
+- (void)streamPubDidFailed:(EMCallConference *)aConference error:(EMError*)aError
+{
+    if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
+        self.switchCameraButton.enabled = NO;
+        self.microphoneButton.enabled = NO;
+        self.videoButton.enabled = NO;
+        
+        [self removeStreamWithId:self.pubStreamId];
+        self.pubStreamId = nil;
+        [self updateScrollView];
+        NSString* msg = [NSString stringWithFormat:@"Pub流失败：%@",aError.errorDescription ];
+        [EMAlertController showInfoAlert:msg];
+    }
+}
+
+- (void)streamUpdateDidFailed:(EMCallConference *)aConference error:(EMError *)aError
+{
+    if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
+        if(aError.code == EMErrorCallVideoFull) {
+            [self videoButtonAction];
+            NSString* msg = [NSString stringWithFormat:@"打开视频流失败：%@",aError.errorDescription ];
+            [EMAlertController showInfoAlert:msg];
+        }
+    }
+}
+
 - (void)conferenceDidEnd:(EMCallConference *)aConference
                   reason:(EMCallEndReason)aReason
                    error:(EMError *)aError
@@ -743,7 +1030,7 @@
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"会议已关闭" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
         [alertView show];
         
-        [self hangupAction];
+        [self _hangup:NO];
     }
 }
 //数据流有更新（是否静音，视频是否可用）(有人静音自己/关闭视频)
@@ -768,6 +1055,10 @@
     }
     
     videoItem.stream = aStream;
+    if([self.navigationController.topViewController isKindOfClass:[SpeakerListViewController class]]) {
+        SpeakerListViewController*sVC = (SpeakerListViewController*)self.navigationController.topViewController;
+        [sVC.tableView reloadData];
+    }
 }
 //数据流已经开始传输数据
 - (void)streamStartTransmitting:(EMCallConference *)aConference
@@ -792,13 +1083,13 @@
     NSString *str = @"";
     switch (aStatus) {
         case EMCallNetworkStatusNormal:
-            str = @"网路正常";
+            self.newtworkView.image = [UIImage imageNamed:@"networkinfo"];
             break;
         case EMCallNetworkStatusUnstable:
-            str = @"网路不稳定";
+            self.newtworkView.image = [UIImage imageNamed:@"networkinfo1"];
             break;
         case EMCallNetworkStatusNoData:
-            str = @"网路已断开";
+            self.newtworkView.image = [UIImage imageNamed:@"networkinfo0"];
             break;
             
         default:
@@ -848,49 +1139,27 @@
             {
                 NSString* userid = [attrs objectAtIndex:i].key;
                 NSString* action = [attrs objectAtIndex:i].value;
+                if([action length] == 0)
+                    continue;
                 if([action isEqualToString:@"request_tobe_speaker"]) {
                     if(currole != EMConferenceRoleAdmin)
                         return;
-                    NSString * message = [userid stringByAppendingString:@" 申请上麦"];
-                    [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
-                        
-                    }];
-                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
-                    [alert addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        if([weakself.streamItemDict count] >= 9){
-                            UIAlertController* alert2 = [UIAlertController alertControllerWithTitle:@"" message:@"主播已满，选人下麦？" preferredStyle:UIAlertControllerStyleAlert];
-                            [alert2 addAction:[UIAlertAction actionWithTitle:@"返回" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                                // 下麦一个主播
-                            }]];
-                            [alert2 addAction:[UIAlertAction actionWithTitle:@"选人下麦" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                                //弹出ViewController
-                                KickSpeakerViewController *xVC = [[KickSpeakerViewController alloc] init];
-                                xVC.view.frame = CGRectMake(0, 200, self.view.bounds.size.width, self.view.bounds.size.height-200);
-                                [xVC setNewSpeaker:userid];
-                                //设置ViewController的模态模式，即ViewController的显示方式
-                                //xVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-                                //self.modalPresentationStyle = UIModalPresentationCurrentContext;
-                                //加载模态视图
-                                [self presentViewController:xVC animated:YES completion:^{
-                                    }];
-                            }]];
-                            [self presentViewController:alert2 animated:YES completion:nil];
-                        }else{
-                            NSString* memId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
-                            [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:aConference.confId memberNames:@[memId] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
-                                if(aError){
-                                    [EMAlertController showErrorAlert:@"上麦失败"];
-                                }
-                                [EMAlertController showSuccessAlert:@"上麦成功"];
+                    ChangeRoleView* view = [[ChangeRoleView alloc] initWithFrame:CGRectMake(16, 486, 174, 92)];
+                    view.name.text = userid;
+                    view.memName = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
+                    view.kickMem = ^(NSString* newSpeaker){
+                        //弹出ViewController
+                        KickSpeakerViewController *xVC = [[KickSpeakerViewController alloc] init];
+                        xVC.view.frame = CGRectMake(0, 200, self.view.bounds.size.width, self.view.bounds.size.height-200);
+                        [xVC setNewSpeaker:userid];
+                        //设置ViewController的模态模式，即ViewController的显示方式
+                        //xVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+                        //self.modalPresentationStyle = UIModalPresentationCurrentContext;
+                        //加载模态视图
+                        [self presentViewController:xVC animated:YES completion:^{
                             }];
-                        }
-                    }]];
-                    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                        [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
-                            
-                        }];
-                    }]];
-                    [self presentViewController:alert animated:YES completion:nil];
+                    };
+                    [self.view addSubview:view];
                 }else
                     if([action isEqualToString:@"request_tobe_audience"]){
                         if(currole != EMConferenceRoleAdmin)
@@ -899,21 +1168,68 @@
                         [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:aConference.confId memberNames:@[memId] role:EMConferenceRoleAudience completion:^(EMError *aError) {
                             if(aError){
                                 [EMAlertController showErrorAlert:@"下麦失败"];
-                            }
+                                [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
+                                    
+                                }];
+                            }else{
                             [EMAlertController showSuccessAlert:@"下麦成功"];
-                            [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
-                                
-                            }];
+                                [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
+                                    
+                                }];
+                            }
                         }];
                     }else
-                        if([action isEqualToString:@"become_admin"]){
-                            [EMAlertController showInfoAlert:[NSString stringWithFormat:@"%@ 成为管理员",userid]];
-                            NSString* memId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
-                            [EMDemoOption sharedOptions].conference.adminIds = @[memId];
+                        if([action isEqualToString:@"request_tobe_admin"]) {
+                            if(currole != EMConferenceRoleAdmin)
+                                return;
+                            NSString * message = [userid stringByAppendingString:@" 申请主持人"];
                             [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
                                 
                             }];
-                            [weakself updateAdminView];
+                            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
+                            [alert addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                                NSString* memId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
+                                [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:aConference.confId memberNames:@[memId] role:EMConferenceRoleAdmin completion:^(EMError *aError) {
+                                    if(aError){
+                                        [EMAlertController showErrorAlert:@"操作失败"];
+                                    }
+                                }];
+                            }]];
+                            [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                            }]];
+                            [self presentViewController:alert animated:YES completion:nil];
+                        }else if([action isEqualToString:@"mute_all"]){
+                            if([EMDemoOption sharedOptions].conference.role > EMConferenceRoleAudience && weakself.pubStreamId) {
+                                if(weakself.microphoneButton.isSelected)
+                                    [weakself microphoneButtonAction];
+                            }
+                        }else if([action isEqualToString:@"unmute_all"]){
+                            if([EMDemoOption sharedOptions].conference.role > EMConferenceRoleAudience && weakself.pubStreamId) {
+                                if(!weakself.microphoneButton.isSelected)
+                                    [weakself microphoneButtonAction];
+                            }
+                        }else{
+                            NSData * jsonData = [action dataUsingEncoding:NSUTF8StringEncoding];
+                            NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:nil];
+                            if(dic)
+                            {
+                                NSString* act = [dic objectForKey:@"action"];
+                                if([act isEqualToString:@"mute"]){
+                                    NSArray* uids = [dic objectForKey:@"uids"];
+                                    if([uids containsObject:[EMDemoOption sharedOptions].userid])
+                                        if([EMDemoOption sharedOptions].conference.role > EMConferenceRoleAudience && weakself.pubStreamId) {
+                                            if(weakself.microphoneButton.isSelected)
+                                                [weakself microphoneButtonAction];
+                                        }
+                                }else if([act isEqualToString:@"unmute"]){
+                                    NSArray* uids = [dic objectForKey:@"uids"];
+                                    if([uids containsObject:[EMDemoOption sharedOptions].userid])
+                                        if([EMDemoOption sharedOptions].conference.role > EMConferenceRoleAudience && weakself.pubStreamId) {
+                                            if(!weakself.microphoneButton.isSelected)
+                                                [weakself microphoneButtonAction];
+                                        }
+                                }
+                            }
                         }
             }
         }
@@ -924,18 +1240,20 @@
 - (void)roleDidChanged:(EMCallConference *)aConference
 {
     __weak typeof(self) weakself = self;
-    if (aConference.role == EMConferenceRoleSpeaker && [self.pubStreamId length] == 0) {
-        [self pubLocalStreamWithEnableVideo:[EMDemoOption sharedOptions].openCamera completion:^(NSString *aPubStreamId, EMError *aError) {
-            //[weakself _updateViewsAfterPubWithEnableVideo:YES error:aError];
-            //weakself.vkbpsButton.enabled = YES;
-            self.roleLable.text = @"下麦";
-            [self.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
-            [self.roleButton setTintColor:[UIColor redColor]];
-            self.videoButton.enabled = YES;
-            self.microphoneButton.enabled = YES;
-            self.switchCameraButton.enabled = YES;
-        }];
-    } else if (aConference.role == EMConferenceRoleAudience && [self.pubStreamId length] > 0) {
+    if (aConference.role == EMConferenceRoleSpeaker) {
+        if([self.pubStreamId length] == 0) {
+            [self pubLocalStreamWithEnableVideo:[EMDemoOption sharedOptions].openCamera completion:^(NSString *aPubStreamId, EMError *aError) {
+                //[weakself _updateViewsAfterPubWithEnableVideo:YES error:aError];
+                //weakself.vkbpsButton.enabled = YES;
+                weakself.roleLable.text = @"下麦";
+                [weakself.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
+                [weakself.roleButton setTintColor:[UIColor redColor]];
+                weakself.videoButton.enabled = YES;
+                weakself.microphoneButton.enabled = YES;
+                weakself.switchCameraButton.enabled = YES;
+            }];
+        }
+    } else if (aConference.role == EMConferenceRoleAudience) {
         self.roleButton.selected = NO;
         self.switchCameraButton.enabled = NO;
         self.microphoneButton.enabled = NO;
@@ -944,7 +1262,9 @@
         [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
         self.roleLable.text = @"上麦";
         [self.roleButton setTintColor:[UIColor whiteColor]];
-        [[EMClient sharedClient].conferenceManager unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
+        if([self.pubStreamId length] > 0)
+        {
+            [[EMClient sharedClient].conferenceManager unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
             weakself.roleButton.selected = NO;
             weakself.switchCameraButton.enabled = NO;
             weakself.microphoneButton.enabled = NO;
@@ -953,15 +1273,28 @@
             [weakself removeStreamWithId:weakself.pubStreamId];
             weakself.pubStreamId = nil;
             [weakself updateScrollView];
-        }];
+            }];
+        }
     }else if(aConference.role == EMConferenceRoleAdmin){
-        [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"become_admin" completion:^(EMError *aError) {
-            if(aError){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [EMAlertController showErrorAlert:@"管理员变更广播失败"];
-                });
-            }
-        }];
+//        [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"become_admin" completion:^(EMError *aError) {
+//            if(aError){
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    [EMAlertController showErrorAlert:@"管理员变更广播失败"];
+//                });
+//            }
+//        }];
+        NSString* memName = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid ];
+        if(![[EMDemoOption sharedOptions].conference.adminIds containsObject:memName]) {
+            [EMDemoOption sharedOptions].conference.adminIds = [[EMDemoOption sharedOptions].conference.adminIds arrayByAddingObject:memName];
+        }
+        [self updateAdminView];
+        UIViewController* topVC = self.navigationController.topViewController;
+        if(topVC && ([topVC isKindOfClass:[RoomSettingViewController class]] || [topVC isKindOfClass:[SpeakerListViewController class]])) {
+            UITableViewController* tableVC = (UITableViewController*)topVC;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [tableVC.tableView reloadData];
+            });
+        }
     }
 }
 
@@ -987,20 +1320,15 @@
 
 -(void)updateAdminView
 {
-    if([EMDemoOption sharedOptions].conference.adminIds.count > 0)
-    {
-        NSString* adminName = [[EMDemoOption sharedOptions].conference.adminIds objectAtIndex:0];
-        if(adminName.length > [EMDemoOption sharedOptions].appkey.length){
-            adminName = [adminName substringFromIndex:([EMDemoOption sharedOptions].appkey.length + 1)];
-            for(NSString* key in _streamItemDict){
-                EMStreamItem* item = [_streamItemDict objectForKey:key];
-                if(item && item.videoView){
-                    if([item.videoView.nameLabel.text isEqualToString:adminName]){
-                        item.videoView.isAdmin = YES;
-                    }else
-                        item.videoView.isAdmin = NO;
-                }
-            }
+    for(NSString* key in _streamItemDict){
+        EMStreamItem* item = [_streamItemDict objectForKey:key];
+        if(item && item.videoView){
+            NSString* memName = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,item.videoView.nameLabel.text];
+            
+            if([[EMDemoOption sharedOptions].conference.adminIds containsObject:memName]){
+                item.videoView.isAdmin = YES;
+            }else
+                item.videoView.isAdmin = NO;
         }
     }
 }

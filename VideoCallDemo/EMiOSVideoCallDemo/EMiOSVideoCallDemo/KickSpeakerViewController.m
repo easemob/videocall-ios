@@ -11,6 +11,15 @@
 #import "EMDemoOption.h"
 #import "EMAlertController.h"
 
+@interface UIKickerTableViewCell : UITableViewCell
+@property (nonatomic) NSString* memName;
+@property (nonatomic) BOOL enableVoice;
+@end
+
+@implementation UIKickerTableViewCell
+
+@end;
+
 @interface KickSpeakerViewController ()
 @property(nonatomic) UIButton* selectButton;
 @property(nonatomic) NSString* speakerName;
@@ -54,13 +63,14 @@
     NSInteger row = indexPath.row;
     static NSString *cellIdentifier = @"cellID";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:
+    UIKickerTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:
     cellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]initWithStyle:
+        cell = [[UIKickerTableViewCell alloc]initWithStyle:
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0) {
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         if(row == 0){
             UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
             cancelButton.frame = CGRectMake(5, 5, 40, 40);
@@ -95,7 +105,48 @@
             NSArray* keys = [confVC.streamItemDict allKeys];
             EMStreamItem*item = [confVC.streamItemDict objectForKey:keys[row]];
             if(item){
-                cell.textLabel.text = item.videoView.nameLabel.text;
+                //cell.textLabel.text = item.videoView.nameLabel.text;
+                cell.textLabel.numberOfLines = 0;
+                //设置Attachment
+                NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+                //使用一张图片作为Attachment数据
+                NSString* memName = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,item.videoView.nameLabel.text];
+                if([item.videoView.nameLabel.text isEqualToString:[EMDemoOption sharedOptions].userid]) {
+                    NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage ];
+                    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
+                    attachment.image = [UIImage imageWithData:data];
+                }else{
+                    EMCallMember*member = [confVC.membersDict objectForKey:memName];
+                    if(member){
+                        NSData*jsonData = [member.ext dataUsingEncoding:NSUTF8StringEncoding];
+                        NSError *jsonError = nil;
+                        NSDictionary* extDic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&jsonError];
+                        if(extDic) {
+                            NSString* headImage = [extDic objectForKey:@"headImage"];
+                            if([headImage length] > 0) {
+                                NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,headImage];
+                                NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
+                                attachment.image = [UIImage imageWithData:data];
+                            }
+                        }
+                    }
+                }
+                NSString* showName = item.videoView.nickNameLabel.text;
+                if([[EMDemoOption sharedOptions].conference.adminIds count] > 0){
+                    if([[EMDemoOption sharedOptions].conference.adminIds containsObject:memName]){
+                        showName = [showName stringByAppendingString:@"(管理员)"];
+                    }
+                }
+                cell.memName = memName;
+                //这里bounds的x值并不会产生影响
+                attachment.bounds = CGRectMake(0, -5, 30, 30);
+                
+                NSMutableAttributedString * attrubedStr = [[NSMutableAttributedString alloc]initWithString:showName];
+
+                NSAttributedString *string = [NSAttributedString attributedStringWithAttachment:attachment];
+                [attrubedStr insertAttributedString:string atIndex:0];
+
+                cell.textLabel.attributedText = attrubedStr;
             }
         }else
             cell.textLabel.text = [[[EMDemoOption sharedOptions].conference.speakerIds objectAtIndex:row] substringFromIndex:([[EMDemoOption sharedOptions].appkey length]+1)];
@@ -135,38 +186,34 @@
 -(void)replaceButtonAction
 {
     if(self.selectButton){
-        long row = self.selectButton.tag - 30000;
         ConferenceViewController* confVC = [self getConfVC];
         if(confVC) {
             NSIndexPath* path = [NSIndexPath indexPathForItem:(self.selectButton.tag-30000) inSection:1];
-            UITableViewCell*cell = [self.tableView cellForRowAtIndexPath:path];
-            NSString* selectName = cell.textLabel.text;
-            NSArray* keys = [confVC.streamItemDict allKeys];
-            EMStreamItem*item = [confVC.streamItemDict objectForKey:keys[row]];
-            if(item){
-                if([selectName isEqualToString:[EMDemoOption sharedOptions].userid])
-                {
-                    [EMAlertController showErrorAlert:@"不能选择管理员自己"];
-                    return;
-                }
-                __weak typeof(self) weakself = self;
-                NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,selectName];
-                [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[memid] role:EMConferenceRoleAudience completion:^(EMError *aError) {
-                    if(aError){
-                        [EMAlertController showErrorAlert:@"下麦失败"];
-                    }else
-                    if(weakself.speakerName){
-                        NSString* newmemid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,weakself.speakerName];
-                        [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[newmemid] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
-                            if(!aError)
-                            {
-                                [EMAlertController showErrorAlert:@"上麦失败"];
-                            }
-                            [EMAlertController showSuccessAlert:@"上麦成功"];
-                        }];
-                    }
-                }];
+            UIKickerTableViewCell*cell = [self.tableView cellForRowAtIndexPath:path];
+            NSString* selectName = cell.memName;
+            NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid];
+            if([selectName isEqualToString:memid])
+            {
+                [EMAlertController showErrorAlert:@"不能选择管理员自己"];
+                return;
             }
+            __weak typeof(self) weakself = self;
+            
+            [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[selectName] role:EMConferenceRoleAudience completion:^(EMError *aError) {
+                if(aError){
+                    [EMAlertController showErrorAlert:@"下麦失败"];
+                }else
+                if(weakself.speakerName){
+                    NSString* newmemid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,weakself.speakerName];
+                    [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[newmemid] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
+                        if(!aError)
+                        {
+                            [EMAlertController showErrorAlert:@"上麦失败"];
+                        }else
+                            [EMAlertController showSuccessAlert:@"上麦成功"];
+                    }];
+                }
+            }];
         }
     }
     [self dismissViewControllerAnimated:YES completion:nil];

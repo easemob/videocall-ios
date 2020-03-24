@@ -31,6 +31,7 @@
         self.bgView.layer.borderColor = [UIColor grayColor].CGColor;
         UIImage *image = [UIImage imageNamed:@"bg_connecting"];
         self.bgView.image = image;
+        self.bgView.backgroundColor = [UIColor grayColor];
         [self addSubview:self.bgView];
         [self.bgView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(self);
@@ -51,6 +52,18 @@
         self.nameLabel.numberOfLines = 0;
         [self addSubview:self.nameLabel];
         [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(self).offset(12);
+            make.left.equalTo(self).offset(5);
+            make.width.equalTo(@90);
+        }];
+        self.nameLabel.hidden = YES;
+        
+        self.nickNameLabel = [[UILabel alloc] init];
+        self.nickNameLabel.textColor = [UIColor redColor];
+        self.nickNameLabel.font = [UIFont systemFontOfSize:10];
+        self.nickNameLabel.numberOfLines = 0;
+        [self addSubview:self.nickNameLabel];
+        [self.nickNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(self).offset(12);
             make.left.equalTo(self).offset(5);
             make.width.equalTo(@90);
@@ -78,6 +91,8 @@
         [self addGestureRecognizer:tap];
         
         [self bringSubviewToFront:_nameLabel];
+        
+        [self bringSubviewToFront:_nickNameLabel];
         
         [self bringSubviewToFront:_adminView];
         

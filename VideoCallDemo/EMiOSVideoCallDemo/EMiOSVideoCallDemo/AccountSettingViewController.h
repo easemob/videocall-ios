@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface AccountSettingViewController : UITableViewController<XDSDropDownMenuDelegate>
+@interface AccountSettingViewController : UITableViewController<XDSDropDownMenuDelegate,UITextFieldDelegate>
 
 @end
 

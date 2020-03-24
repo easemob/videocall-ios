@@ -13,6 +13,7 @@
 #import "EMAlertController/EMAlertController.h"
 #import "UIViewController+HUD.h"
 #import "XDSDropDownMenu.h"
+#import "ProfileViewController.h"
 
 @interface AccountSettingViewController ()<MFMailComposeViewControllerDelegate>
 
@@ -34,12 +35,11 @@
     self.title = @"设置";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _sexDropDownMenu = [[XDSDropDownMenu alloc] init];
-    [self.navigationController setNavigationBarHidden:YES];
 }
 
--(void)viewDidDisappear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [self.navigationController setNavigationBarHidden:NO];
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table View Data source
@@ -73,10 +73,28 @@
     if(section == 1) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         if(row == 0){
-            UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 200, 10, 200, 40)];
-            username.text = [EMDemoOption sharedOptions].userid;
-            [cell addSubview:username];
-            cell.textLabel.text = @"环信ID:" ;
+            [[cell viewWithTag:6000] removeFromSuperview];
+            UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(60, 2, 100, 40)];
+            label.text = [EMDemoOption sharedOptions].nickName;
+            label.tag = 6000;
+            [cell addSubview:label];
+            
+            UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+            opButton.frame = CGRectMake(self.tableView.frame.size.width - 40, 5, 30, 30);
+            [opButton setTitle:@">" forState:UIControlStateNormal];
+            opButton.titleLabel.textAlignment = NSTextAlignmentRight;
+            [opButton addTarget:self action:@selector(OperationAction:) forControlEvents:UIControlEventTouchUpInside];
+            [cell addSubview:opButton];
+
+            UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 0, 40, 40)];
+            if([[EMDemoOption sharedOptions].headImage length] > 0) {
+                NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage ];
+                NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
+                headimageView.image = [[UIImage alloc] initWithData:data];
+            }else
+                headimageView.image = [UIImage imageNamed:@"APP"];
+            headimageView.contentMode = UIViewContentModeScaleAspectFill;
+            [cell addSubview:headimageView];
         }
         if(row == 1) {
             cell.textLabel.text = @"加入时打开摄像头";
@@ -124,7 +142,7 @@
         cell.textLabel.text = @"遇到问题";
         UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         [button setTitle:@"上传日志" forState:UIControlStateNormal];
-        button.frame = CGRectMake(self.tableView.frame.size.width - 105, 10, 100, 40);
+        button.frame = CGRectMake(self.tableView.frame.size.width - 105, 5, 100, 40);
         [button addTarget:self action:@selector(sendLogAction) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:button];
     }
@@ -134,8 +152,13 @@
 
 -(void)backAction
 {
-    [self.navigationController setNavigationBarHidden:NO];
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)OperationAction:(UIButton*)button
+{
+    ProfileViewController* pVC = [[ProfileViewController alloc] init];
+    [self.navigationController pushViewController:pVC animated:NO];
 }
 
 -(void)setResolutionAction:(UIButton*)button
@@ -308,6 +331,28 @@ return view ;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)aTextfield {
+    [aTextfield resignFirstResponder];//关闭键盘
+    [EMDemoOption sharedOptions].nickName = aTextfield.text;
+    [[EMDemoOption sharedOptions] archive];
+    return YES;
+}
+
+- (void)clickImage
+{
+}
+
+
+-(BOOL)validateString:(NSString*)str
+{
+    // 编写正则表达式
+    NSString *regex = @"^[\u4e00-\u9fa5A-Za-z0-9_-]*$";
+    // 创建谓词对象并设定条件表达式
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
+    // 字符串判断，然后BOOL值
+    BOOL result = [predicate evaluateWithObject:str];
+    return result;
+}
 
 /*
 #pragma mark - Navigation

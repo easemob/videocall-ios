@@ -26,6 +26,8 @@ typedef enum {
 
 @property (nonatomic, strong) UILabel *nameLabel;
 
+@property (nonatomic, strong) UILabel *nickNameLabel;
+
 @property (nonatomic) StreamStatus status;
 
 @property (nonatomic) BOOL enableVoice;

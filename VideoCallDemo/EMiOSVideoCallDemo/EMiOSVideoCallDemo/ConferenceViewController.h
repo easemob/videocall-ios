@@ -36,17 +36,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) int timeLength;
 @property (strong, nonatomic) NSTimer *timeTimer;
 @property (nonatomic, strong) NSMutableDictionary *streamItemDict;
+@property (nonatomic, strong) NSMutableDictionary *membersDict;
 @property (nonatomic, strong) NSString *pubStreamId;
 @property (nonatomic, strong) NSMutableArray *streamIds;
 @property (nonatomic, strong, readonly) NSMutableArray *talkingStreamIds;
 @property (nonatomic) BOOL isSetSpeaker;
 @property (nonatomic) EMConferenceRole role;
 @property (nonatomic) UITableView* tableView;
-- (void)microphoneButtonAction;
+@property (nonatomic) UILabel* audioVolume;
 
-- (void)videoButtonAction;
-
-- (void)hangupAction;
+- (void)updateAdminView;
 
 - (instancetype)initWithConfence:(EMCallConference*)call role:(EMConferenceRole)role;
 @end
