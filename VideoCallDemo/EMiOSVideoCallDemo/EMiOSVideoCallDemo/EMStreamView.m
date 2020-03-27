@@ -41,9 +41,9 @@
         self.statusView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:self.statusView];
         [self.statusView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self).offset(5);
-            make.right.equalTo(self).offset(-5);
             make.width.height.equalTo(@20);
+            make.centerY.equalTo(self).multipliedBy(0.1);
+            make.centerX.equalTo(self).multipliedBy(1.9);
         }];
         
         self.nameLabel = [[UILabel alloc] init];
@@ -60,13 +60,14 @@
         
         self.nickNameLabel = [[UILabel alloc] init];
         self.nickNameLabel.textColor = [UIColor redColor];
-        self.nickNameLabel.font = [UIFont systemFontOfSize:10];
+        self.nickNameLabel.font = [UIFont systemFontOfSize:16];
         self.nickNameLabel.numberOfLines = 0;
+        self.nickNameLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.nickNameLabel];
         [self.nickNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self).offset(12);
-            make.left.equalTo(self).offset(5);
-            make.width.equalTo(@90);
+            make.center.equalTo(self);
+            make.width.equalTo(self);
+            make.height.equalTo(self);
         }];
         
         self.adminView = [[UIImageView alloc] init];
@@ -88,6 +89,7 @@
         self.adminView.hidden = YES;
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapAction:)];
+        
         [self addGestureRecognizer:tap];
         
         [self bringSubviewToFront:_nameLabel];
@@ -155,6 +157,7 @@
     if (enableVoice) {
         _statusView.image = nil;
     } else {
+        self.status = StreamStatusNormal;
         _statusView.image = [UIImage imageNamed:@"mute_red"];
     }
 }
@@ -164,9 +167,13 @@
     _enableVideo = enableVideo;
     
     if (enableVideo) {
-        [self sendSubviewToBack:_bgView];
+        //[self sendSubviewToBack:_bgView];
+        _bgView.hidden = YES;
+        self.nickNameLabel.hidden = YES;
     } else {
+        _bgView.hidden = NO;
         [self sendSubviewToBack:_displayView];
+        self.nickNameLabel.hidden = NO;
     }
 }
 

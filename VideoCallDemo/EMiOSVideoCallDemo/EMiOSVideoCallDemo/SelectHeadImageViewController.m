@@ -90,7 +90,8 @@
     }
     if(section == 0)
     {
-        UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 2, 35, 35)];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 10, 40, 40)];
         NSArray* headImages = [[EMDemoOption sharedOptions].headImageDic allValues];
         if([[EMDemoOption sharedOptions].headImage length] > 0) {
             NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,headImages[row]];
@@ -104,7 +105,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         UIButton *checkbox = [UIButton buttonWithType:UIButtonTypeCustom];
          
-        CGRect checkboxRect = CGRectMake(self.tableView.frame.size.width - 50, 5, 40, 40);
+        CGRect checkboxRect = CGRectMake(self.tableView.frame.size.width - 50, 10, 40, 40);
         [checkbox setFrame:checkboxRect];
         checkbox.tag = 30000+row;
          
@@ -135,6 +136,10 @@
     _selectButton = checkButton;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60;
+}
 /*
 #pragma mark - Navigation
 

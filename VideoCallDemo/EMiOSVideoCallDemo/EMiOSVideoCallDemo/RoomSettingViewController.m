@@ -84,7 +84,7 @@
         }
 //        if(row == 2)
 //        {
-//            cell.textLabel.text = @"管理员";
+//            cell.textLabel.text = @"主持人";
 //            if([EMDemoOption sharedOptions].conference.adminIds.count > 0){
 //                UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 250, 10, 250, 40)];
 //                if(![[[EMDemoOption sharedOptions].conference.adminIds objectAtIndex:0] isEqualToString:[EMDemoOption sharedOptions].appkey])
@@ -121,7 +121,7 @@
     }
     if(section == 3) {
         if(row == 0) {
-            cell.textLabel.text = @"遇到问题";
+            cell.textLabel.text = @"遇到问题？请上传日志";
             UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
             [button setTitle:@"上传日志" forState:UIControlStateNormal];
             button.frame = CGRectMake(self.tableView.frame.size.width - 105, 10, 100, 40);
@@ -145,7 +145,7 @@
     view.backgroundColor = [UIColor clearColor];
     if(section == 2){
         UILabel* lable = [[UILabel alloc] initWithFrame:CGRectMake(10, 2, 80, 25)];
-        lable.text = @"管理员";
+        lable.text = @"主持人";
         if([EMDemoOption sharedOptions].conference.role > EMConferenceRoleAudience) {
             UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
             button.frame = CGRectMake( self.view.bounds.size.width-120, 2, 100, 25);
@@ -222,7 +222,7 @@
             if(!aError){
                 __weak typeof(self) weakself = self;
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [EMAlertController showInfoAlert:@"主持人申请已提交，请等待管理员审核"];
+                    [EMAlertController showInfoAlert:@"主持人申请已提交，请等待主持人审核"];
                 });
             }
         }];

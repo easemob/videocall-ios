@@ -39,6 +39,7 @@ static BOOL g_IsLogin = NO;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self checkVersion];
     [self initSDK];
     [self initDemo];
     [self laodHeadImage];
@@ -60,7 +61,8 @@ int kHeightStart = 300;
     UILabel* lable = [[UILabel alloc] initWithFrame:CGRectMake(100, 230, mainBounds.size.width-200, 40)];
     lable.text = @"环信多人会议";
     lable.textAlignment = NSTextAlignmentCenter;
-    lable.hidden = YES;
+    [lable setFont:[UIFont systemFontOfSize:14]];
+    lable.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1.0];
     [self.view addSubview:lable];
     
 //    self.maxVideoCount = [[UITextField alloc] initWithFrame:CGRectMake(60, 90, mainBounds.size.width - 120, 40)];
@@ -147,8 +149,7 @@ int kHeightStart = 300;
     self.joinAsSpeaker.layer.cornerRadius = 18;
     [self.view addSubview:_joinAsSpeaker];
     
-    self.joinAsAudience = [UIButton buttonWithType:
-    UIButtonTypeRoundedRect];
+    self.joinAsAudience = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [self.joinAsAudience setFrame:CGRectMake(100,kHeightStart+200, mainBounds.size.width-200, 40)];
     self.joinAsAudience.titleLabel.font = [UIFont systemFontOfSize:14];
     // sets title for the button
@@ -166,12 +167,39 @@ int kHeightStart = 300;
     [self.view addSubview:self.joinAsAudience];
     
     UIButton* settingButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    settingButton.frame = CGRectMake(self.view.bounds.size.width/2 - 40, self.view.bounds.size.height - 60, 80, 24);
+    settingButton.frame = CGRectMake(100, kHeightStart+300, mainBounds.size.width-200, 24);
     [settingButton setTitle:@"设置" forState:UIControlStateNormal];
     [settingButton setTintColor:[UIColor colorWithRed:0/255.0 green:175/255.0 blue:239/255.0 alpha:1.0]];
     [settingButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
     [settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:settingButton];
+}
+
+-(void)checkVersion
+{
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+     // app版本
+    NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    NSURL* url = [NSURL URLWithString:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/version.conf"];
+    NSData* data = [NSData dataWithContentsOfURL:url];
+    if(data) {
+        NSError *jsonError = nil;
+        NSDictionary *dictFromData = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+        if(dictFromData) {
+            NSMutableDictionary* dic = [dictFromData objectForKey:@"version"];
+            if(dic){
+                NSString* newVersion = [dic objectForKey:@"iOS"];
+                if(![app_Version isEqualToString:newVersion]) {
+                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:@"当前APP不是最新版本，请升级到最新版本" preferredStyle:UIAlertControllerStyleAlert];
+                    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        [self performSelector:@selector(notExistCall)];
+                        abort();
+                    }]];
+                    [self presentViewController:alert animated:YES completion:nil];
+                }
+            }
+        }
+    }
 }
 
 -(void)initSDK
@@ -398,7 +426,7 @@ int kHeightStart = 300;
 - (void)joinAsAudienceAction
 {
     if([[EMDemoOption sharedOptions].nickName length] == 0) {
-        NickNameAlertController *alertController = [NickNameAlertController alertControllerWithTitle:@"请设置昵称" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        NickNameAlertController *alertController = [NickNameAlertController alertControllerWithTitle:@"请输入昵称" message:nil preferredStyle:UIAlertControllerStyleAlert];
             //以下方法就可以实现在提示框中输入文本；
             
             //在AlertView中添加一个输入框

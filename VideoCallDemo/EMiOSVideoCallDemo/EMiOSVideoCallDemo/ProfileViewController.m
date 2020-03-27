@@ -11,6 +11,21 @@
 #import "UpdateNicknameViewController.h"
 #import "SelectHeadImageViewController.h"
 
+@interface UpdateNickNameAlertController : UIAlertController
+-(void)textChange:(UITextField*)textField;
+@end
+@implementation UpdateNickNameAlertController
+
+-(void)textChange:(UITextField *)textField
+{
+    if([self.textFields[0].text length] == 0)
+        self.actions[0].enabled = NO;
+    else
+        self.actions[0].enabled = YES;
+}
+
+@end
+
 @interface ProfileViewController()
 @property (nonatomic) UITableView* tableView;
 @end
@@ -53,7 +68,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 40;
+    return 60;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -87,9 +102,10 @@
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0){
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = @"头像";
         
-        UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 80, 0, 40, 40)];
+        UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 80, 10, 40, 40)];
         if([[EMDemoOption sharedOptions].headImage length] > 0) {
             NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage ];
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
@@ -100,7 +116,7 @@
         [cell addSubview:headimageView];
         
         UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        opButton.frame = CGRectMake(self.view.frame.size.width - 40, 5, 30, 30);
+        opButton.frame = CGRectMake(self.view.frame.size.width - 40, 10, 40, 40);
         [opButton setTitle:@">" forState:UIControlStateNormal];
         opButton.titleLabel.textAlignment = NSTextAlignmentRight;
         opButton.tag = 5000;
@@ -108,16 +124,17 @@
         [cell addSubview:opButton];
     }
     if(section == 1) {
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         [[cell viewWithTag:6000] removeFromSuperview];
         cell.textLabel.text = @"我的昵称";
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 140, 2, 100, 35)];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 140, 10, 100, 40)];
         label.text = [EMDemoOption sharedOptions].nickName;
         label.textAlignment = NSTextAlignmentRight;
         label.tag = 6000;
         [cell addSubview:label];
         
         UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        opButton.frame = CGRectMake(self.view.frame.size.width - 40, 5, 30, 30);
+        opButton.frame = CGRectMake(self.view.frame.size.width - 40, 10, 40, 40);
         [opButton setTitle:@">" forState:UIControlStateNormal];
         opButton.titleLabel.textAlignment = NSTextAlignmentRight;
         opButton.tag = 5001;
@@ -137,8 +154,33 @@
     }
     if(button.tag == 5001)
     {
-        UpdateNicknameViewController* uVC = [[UpdateNicknameViewController alloc] init];
-        [self.navigationController pushViewController:uVC animated:NO];
+        //UpdateNicknameViewController* uVC = [[UpdateNicknameViewController alloc] init];
+        //[self.navigationController pushViewController:uVC animated:NO];
+        __weak typeof(self) weakself = self;
+        UpdateNickNameAlertController *alertController = [UpdateNickNameAlertController alertControllerWithTitle:@"请输入昵称" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            //以下方法就可以实现在提示框中输入文本；
+            
+            //在AlertView中添加一个输入框
+            [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+                
+                textField.placeholder = @"昵称";
+                textField.text = [EMDemoOption sharedOptions].nickName;
+                [[NSNotificationCenter defaultCenter] addObserver:alertController selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:textField];
+            }];
+            UIAlertAction* action = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                UITextField *envirnmentNameTextField = alertController.textFields.firstObject;
+                
+                [EMDemoOption sharedOptions].nickName = envirnmentNameTextField.text;
+                [[EMDemoOption sharedOptions] archive];
+                [weakself.tableView reloadData];
+            }];
+            [alertController addAction:action];
+            
+            //添加一个取消按钮
+            [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:nil]];
+            
+            //present出AlertView
+            [self presentViewController:alertController animated:true completion:nil];
     }
 }
 /*

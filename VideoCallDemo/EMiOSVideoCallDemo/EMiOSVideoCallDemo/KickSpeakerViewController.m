@@ -134,7 +134,7 @@
                 NSString* showName = item.videoView.nickNameLabel.text;
                 if([[EMDemoOption sharedOptions].conference.adminIds count] > 0){
                     if([[EMDemoOption sharedOptions].conference.adminIds containsObject:memName]){
-                        showName = [showName stringByAppendingString:@"(管理员)"];
+                        showName = [showName stringByAppendingString:@"(主持人)"];
                     }
                 }
                 cell.memName = memName;
@@ -194,7 +194,7 @@
             NSString* memid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid];
             if([selectName isEqualToString:memid])
             {
-                [EMAlertController showErrorAlert:@"不能选择管理员自己"];
+                [EMAlertController showErrorAlert:@"不能选择主持人自己"];
                 return;
             }
             __weak typeof(self) weakself = self;

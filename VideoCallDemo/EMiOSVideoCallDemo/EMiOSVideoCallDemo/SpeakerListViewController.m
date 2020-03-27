@@ -19,9 +19,9 @@
 @implementation UICustomTableViewCell
 
 @end;
-
+static BOOL muteAll = NO;
 @interface SpeakerListViewController ()
-
+@property (nonatomic) UIButton* muteAllButton;
 @end
 
 @implementation SpeakerListViewController
@@ -91,24 +91,30 @@
         [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:button];
+        if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin) {
+            if(self.muteAllButton)
+               [self.muteAllButton removeFromSuperview];
+            self.muteAllButton = [UIButton buttonWithType:UIButtonTypeSystem];
+            self.muteAllButton.frame = CGRectMake(self.tableView.frame.size.width - 100, 8, 100, 30);
+            if(muteAll)
+                [self.muteAllButton setTitle:@"解除静音" forState:UIControlStateNormal];
+            else
+                [self.muteAllButton setTitle:@"全体静音" forState:UIControlStateNormal];
+            [self.muteAllButton addTarget:self action:@selector(muteAllAction:) forControlEvents:UIControlEventTouchUpInside];
+            [self.view addSubview:self.muteAllButton];
+        }
     }else
     if(section == 1)
     {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         [[cell viewWithTag:20000+row*3] removeFromSuperview];
         [[cell viewWithTag:20000+row*3+1] removeFromSuperview];
-        UIButton* audioButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        audioButton.frame = CGRectMake(self.tableView.frame.size.width - 90, 5, 30, 30);
-        audioButton.tag = 20000+row*3;
-        //[audioButton setTitle:@"音频" forState:UIControlStateNormal];
-        [audioButton setImage:[UIImage imageNamed:@"audiostatus"] forState:UIControlStateNormal];
-        UIButton* videoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        videoButton.frame = CGRectMake(self.tableView.frame.size.width - 60, 5, 30, 30);
-        videoButton.tag = 20000+row*3 + 1;
-        //[videoButton setTitle:@"视频" forState:UIControlStateNormal];
-        [videoButton setImage:[UIImage imageNamed:@"videostatus"] forState:UIControlStateNormal];
-        //[audioButton addTarget:self action:@selector(audioAction:) forControlEvents:UIControlEventTouchUpInside];
-        //[videoButton addTarget:self action:@selector(videoAction:) forControlEvents:UIControlEventTouchUpInside];
+        UIImageView* audioImage = [[UIImageView alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 100, 8, 30, 30)];
+        audioImage.tag = 20000+row*3;
+        audioImage.image = [UIImage imageNamed:@"audioclose"];
+        UIImageView* videoImage = [[UIImageView alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 60, 8, 30, 30)];
+        videoImage.tag = 20000+row*3 + 1;
+        videoImage.image = [UIImage imageNamed:@"cameraclose"];
         if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin) {
             UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
             opButton.frame = CGRectMake(self.tableView.frame.size.width - 30, 5, 30, 30);
@@ -118,8 +124,8 @@
             [opButton addTarget:self action:@selector(OperationAction:) forControlEvents:UIControlEventTouchUpInside];
             [cell addSubview:opButton];
         }
-        [cell addSubview:audioButton];
-        [cell addSubview:videoButton];
+        [cell addSubview:audioImage];
+        [cell addSubview:videoImage];
         ConferenceViewController* confVC = [self getConfVC];
         if(confVC) {
             NSArray* keys = [confVC.streamItemDict allKeys];
@@ -154,7 +160,7 @@
                 NSString* showName = item.videoView.nickNameLabel.text;
                 if([[EMDemoOption sharedOptions].conference.adminIds count] > 0){
                     if([[EMDemoOption sharedOptions].conference.adminIds containsObject:memName]){
-                        showName = [showName stringByAppendingString:@"(管理员)"];
+                        showName = [showName stringByAppendingString:@"(主持人)"];
                     }
                 }
                 cell.memName = memName;
@@ -170,18 +176,11 @@
                 if([[EMDemoOption sharedOptions].userid isEqualToString:item.videoView.nameLabel.text] )
                     cell.textLabel.textColor = [UIColor blueColor];
                 cell.enableVoice = item.videoView.enableVoice;
-                if(!item.videoView.enableVideo && !item.videoView.enableVoice){
-                    videoButton.hidden = YES;
-                    audioButton.hidden = YES;
-                }else{
-                    if(item.videoView.enableVoice && !item.videoView.enableVideo){
-                        videoButton.hidden = YES;
-                        audioButton.frame = videoButton.frame;
-                    }else{
-                        if(item.videoView.enableVideo && !item.videoView.enableVoice){
-                            audioButton.hidden = YES;
-                        }
-                    }
+                if(item.videoView.enableVideo){
+                    videoImage.image = [UIImage imageNamed:@"cameraopen"];
+                }
+                if(item.videoView.enableVoice){
+                    audioImage.image = [UIImage imageNamed:@"audioopen"];
                 }
             }
         }else
@@ -334,25 +333,13 @@
     if(section == 0)
         return 1;
     if(section == 1)
-        return 3;
+        return 30;
     return 10;//section头部高度
 }
 //section头部视图
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
-    view.backgroundColor = [UIColor clearColor];
-    return view ;
-}
-//section底部间距
--(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    return 30;
-}
-//section底部视图
--(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    if(section == 0){
+    if(section == 1){
         NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.memberCount - [EMDemoOption sharedOptions].conference.speakerIds.count;
         //创建一个普通的Label
         UILabel *testLabel = [[UILabel alloc] init];
@@ -374,29 +361,58 @@
         testLabel.attributedText = attributedString;
         return testLabel;
     }
+    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
+    view.backgroundColor = [UIColor clearColor];
+    return view ;
+}
+//section底部间距
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    if(section == 0 && !muteAll)
+        return 1;
+    return 30;
+}
+//section底部视图
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    if(section == 0 && muteAll){
+        UILabel* text = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 1)];
+        text.text = @"当前处于全体静音状态";
+        text.textColor = [UIColor whiteColor];
+        text.font = [UIFont systemFontOfSize:12];
+        text.textAlignment = NSTextAlignmentCenter;
+        text.backgroundColor = [UIColor redColor];
+        return text;
+    }
     
     UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 1)];
     view.backgroundColor = [UIColor clearColor];
-    if(section == 1 && [EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin){
-        UIButton *buttonMute = [UIButton buttonWithType:UIButtonTypeSystem];
-        buttonMute.frame = CGRectMake(30, 5, 100, 30);
-        [buttonMute setTitle:@"全体静音" forState:UIControlStateNormal];
-        [buttonMute addTarget:self action:@selector(muteAllAction) forControlEvents:UIControlEventTouchUpInside];
-        [view addSubview:buttonMute];
-        
-        UIButton *buttonUnMute = [UIButton buttonWithType:UIButtonTypeSystem];
-        buttonUnMute.frame = CGRectMake( self.view.bounds.size.width/2+30, 5, 100, 30);
-        [buttonUnMute addTarget:self action:@selector(unmuteAllAction) forControlEvents:UIControlEventTouchUpInside];
-        [buttonUnMute setTitle:@"解除全体静音" forState:UIControlStateNormal];
-        [view addSubview:buttonUnMute];
-    }
     return view;
 }
 
--(void)muteAllAction
+-(void)muteAllAction:(UIButton*)button
 {
+    NSString* title = button.titleLabel.text;
+    if([title isEqualToString:@"全体静音"]) {
+        muteAll = YES;
+        [self setMuteAll:YES];
+        [self.tableView reloadData];
+    }else{
+        muteAll = NO;
+        [self setMuteAll:NO];
+        [self.tableView reloadData];
+    }
+}
+
+-(void)setMuteAll:(BOOL)mute
+{
+    NSDate *datenow = [NSDate date];
+    NSDictionary* dic = @{@"status":[NSNumber numberWithInt:mute],@"setter":[EMDemoOption sharedOptions].userid,@"timestamp":[NSNumber numberWithLong:(long)[datenow timeIntervalSince1970]]};
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+
+    NSString *jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
     if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin)
-       [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"mute_all" completion:^(EMError *aError) {
+       [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:@"muteall" value:jsonString completion:^(EMError *aError) {
         if(aError){
             dispatch_async(dispatch_get_main_queue(), ^{
                 [EMAlertController  showErrorAlert:@"操作失败"];
@@ -410,17 +426,7 @@
 
 -(void)unmuteAllAction
 {
-    if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin)
-    [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"unmute_all" completion:^(EMError *aError) {
-     if(aError){
-         dispatch_async(dispatch_get_main_queue(), ^{
-             [EMAlertController  showErrorAlert:@"操作失败"];
-         });
-     }else
-         dispatch_async(dispatch_get_main_queue(), ^{
-             [EMAlertController  showSuccessAlert:@"操作成功"];
-         });
-     }] ;
+    [self setMuteAll:NO];
 }
 
 /*
