@@ -91,8 +91,7 @@
                 UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
                 if([[EMDemoOption sharedOptions].headImage length] > 0) {
                     NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage ];
-                    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
-                    headimageView.image = [[UIImage alloc] initWithData:data];
+                    [headimageView sd_setImageWithURL:[NSURL URLWithString:imageurl]];
                 }else
                     headimageView.image = [UIImage imageNamed:@"APP"];
                 headimageView.contentMode = UIViewContentModeScaleAspectFill;

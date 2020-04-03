@@ -43,7 +43,7 @@
         [self.statusView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.width.height.equalTo(@20);
             make.centerY.equalTo(self).multipliedBy(0.1);
-            make.centerX.equalTo(self).multipliedBy(1.9);
+            make.centerX.multipliedBy(1.8);
         }];
         
         self.nameLabel = [[UILabel alloc] init];
@@ -61,12 +61,11 @@
         self.nickNameLabel = [[UILabel alloc] init];
         self.nickNameLabel.textColor = [UIColor redColor];
         self.nickNameLabel.font = [UIFont systemFontOfSize:16];
-        self.nickNameLabel.numberOfLines = 0;
         self.nickNameLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.nickNameLabel];
         [self.nickNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.center.equalTo(self);
-            make.width.equalTo(self);
+            make.width.equalTo(@90);
             make.height.equalTo(self);
         }];
         

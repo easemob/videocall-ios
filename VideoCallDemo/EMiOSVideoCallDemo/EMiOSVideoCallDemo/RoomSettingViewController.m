@@ -15,6 +15,7 @@
 
 @interface RoomSettingViewController ()<MFMailComposeViewControllerDelegate>
 @property (nonatomic) NSString* logPath;
+@property (nonatomic) UIButton* logButton;
 @end
 
 @implementation RoomSettingViewController
@@ -28,6 +29,7 @@
 {
     //self.title = @"房间设置";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.logButton = nil;
 }
 
 -(void)backAction
@@ -71,16 +73,18 @@
     if(section == 1) {
         if(row == 0){
             cell.textLabel.text = @"房间名称";
-            UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 250, 10, 250, 40)];
+            UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 250, 5, 240, 40)];
             username.text = [EMDemoOption sharedOptions].roomName;
+            username.textAlignment = NSTextAlignmentRight;
             [cell addSubview:username];
         }
         if(row == 1)
         {
             cell.textLabel.text = @"房间密码";
-            UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 250, 10, 250, 40)];
-            username.text = [EMDemoOption sharedOptions].roomPswd;
-            [cell addSubview:username];
+            UILabel * password = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 250, 5, 240, 40)];
+            password.text = [EMDemoOption sharedOptions].roomPswd;
+            password.textAlignment = NSTextAlignmentRight;
+            [cell addSubview:password];
         }
 //        if(row == 2)
 //        {
@@ -115,18 +119,20 @@
                 }
             }
             if([nickName hasPrefix:[EMDemoOption sharedOptions].appkey] && [nickName length] > [[EMDemoOption sharedOptions].appkey length])
-                nickName = [[[EMDemoOption sharedOptions].conference.adminIds objectAtIndex:0] substringFromIndex:([[EMDemoOption sharedOptions].appkey length]+1)];
+                nickName = [adminMemName substringFromIndex:([[EMDemoOption sharedOptions].appkey length]+1)];
             cell.textLabel.text = nickName;
         }
     }
     if(section == 3) {
         if(row == 0) {
             cell.textLabel.text = @"遇到问题？请上传日志";
-            UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            [button setTitle:@"上传日志" forState:UIControlStateNormal];
-            button.frame = CGRectMake(self.tableView.frame.size.width - 105, 10, 100, 40);
-            [button addTarget:self action:@selector(sendLogAction) forControlEvents:UIControlEventTouchUpInside];
-            [cell addSubview:button];
+            if(self.logButton)
+               [self.logButton removeFromSuperview];
+            self.logButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+            [self.logButton  setTitle:@"上传日志" forState:UIControlStateNormal];
+            self.logButton.frame = CGRectMake(self.tableView.frame.size.width - 105, 5, 100, 30);
+            [self.logButton  addTarget:self action:@selector(sendLogAction) forControlEvents:UIControlEventTouchUpInside];
+            [cell addSubview:self.logButton ];
         }
     }
     return cell;

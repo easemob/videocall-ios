@@ -27,7 +27,7 @@ NSString* kHeadImage = @"headimage";
 {
     self.appkey = @"easemob-demo#chatdemoui";
     self.specifyServer = YES;
-    self.chatServer = @"39.107.54.56";
+    self.chatServer = @"116.85.43.118";
     self.chatPort = 6717;
     self.restServer = @"a1-hsb.easemob.com";
     self.openCamera = YES;

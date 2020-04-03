@@ -539,7 +539,15 @@
     RoomSettingViewController* roomSettingViewControler = [[RoomSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
     [self.navigationController pushViewController:roomSettingViewControler animated:YES];
     settingButton.enabled = YES;
-    
+    [[[EMClient sharedClient] conferenceManager] getConference:[EMDemoOption sharedOptions].conference.confId password:[EMDemoOption sharedOptions].roomPswd completion:^(EMCallConference *aCall, EMError *aError) {
+        [EMDemoOption sharedOptions].conference.adminIds = [aCall.adminIds copy];
+        [EMDemoOption sharedOptions].conference.memberCount = aCall.memberCount;
+        [EMDemoOption sharedOptions].conference.speakerIds = [aCall.speakerIds copy];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [roomSettingViewControler.tableView reloadData];
+        });
+        
+    }];
 }
 
 - (AVAudioSessionPortDescription*)bluetoothAudioDevice
@@ -640,7 +648,7 @@
 {
     NSInteger count = [self.streamItemDict count];
     int viewSize = 100;
-    CGRect frame = CGRectMake(self.scrollView.bounds.origin.x + 90*(count-1), self.scrollView.bounds.origin.y, 90, viewSize);
+    CGRect frame = CGRectMake(self.scrollView.bounds.origin.x + 100*(count-1), self.scrollView.bounds.origin.y, 100, viewSize);
     
     return frame;
 }
@@ -664,7 +672,10 @@
         EMCallMember* member = [self.membersDict objectForKey:aStream.memberName];
         if(member && [member.nickname length] > 0)
         {
-            videoView.nickNameLabel.text = member.nickname;
+            if([member.nickname hasPrefix:[EMDemoOption sharedOptions].appkey])
+                videoView.nickNameLabel.text = [member.nickname substringFromIndex:[[EMDemoOption sharedOptions].appkey length]+1];
+            else
+                videoView.nickNameLabel.text = member.nickname;
             NSData*jsonData = [member.ext dataUsingEncoding:NSUTF8StringEncoding];
             NSError *jsonError = nil;
             NSDictionary* extDic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&jsonError];
@@ -672,12 +683,13 @@
                 NSString* headImage = [extDic objectForKey:@"headImage"];
                 if([headImage length] > 0) {
                     NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,headImage];
-                    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
-                    videoView.bgView.image = [[UIImage alloc] initWithData:data];
+                    [videoView.bgView sd_setImageWithURL:[NSURL URLWithString:imageurl]];
                 }
             }
         }else
+        {
             videoView.nickNameLabel.text = aName;
+        }
     }else {
         if([[EMDemoOption sharedOptions].nickName length] > 0)
             videoView.nickNameLabel.text = [EMDemoOption sharedOptions].nickName;
@@ -685,8 +697,7 @@
             videoView.nickNameLabel.text = aName;
         if([[EMDemoOption sharedOptions].headImage length] > 0) {
             NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage];
-            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]];
-            videoView.bgView.image = [[UIImage alloc] initWithData:data];
+            [videoView.bgView sd_setImageWithURL:[NSURL URLWithString:imageurl]];
         }
     }
     videoView.displayView = aDisplayView;
@@ -830,6 +841,11 @@
             EMCallRemoteView*view = (EMCallRemoteView*)self.curBigView.displayView;
             view.scaleMode = EMCallViewScaleModeAspectFit;
         }
+        if([self.curBigView.displayView isKindOfClass:[EMCallLocalView class]])
+        {
+            EMCallLocalView*view = (EMCallLocalView*)self.curBigView.displayView;
+            view.scaleMode = EMCallViewScaleModeAspectFit;
+        }
     }
 }
 
@@ -864,15 +880,7 @@
 
 - (void)streamViewDidTap:(EMStreamView *)aVideoView
 {
-    if (aVideoView == _curBigView && _curBigView != nil) {
-        if([_curBigView.displayView isKindOfClass:[EMCallRemoteView class]]){
-            EMCallRemoteView*view = (EMCallRemoteView*) _curBigView.displayView;
-            view.scaleMode = 1-view.scaleMode;
-        }
-        if([_curBigView.displayView isKindOfClass:[EMCallLocalView class]]){
-            EMCallLocalView*view = (EMCallLocalView*) _curBigView.displayView;
-            view.scaleMode = 1-view.scaleMode;
-        }
+    if (aVideoView == _curBigView) {
         return;
     }
     
@@ -977,17 +985,28 @@
             }
         }
         
-        [EMDemoOption sharedOptions].conference.adminIds = [[EMDemoOption sharedOptions].conference.adminIds arrayByAddingObject:adminName];
+//        if([adminName length] > 0)
+//        {
+//            [EMDemoOption sharedOptions].conference.adminIds = [[EMDemoOption sharedOptions].conference.adminIds arrayByAddingObject:adminName];
+//        }
         
         NSString* msg = [NSString stringWithFormat:@"%@ 成为主持人",showName ];
         [EMAlertController showInfoAlert:msg];
-        [self updateAdminView];
+        
         UIViewController* topVC = self.navigationController.topViewController;
+        __weak typeof(self) weakself = self;
         if(topVC && ([topVC isKindOfClass:[RoomSettingViewController class]] || [topVC isKindOfClass:[SpeakerListViewController class]])) {
-            UITableViewController* tableVC = (UITableViewController*)topVC;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [tableVC.tableView reloadData];
-            });
+            [[[EMClient sharedClient] conferenceManager] getConference:aConference.confId password:[EMDemoOption sharedOptions].roomPswd completion:^(EMCallConference *aCall, EMError *aError) {
+                [EMDemoOption sharedOptions].conference.adminIds = [aCall.adminIds copy];
+                [EMDemoOption sharedOptions].conference.memberCount = aCall.memberCount;
+                [EMDemoOption sharedOptions].conference.speakerIds = [aCall.speakerIds copy];
+                [weakself updateAdminView];
+                UITableViewController* tableVC = (UITableViewController*)topVC;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [tableVC.tableView reloadData];
+                });
+            }];
+            
         }
     }
 }
@@ -1215,7 +1234,12 @@
                         if([action isEqualToString:@"request_tobe_admin"]) {
                             if(currole != EMConferenceRoleAdmin)
                                 return;
-                            NSString * message = [userid stringByAppendingString:@" 申请主持人"];
+                            NSString* adminId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
+                            EMCallMember* member = [self.membersDict objectForKey:adminId];
+                            NSString* nickName = userid;
+                            if(member && [member.nickname length] > 0)
+                                nickName = member.nickname;
+                            NSString * message = [nickName stringByAppendingString:@" 申请主持人"];
                             [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
                                 
                             }];
@@ -1240,9 +1264,13 @@
                                     NSString* setter = [dic objectForKey:@"setter"];
                                     if([setter isEqualToString:[EMDemoOption sharedOptions].userid])
                                         return;
+                                    NSString* adminId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,setter ];
+                                    EMCallMember* member = [self.membersDict objectForKey:adminId];
+                                    if(member && [member.nickname length] > 0)
+                                        setter = member.nickname;
                                     NSNumber* status = [dic objectForKey:@"status"];
                                     if([status intValue] == 1) {
-                                        [EMAlertController showInfoAlert:[NSString stringWithFormat:@"%@ 设置了全体静音",userid]];
+                                        [EMAlertController showInfoAlert:[NSString stringWithFormat:@"%@ 设置了全体静音",setter]];
                                         // 全体静音
                                         if([EMDemoOption sharedOptions].conference.role > EMConferenceRoleAudience && weakself.pubStreamId) {
                                             if(weakself.microphoneButton.isSelected)
@@ -1250,7 +1278,7 @@
                                         }
                                     }else{
                                         // 解除全体静音
-                                        [EMAlertController showInfoAlert:[NSString stringWithFormat:@"%@ 设置了解除全体静音",userid]];
+                                        [EMAlertController showInfoAlert:[NSString stringWithFormat:@"%@ 设置了解除全体静音",setter]];
                                         if([EMDemoOption sharedOptions].conference.role > EMConferenceRoleAudience && weakself.pubStreamId) {
                                             if(!weakself.microphoneButton.isSelected)
                                                 [weakself microphoneButtonAction];
@@ -1301,8 +1329,12 @@
                 weakself.videoButton.enabled = YES;
                 weakself.microphoneButton.enabled = YES;
                 weakself.switchCameraButton.enabled = YES;
+                [weakself updateScrollView];
             }];
         }
+        NSMutableArray* adminIds = [[EMDemoOption sharedOptions].conference.adminIds mutableCopy];
+        [adminIds removeObject:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid]];
+        [EMDemoOption sharedOptions].conference.adminIds = [adminIds copy];
     } else if (aConference.role == EMConferenceRoleAudience) {
         self.roleButton.selected = NO;
         self.switchCameraButton.enabled = NO;
@@ -1325,6 +1357,9 @@
             [weakself updateScrollView];
             }];
         }
+        NSMutableArray* adminIds = [[EMDemoOption sharedOptions].conference.adminIds mutableCopy];
+        [adminIds removeObject:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid]];
+        [EMDemoOption sharedOptions].conference.adminIds = [adminIds copy];
     }else if(aConference.role == EMConferenceRoleAdmin){
 //        [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"become_admin" completion:^(EMError *aError) {
 //            if(aError){
@@ -1362,12 +1397,12 @@
                 EMCallLocalView*view = (EMCallLocalView*)item.videoView.displayView;
                 view.scaleMode = EMCallViewScaleModeAspectFill;
             }
-            item.videoView.frame = CGRectMake(100*index, 0, 90, 100);
+            item.videoView.frame = CGRectMake(100*index, 0, 100, 100);
             index++;
         }
     }
-    if(self.streamItemDict.count * 90 > self.view.bounds.size.width){
-        self.scrollView.contentSize = CGSizeMake(self.streamItemDict.count*90,100);
+    if(self.streamItemDict.count * 100 > self.view.bounds.size.width){
+        self.scrollView.contentSize = CGSizeMake(self.streamItemDict.count*100,100);
     }else
         self.scrollView.contentSize = CGSizeMake(self.view.bounds.size.width, 100);
 }

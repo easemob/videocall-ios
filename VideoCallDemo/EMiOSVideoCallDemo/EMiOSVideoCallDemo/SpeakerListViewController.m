@@ -261,7 +261,8 @@ static BOOL muteAll = NO;
         if(cell.enableVoice)
             actions = @"mute";
         NSString* uid = [cell.memName substringFromIndex:([[EMDemoOption sharedOptions].appkey length]+1)];
-        NSDictionary *params = @{@"action":actions, @"uids":@[uid]};
+        NSDate *datenow = [NSDate date];
+        NSDictionary *params = @{@"action":actions, @"uids":@[uid],@"timestamp":[NSNumber numberWithLong:(long)[datenow timeIntervalSince1970]]};
         NSError *jsonError = nil;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:NSJSONWritingPrettyPrinted error:&jsonError];
         NSString *jsonStr = @"";
@@ -288,10 +289,6 @@ static BOOL muteAll = NO;
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [EMAlertController  showErrorAlert:@"操作失败"];
                     });
-                }else{
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [EMAlertController  showSuccessAlert:@"操作成功"];
-                    });
                 }
             }];
         }];
@@ -302,10 +299,6 @@ static BOOL muteAll = NO;
                 if(aError) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [EMAlertController  showErrorAlert:@"操作失败"];
-                    });
-                }else{
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [EMAlertController  showSuccessAlert:@"操作成功"];
                     });
                 }
             }];
