@@ -13,6 +13,8 @@ NSString* kPswd = @"pwsd";
 NSString* kCamera = @"camera";
 NSString* kMicrophone = @"microphone";
 NSString* kResolution = @"resoltionrate";
+NSString* kNickname = @"nickname";
+NSString* kHeadImage = @"headimage";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -24,13 +26,14 @@ NSString* kResolution = @"resoltionrate";
 - (void)initServerOptions
 {
     self.appkey = @"easemob-demo#chatdemoui";
-    self.specifyServer = NO;
-    self.chatServer = @"39.107.54.56";
+    self.specifyServer = YES;
+    self.chatServer = @"116.85.43.118";
     self.chatPort = 6717;
     self.restServer = @"a1-hsb.easemob.com";
     self.openCamera = YES;
     self.openMicrophone = YES;
     self.resolutionrate = ResolutionRate_480p;
+    self.nickName = @"";
 }
 
 - (void)archive
@@ -47,6 +50,8 @@ NSString* kResolution = @"resoltionrate";
     [aCoder encodeBool:self.openCamera forKey:kCamera];
     [aCoder encodeBool:self.openMicrophone forKey:kMicrophone];
     [aCoder encodeInt:self.resolutionrate forKey:kResolution];
+    [aCoder encodeObject:self.nickName forKey:kNickname];
+    [aCoder encodeObject:self.headImage forKey:kHeadImage];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -59,6 +64,8 @@ NSString* kResolution = @"resoltionrate";
         self.openMicrophone = [aDecoder decodeBoolForKey:kMicrophone];
         int reso = [aDecoder decodeIntForKey:kResolution];
         self.resolutionrate = reso + ResolutionRate_720p;
+        self.nickName = [aDecoder decodeObjectForKey:kNickname];
+        self.headImage = [aDecoder decodeObjectForKey:kHeadImage];
     }
     return self;
 }

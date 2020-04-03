@@ -12,9 +12,26 @@
 #import "EMDemoOption.h"
 #import <Hyphenate/EMOptions+PrivateDeploy.h>
 static BOOL gIsInitializedSDK = NO;
+
+@interface NickNameAlertController : UIAlertController
+-(void)textChange:(UITextField*)textField;
+@end
+@implementation NickNameAlertController
+
+-(void)textChange:(UITextField *)textField
+{
+    if([self.textFields[0].text length] == 0)
+        self.actions[0].enabled = NO;
+    else
+        self.actions[0].enabled = YES;
+}
+
+@end
 @interface RoomJoinViewController ()
 @property (nonatomic) NSString* roomName;
 @property (nonatomic) NSString* password;
+//@property (nonatomic) UITextField* maxVideoCount;
+//@property (nonatomic) UITextField* maxTalkerCount;
 @end
 static BOOL g_IsLogin = NO;
 @implementation RoomJoinViewController
@@ -22,18 +39,18 @@ static BOOL g_IsLogin = NO;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self checkVersion];
     [self initSDK];
     [self initDemo];
+    [self laodHeadImage];
 }
 - (void)viewWillAppear:(BOOL)animated
 {
-    [self.navigationController setNavigationBarHidden:NO];
+    [self.navigationController setNavigationBarHidden:YES];
 }
 int kHeightStart = 300;
 - (void)initDemo {
     CGRect mainBounds = [[UIScreen mainScreen] bounds];
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"设置" style:UIBarButtonItemStyleDone target:self action:@selector(settingAction)];
     
     UIImage* image = [UIImage imageNamed:@"APP"];
     self.conferencelogo = [[UIImageView alloc] initWithImage:image];
@@ -44,8 +61,24 @@ int kHeightStart = 300;
     UILabel* lable = [[UILabel alloc] initWithFrame:CGRectMake(100, 230, mainBounds.size.width-200, 40)];
     lable.text = @"环信多人会议";
     lable.textAlignment = NSTextAlignmentCenter;
-    lable.hidden = YES;
+    [lable setFont:[UIFont systemFontOfSize:14]];
+    lable.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1.0];
     [self.view addSubview:lable];
+    
+//    self.maxVideoCount = [[UITextField alloc] initWithFrame:CGRectMake(60, 90, mainBounds.size.width - 120, 40)];
+//    self.maxVideoCount.placeholder = @"maxVideoCount";
+//    //self.maxVideoCount.keyboardType = UIKeyboardTypeNumberPad;
+//    self.maxVideoCount.layer.cornerRadius = 5;
+//    self.maxVideoCount.layer.borderWidth = 1;
+//    [self.view addSubview:self.maxVideoCount];
+//
+//    self.maxTalkerCount = [[UITextField alloc] initWithFrame:CGRectMake(60, 130, mainBounds.size.width - 120, 40)];
+//    self.maxTalkerCount.placeholder = @"maxTalkerCount";
+//    //self.maxTalkerCount.keyboardType = UIKeyboardTypeNumberPad;
+//    self.maxTalkerCount.layer.cornerRadius = 5;
+//    self.maxTalkerCount.layer.borderWidth = 1;
+//    self.maxTalkerCount.borderStyle = UITextBorderStyleNone;
+//    [self.view addSubview:self.maxTalkerCount];
     
     self.nameField = [[UITextField alloc] initWithFrame:CGRectMake(60, kHeightStart, mainBounds.size.width - 120, 40)];
     self.nameField.delegate = self;
@@ -58,7 +91,6 @@ int kHeightStart = 300;
     self.nameField.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
     self.nameField.leftViewMode = UITextFieldViewModeAlways;
     self.nameField.layer.cornerRadius = 5;
-    self.nameField.layer.borderWidth = 1;
     self.nameField.layer.borderColor = [UIColor lightGrayColor].CGColor;
     self.nameField.tag = 100;
     self.nameField.keyboardType = UIKeyboardTypeASCIICapable;
@@ -67,20 +99,24 @@ int kHeightStart = 300;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:self.nameField];
     [self.view addSubview:self.nameField];
     
-    self.pswdField = [[UITextField alloc] initWithFrame:CGRectMake(60, kHeightStart+100, mainBounds.size.width-120, 40)];
+    UIView *underline1 = [[UIView alloc] init];
+    underline1.frame = CGRectMake(60, kHeightStart+39, mainBounds.size.width - 120, 1);
+
+    underline1.layer.backgroundColor = [UIColor colorWithRed:214/255.0 green:214/255.0 blue:214/255.0 alpha:1.0].CGColor;
+    [self.view addSubview:underline1];
+    
+    self.pswdField = [[UITextField alloc] initWithFrame:CGRectMake(60, kHeightStart+70, mainBounds.size.width-120, 40)];
     self.pswdField.delegate = self;
     self.pswdField.borderStyle = UITextBorderStyleNone;
     self.pswdField.placeholder = @"请输入房间密码";
     self.pswdField.font = [UIFont systemFontOfSize:17];
     self.pswdField.returnKeyType = UIReturnKeyDone;
-    //self.pswdField.secureTextEntry = YES;
-    self.pswdField.rightViewMode = UITextFieldViewModeAlways;
+    self.pswdField.rightViewMode = UITextFieldViewModeWhileEditing;
+    self.pswdField.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.pswdField.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
     self.pswdField.leftViewMode = UITextFieldViewModeAlways;
     self.pswdField.layer.cornerRadius = 5;
-    self.pswdField.layer.borderWidth = 1;
     self.pswdField.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.pswdField.secureTextEntry = YES;
     self.pswdField.tag = 101;
     //self.pswdField.keyboardType = UIKeyboardTypeASCIICapable;
     self.pswdField.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -88,42 +124,82 @@ int kHeightStart = 300;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:self.pswdField];
     [self.view addSubview:self.pswdField];
     
-    self.errorLable = [[UILabel alloc] initWithFrame:CGRectMake(60, kHeightStart+150, mainBounds.size.width-120, 60)];
+    UIView *underline2 = [[UIView alloc] init];
+    underline2.frame = CGRectMake(60, kHeightStart+109, mainBounds.size.width - 120, 1);
+
+    underline2.layer.backgroundColor = [UIColor colorWithRed:214/255.0 green:214/255.0 blue:214/255.0 alpha:1.0].CGColor;
+    [self.view addSubview:underline2];
+    
+    self.errorLable = [[UILabel alloc] initWithFrame:CGRectMake(60, kHeightStart+110, mainBounds.size.width-120, 30)];
     [self.errorLable setTextColor:[UIColor redColor]];
     self.errorLable.text = @"";
     [self.view addSubview:self.errorLable];
     
     self.joinAsSpeaker = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.joinAsSpeaker.frame = CGRectMake(100, kHeightStart+200, mainBounds.size.width-200, 40);
+    self.joinAsSpeaker.frame = CGRectMake(100, kHeightStart+150, mainBounds.size.width-200, 40);
     self.joinAsSpeaker.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.joinAsSpeaker setTitle:@"以主播身份加入" forState:UIControlStateNormal];
-    [self.joinAsSpeaker setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [self.joinAsSpeaker setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.joinAsSpeaker addTarget:self action:@selector(joinRoomAsSpeakerAction) forControlEvents:UIControlEventTouchUpInside];
     //设置按下状态的颜色
-    [self.joinAsSpeaker setTitleColor:[UIColor orangeColor] forState:UIControlStateHighlighted];
-    [self.joinAsSpeaker setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
+    [self.joinAsSpeaker setTitleColor:[UIColor whiteColor] forState:UIControlStateDisabled];
+    [self.joinAsSpeaker setBackgroundColor:[UIColor colorWithRed:205/255.0 green:242/255.0 blue:255/255.0 alpha:1.0]];
     [self.joinAsSpeaker setEnabled:NO];
-    self.joinAsSpeaker.layer.borderWidth = 0.5;
-    self.joinAsSpeaker.layer.cornerRadius = 10;
+    //self.joinAsSpeaker.layer.borderWidth = 0.5;
+    self.joinAsSpeaker.layer.cornerRadius = 18;
     [self.view addSubview:_joinAsSpeaker];
     
-    self.joinAsAudience = [UIButton buttonWithType:
-    UIButtonTypeRoundedRect];
-    [self.joinAsAudience setFrame:CGRectMake(100,kHeightStart+280, mainBounds.size.width-200, 40)];
+    self.joinAsAudience = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [self.joinAsAudience setFrame:CGRectMake(100,kHeightStart+200, mainBounds.size.width-200, 40)];
     self.joinAsAudience.titleLabel.font = [UIFont systemFontOfSize:14];
     // sets title for the button
     [self.joinAsAudience setTitle:@"以观众身份加入" forState:
     UIControlStateNormal];
     [self.joinAsAudience addTarget:self action:@selector(joinAsAudienceAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.joinAsAudience setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    [self.joinAsAudience setTitleColor:[UIColor orangeColor] forState:UIControlStateHighlighted];
-    [self.joinAsAudience setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
+    [self.joinAsAudience setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.joinAsAudience setTitleColor:[UIColor whiteColor] forState:UIControlStateDisabled];
     [self.joinAsAudience setTintColor:[UIColor whiteColor]];
     [self.joinAsAudience setEnabled:NO];
-    self.joinAsAudience.layer.borderWidth = 0.5;
-    self.joinAsAudience.layer.cornerRadius = 10;
+    [self.joinAsAudience setBackgroundColor:[UIColor colorWithRed:205/255.0 green:242/255.0 blue:255/255.0 alpha:1.0]];
+    //self.joinAsAudience.layer.borderWidth = 0.5;
+    self.joinAsAudience.layer.cornerRadius = 18;
     //self.joinAsAudience.backgroundColor = [UIColor blueColor];
     [self.view addSubview:self.joinAsAudience];
+    
+    UIButton* settingButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    settingButton.frame = CGRectMake(100, kHeightStart+300, mainBounds.size.width-200, 24);
+    [settingButton setTitle:@"设置" forState:UIControlStateNormal];
+    [settingButton setTintColor:[UIColor colorWithRed:0/255.0 green:175/255.0 blue:239/255.0 alpha:1.0]];
+    [settingButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
+    [settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:settingButton];
+}
+
+-(void)checkVersion
+{
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+     // app版本
+    NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    NSURL* url = [NSURL URLWithString:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/version.conf"];
+    NSData* data = [NSData dataWithContentsOfURL:url];
+    if(data) {
+        NSError *jsonError = nil;
+        NSDictionary *dictFromData = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+        if(dictFromData) {
+            NSMutableDictionary* dic = [dictFromData objectForKey:@"version"];
+            if(dic){
+                NSString* newVersion = [dic objectForKey:@"iOS"];
+                if(![app_Version isEqualToString:newVersion]) {
+                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:@"当前APP不是最新版本，请升级到最新版本" preferredStyle:UIAlertControllerStyleAlert];
+                    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        [self performSelector:@selector(notExistCall)];
+                        abort();
+                    }]];
+                    [self presentViewController:alert animated:YES completion:nil];
+                }
+            }
+        }
+    }
 }
 
 -(void)initSDK
@@ -185,10 +261,12 @@ int kHeightStart = 300;
     [[EMClient sharedClient].conferenceManager enableStatistics:YES];
 }
 
--(void)settingAction
+-(void)settingAction:(UIButton*)settingButton
 {
+    settingButton.enabled = NO;
     AccountSettingViewController* settingViewController = [[AccountSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
     [self.navigationController pushViewController:settingViewController animated:YES];
+    settingButton.enabled = YES;
 }
 
 -(void)textChange:(UITextField*)field {
@@ -198,19 +276,56 @@ int kHeightStart = 300;
     {
         [self.joinAsSpeaker setEnabled:YES];
         [self.joinAsAudience setEnabled:YES];
+        [self.joinAsSpeaker setBackgroundColor:[UIColor colorWithRed:0/255.0 green:175/255.0 blue:239/255.0 alpha:1.0]];
+        [self.joinAsAudience setBackgroundColor:[UIColor colorWithRed:0/255.0 green:175/255.0 blue:239/255.0 alpha:1.0]];
+        
     }
     else{
         [self.joinAsSpeaker setEnabled:NO];
         [self.joinAsAudience setEnabled:NO];
+        [self.joinAsSpeaker setBackgroundColor:[UIColor colorWithRed:205/255.0 green:242/255.0 blue:255/255.0 alpha:1.0]];
+        [self.joinAsAudience setBackgroundColor:[UIColor colorWithRed:205/255.0 green:242/255.0 blue:255/255.0 alpha:1.0]];
     }
 }
 
 - (void)joinRoomAsSpeakerAction
 {
-    self.joinAsSpeaker.enabled = NO;
-    self.joinAsAudience.enabled = NO;
-    self.errorLable.text = @"";
-    [self _joinWithRole:EMConferenceRoleSpeaker];
+    if([[EMDemoOption sharedOptions].nickName length] == 0) {
+        NickNameAlertController *alertController = [NickNameAlertController alertControllerWithTitle:@"请设置昵称" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            //以下方法就可以实现在提示框中输入文本；
+            
+            //在AlertView中添加一个输入框
+            [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+                
+                textField.placeholder = @"昵称";
+                [[NSNotificationCenter defaultCenter] addObserver:alertController selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:textField];
+            }];
+            UIAlertAction* action = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                UITextField *envirnmentNameTextField = alertController.textFields.firstObject;
+                
+                [EMDemoOption sharedOptions].nickName = envirnmentNameTextField.text;
+                [[EMDemoOption sharedOptions] archive];
+                //输出 检查是否正确无误
+                NSLog(@"你输入的昵称%@",envirnmentNameTextField.text);
+                self.joinAsSpeaker.enabled = NO;
+                self.joinAsAudience.enabled = NO;
+                self.errorLable.text = @"";
+                [self _joinWithRole:EMConferenceRoleSpeaker];
+            }];
+        action.enabled = NO;
+            [alertController addAction:action];
+            
+            //添加一个取消按钮
+            [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:nil]];
+            
+            //present出AlertView
+            [self presentViewController:alertController animated:true completion:nil];
+    }else{
+        self.joinAsSpeaker.enabled = NO;
+        self.joinAsAudience.enabled = NO;
+        self.errorLable.text = @"";
+        [self _joinWithRole:EMConferenceRoleSpeaker];
+    }
 }
 
 - (void)_joinWithRole:(EMConferenceRole)role
@@ -287,15 +402,65 @@ int kHeightStart = 300;
         self.joinAsSpeaker.enabled = YES;
         self.joinAsAudience.enabled = YES;
     };
-    [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:pswd role:role completion:block];
+    RoomConfig* roomConfig = [[RoomConfig alloc] init];
+    roomConfig.confrType = EMConferenceTypeCommunication;
+    NSMutableDictionary* extDic = [NSMutableDictionary dictionary];
+    NSString* headImage = [EMDemoOption sharedOptions].headImage;
+    [extDic setObject:headImage forKey:@"headImage"];
+    NSError *jsonError = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:extDic options:NSJSONWritingPrettyPrinted error:&jsonError];
+    NSString *jsonStr = @"";
+    if (jsonData && !jsonError) {
+        jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+    roomConfig.ext = jsonStr;
+    roomConfig.nickName = [NSString stringWithCString:[[EMDemoOption sharedOptions].nickName UTF8String] encoding:NSUTF8StringEncoding];
+    roomConfig.isMerge = NO;
+    roomConfig.isRecord = NO;
+    roomConfig.isSupportWechatMiniProgram = NO;
+    //roomConfig.maxTalkerCount  = [self.maxTalkerCount.text intValue];
+    //roomConfig.maxVideoCount = [self.maxVideoCount.text intValue];
+    [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:pswd role:role roomConfig:roomConfig completion:block];
 }
 
 - (void)joinAsAudienceAction
 {
-    self.joinAsSpeaker.enabled = NO;
-    self.joinAsAudience.enabled = NO;
-    self.errorLable.text = @"";
-    [self _joinWithRole:EMConferenceRoleAudience];
+    if([[EMDemoOption sharedOptions].nickName length] == 0) {
+        NickNameAlertController *alertController = [NickNameAlertController alertControllerWithTitle:@"请输入昵称" message:nil preferredStyle:UIAlertControllerStyleAlert];
+            //以下方法就可以实现在提示框中输入文本；
+            
+            //在AlertView中添加一个输入框
+            [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+                
+                textField.placeholder = @"昵称";
+                [[NSNotificationCenter defaultCenter] addObserver:alertController selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:textField];
+            }];
+            UIAlertAction* action = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                UITextField *envirnmentNameTextField = alertController.textFields.firstObject;
+                
+                [EMDemoOption sharedOptions].nickName = envirnmentNameTextField.text;
+                [[EMDemoOption sharedOptions] archive];
+                //输出 检查是否正确无误
+                NSLog(@"你输入的昵称%@",envirnmentNameTextField.text);
+                self.joinAsSpeaker.enabled = NO;
+                self.joinAsAudience.enabled = NO;
+                self.errorLable.text = @"";
+                [self _joinWithRole:EMConferenceRoleAudience];
+            }];
+        action.enabled = NO;
+            [alertController addAction:action];
+            
+            //添加一个取消按钮
+            [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:nil]];
+            
+            //present出AlertView
+            [self presentViewController:alertController animated:true completion:nil];
+    }else{
+        self.joinAsSpeaker.enabled = NO;
+        self.joinAsAudience.enabled = NO;
+        self.errorLable.text = @"";
+        [self _joinWithRole:EMConferenceRoleAudience];
+    }
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -330,6 +495,24 @@ int kHeightStart = 300;
     // 字符串判断，然后BOOL值
     BOOL result = [predicate evaluateWithObject:str];
     return result;
+}
+
+- (void)laodHeadImage
+{
+    NSURL* url = [NSURL URLWithString:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/headImage.conf"];
+    NSData* data = [NSData dataWithContentsOfURL:url];
+    if(data) {
+        NSError *jsonError = nil;
+        NSDictionary *dictFromData = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+        if(dictFromData) {
+            NSMutableDictionary* dic = [dictFromData objectForKey:@"headImageList"];
+            [EMDemoOption sharedOptions].headImageDic = dic;
+            if([[EMDemoOption sharedOptions].headImage length] == 0){
+                NSArray* keys = [dic allKeys];
+                [EMDemoOption sharedOptions].headImage = [dic objectForKey:keys[0]];
+            }
+        }
+    }
 }
 /*
 #pragma mark - Navigation

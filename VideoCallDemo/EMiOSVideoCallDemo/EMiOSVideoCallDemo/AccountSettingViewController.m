@@ -13,6 +13,7 @@
 #import "EMAlertController/EMAlertController.h"
 #import "UIViewController+HUD.h"
 #import "XDSDropDownMenu.h"
+#import "ProfileViewController.h"
 
 @interface AccountSettingViewController ()<MFMailComposeViewControllerDelegate>
 
@@ -34,18 +35,17 @@
     self.title = @"设置";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _sexDropDownMenu = [[XDSDropDownMenu alloc] init];
-    [self.navigationController setNavigationBarHidden:YES];
 }
 
--(void)viewDidDisappear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [self.navigationController setNavigationBarHidden:NO];
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table View Data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if(section == 1)
-        return 4;
+    if(section == 2)
+        return 3;
     return 1;
 }
 
@@ -61,81 +61,111 @@
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0){
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = @"设置";
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         //[button setTitle:@"上传日志" forState:UIControlStateNormal];
-        button.frame = CGRectMake(5, 5, 40, 40);
+        button.frame = CGRectMake(10, 10, 40, 40);
         [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:button];
     }else
-    if(section == 1) {
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        if(row == 0){
-            UILabel * username = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 200, 10, 200, 40)];
-            username.text = [EMDemoOption sharedOptions].userid;
-            [cell addSubview:username];
-            cell.textLabel.text = @"环信ID:" ;
-        }
-        if(row == 1) {
-            cell.textLabel.text = @"加入时打开摄像头";
-            UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
-            switchControl.tag = section*10 + row + 10000;
-            [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
-            [switchControl setOn:[EMDemoOption sharedOptions].openCamera];
-            [cell.contentView addSubview:switchControl];
-        }
-        if(row == 2) {
-            cell.textLabel.text = @"加入时打开麦克风";
-            UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
-            switchControl.tag = section*10 + row + 10000;
-            [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
-            [switchControl setOn:[EMDemoOption sharedOptions].openMicrophone];
-            [cell.contentView addSubview:switchControl];
-        }
-        if(row == 3) {
-            cell.textLabel.text = @"分辨率";
-            UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            NSString* title = @"720p";
-            switch ([EMDemoOption sharedOptions].resolutionrate) {
-                case ResolutionRate_720p:
-                    title = @"720p";
-                    break;
-                case ResolutionRate_480p:
-                    title = @"480p";
-                    break;
-                case ResolutionRate_360p:
-                    title = @"360p";
-                    break;
-                default:
-                    break;
+        if(section == 1) {
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            if(row == 0){
+                [[cell viewWithTag:6000] removeFromSuperview];
+                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(60, 10, 100, 40)];
+                label.text = [EMDemoOption sharedOptions].nickName;
+                label.tag = 6000;
+                [cell addSubview:label];
+                
+                UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                opButton.frame = CGRectMake(self.tableView.frame.size.width - 40, 10, 40, 40);
+                [opButton setTitle:@">" forState:UIControlStateNormal];
+                opButton.titleLabel.textAlignment = NSTextAlignmentRight;
+                [opButton.titleLabel setFont:[UIFont systemFontOfSize:16]];
+                [opButton addTarget:self action:@selector(OperationAction:) forControlEvents:UIControlEventTouchUpInside];
+                [cell addSubview:opButton];
+
+                UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
+                if([[EMDemoOption sharedOptions].headImage length] > 0) {
+                    NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage ];
+                    [headimageView sd_setImageWithURL:[NSURL URLWithString:imageurl]];
+                }else
+                    headimageView.image = [UIImage imageNamed:@"APP"];
+                headimageView.contentMode = UIViewContentModeScaleAspectFill;
+                [cell addSubview:headimageView];
             }
-            [button setTitle:title forState:UIControlStateNormal];
-            button.tag = 1000;
-            button.frame = CGRectMake(self.tableView.frame.size.width - 70, 10, 70, 40);
-            [button addTarget:self action:@selector(setResolutionAction:) forControlEvents:UIControlEventTouchUpInside];
-            [button addTarget:self action:@selector(hideMenu:) forControlEvents:UIControlEventTouchUpOutside];
-            [cell addSubview:button];
-        }
-    }
-    if(section == 2) {
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.text = @"遇到问题";
-        UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        [button setTitle:@"上传日志" forState:UIControlStateNormal];
-        button.frame = CGRectMake(self.tableView.frame.size.width - 105, 10, 100, 40);
-        [button addTarget:self action:@selector(sendLogAction) forControlEvents:UIControlEventTouchUpInside];
-        [cell addSubview:button];
-    }
+        }else
+            if(section == 2) {
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                if(row == 0) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"加入时打开摄像头";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].openCamera];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 1) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"加入时打开麦克风";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].openMicrophone];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 2) {
+                    [[cell viewWithTag:1000] removeFromSuperview];
+                    cell.textLabel.text = @"分辨率";
+                    UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                    NSString* title = @"720p";
+                    switch ([EMDemoOption sharedOptions].resolutionrate) {
+                        case ResolutionRate_720p:
+                            title = @"720p";
+                            break;
+                        case ResolutionRate_480p:
+                            title = @"480p";
+                            break;
+                        case ResolutionRate_360p:
+                            title = @"360p";
+                            break;
+                        default:
+                            break;
+                    }
+                    [button setTitle:title forState:UIControlStateNormal];
+                    button.tag = 1000;
+                    button.frame = CGRectMake(self.tableView.frame.size.width - 70, 10, 70, 40);
+                    [button addTarget:self action:@selector(setResolutionAction:) forControlEvents:UIControlEventTouchUpInside];
+                    [button addTarget:self action:@selector(hideMenu:) forControlEvents:UIControlEventTouchUpOutside];
+                    [cell addSubview:button];
+                }
+            }else
+                if(section == 3) {
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    cell.textLabel.text = @"遇到问题？请上传日志";
+                    UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                    [button setTitle:@"上传日志" forState:UIControlStateNormal];
+                    button.frame = CGRectMake(self.tableView.frame.size.width - 105, 5, 100, 40);
+                    [button addTarget:self action:@selector(sendLogAction) forControlEvents:UIControlEventTouchUpInside];
+                    [cell addSubview:button];
+                }
     
     return cell;
 }
 
 -(void)backAction
 {
-    [self.navigationController setNavigationBarHidden:NO];
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)OperationAction:(UIButton*)button
+{
+    ProfileViewController* pVC = [[ProfileViewController alloc] init];
+    [self.navigationController pushViewController:pVC animated:NO];
 }
 
 -(void)setResolutionAction:(UIButton*)button
@@ -195,9 +225,9 @@
 - (void)cellSwitchValueChanged:(UISwitch *)aSwitch
 {
     NSInteger tag = aSwitch.tag;
-    if (tag == 1 + 10000 + 10) {
+    if (tag == 10000 + 10*2) {
         [EMDemoOption sharedOptions].openCamera = [aSwitch isOn];
-    } else if (tag == 2 + 10000 + 10) {
+    } else if (tag == 1 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].openMicrophone = [aSwitch isOn];
     }
     [[EMDemoOption sharedOptions] archive];
@@ -205,13 +235,18 @@
 
 // Default is 1 if not implemented
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 3;
+    return 4;
 }
 
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 30;//section头部高度
+    return 15;//section头部高度
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60;
 }
 //section头部视图
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -223,7 +258,7 @@ return view ;
 //section底部间距
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 30;
+    return 15;
 }
 //section底部视图
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
@@ -308,6 +343,28 @@ return view ;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)aTextfield {
+    [aTextfield resignFirstResponder];//关闭键盘
+    [EMDemoOption sharedOptions].nickName = aTextfield.text;
+    [[EMDemoOption sharedOptions] archive];
+    return YES;
+}
+
+- (void)clickImage
+{
+}
+
+
+-(BOOL)validateString:(NSString*)str
+{
+    // 编写正则表达式
+    NSString *regex = @"^[\u4e00-\u9fa5A-Za-z0-9_-]*$";
+    // 创建谓词对象并设定条件表达式
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
+    // 字符串判断，然后BOOL值
+    BOOL result = [predicate evaluateWithObject:str];
+    return result;
+}
 
 /*
 #pragma mark - Navigation
