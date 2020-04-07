@@ -606,6 +606,7 @@
 
     UIAlertAction *SpeakerAction = [UIAlertAction actionWithTitle:@"扬声器" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [weakself playWithSpeaker];
+        weakself.isSetSpeaker = YES;
     }];
     [alertController addAction:SpeakerAction];
 
@@ -613,6 +614,7 @@
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
         [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
         [audioSession setActive:YES error:nil];
+        weakself.isSetSpeaker = NO;
     }];
     [alertController addAction:IphoneAction];
     
@@ -637,11 +639,16 @@
     hud.userInteractionEnabled = NO;
     // Configure for text only and offset down
     hud.mode = MBProgressHUDModeText;
-    hud.labelText = hint;
+    hud.label.text = hint;
     hud.margin = 10.f;
-    hud.yOffset = 180;
+    static int sHubCount = 0;
+    hud.completionBlock = ^{
+        sHubCount --;
+    };
+    hud.yOffset = sHubCount * 45;
     hud.removeFromSuperViewOnHide = YES;
-    [hud hide:YES afterDelay:2];
+    [hud hideAnimated:YES afterDelay:2];
+    sHubCount++;
 }
 
 - (CGRect)getNewVideoViewFrame
@@ -1122,10 +1129,10 @@
             videoItem.videoView.status = StreamStatusConnected;
         }
         
-        if (!self.microphoneButton.isSelected && self.videoButton.isSelected && !self.isSetSpeaker) {
-            self.isSetSpeaker = YES;
-            [self playWithSpeaker];
-        }
+//        if (!self.microphoneButton.isSelected && self.videoButton.isSelected && !self.isSetSpeaker) {
+//            self.isSetSpeaker = YES;
+//            [self playWithSpeaker];
+//        }
     }
 }
 
@@ -1240,11 +1247,11 @@
                             if(member && [member.nickname length] > 0)
                                 nickName = member.nickname;
                             NSString * message = [nickName stringByAppendingString:@" 申请主持人"];
-                            [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
-                                
-                            }];
                             UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
                             [alert addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                                [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
+                                    
+                                }];
                                 NSString* memId = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,userid ];
                                 [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:aConference.confId memberNames:@[memId] role:EMConferenceRoleAdmin completion:^(EMError *aError) {
                                     if(aError){
@@ -1253,6 +1260,9 @@
                                 }];
                             }]];
                             [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                                [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:userid completion:^(EMError *aError) {
+                                    
+                                }];
                             }]];
                             [self presentViewController:alert animated:YES completion:nil];
                         }else{
