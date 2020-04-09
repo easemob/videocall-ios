@@ -188,8 +188,8 @@
 		C070FA7E23FB78F900DC0F57 /* minimize_white@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C070FA0623FB78F900DC0F57 /* minimize_white@3x.png */; };
 		C0720AE723F641FC00E1FEC3 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */; };
 		C0720AF023F6454900E1FEC3 /* EMStreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AEF23F6454900E1FEC3 /* EMStreamView.m */; };
-		C077C79824331A6F00263BDC /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C077C79724331A6F00263BDC /* Hyphenate.framework */; };
-		C077C79924331A6F00263BDC /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C077C79724331A6F00263BDC /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C07FC7B1243D810800510715 /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C07FC7B0243D810800510715 /* Hyphenate.framework */; };
+		C07FC7B2243D810800510715 /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C07FC7B0243D810800510715 /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C08470962405292B00B3771D /* admin.png in Resources */ = {isa = PBXBuildFile; fileRef = C08470952405292B00B3771D /* admin.png */; };
 		C095A28023F0F1B300A09CAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A27F23F0F1B300A09CAA /* AppDelegate.m */; };
 		C095A28923F0F1B300A09CAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C095A28723F0F1B300A09CAA /* Main.storyboard */; };
@@ -265,13 +265,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C099A4562410C083009B8A06 /* Embed Frameworks */ = {
+		C07FC7AB243D7B2500510715 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C077C79924331A6F00263BDC /* Hyphenate.framework in Embed Frameworks */,
+				C07FC7B2243D810800510715 /* Hyphenate.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -473,7 +473,7 @@
 		C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
 		C0720AEE23F6454900E1FEC3 /* EMStreamView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMStreamView.h; sourceTree = "<group>"; };
 		C0720AEF23F6454900E1FEC3 /* EMStreamView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMStreamView.m; sourceTree = "<group>"; };
-		C077C79724331A6F00263BDC /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hyphenate.framework; path = EMiOSVideoCallDemo/Hyphenate.framework; sourceTree = "<group>"; };
+		C07FC7B0243D810800510715 /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hyphenate.framework; path = EMiOSVideoCallDemo/Hyphenate.framework; sourceTree = "<group>"; };
 		C08470952405292B00B3771D /* admin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = admin.png; sourceTree = "<group>"; };
 		C095A27B23F0F1B300A09CAA /* 环信视频会议.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "环信视频会议.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C095A27E23F0F1B300A09CAA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -562,7 +562,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */,
-				C077C79824331A6F00263BDC /* Hyphenate.framework in Frameworks */,
+				C07FC7B1243D810800510715 /* Hyphenate.framework in Frameworks */,
 				C0D82B032424B10100C7E6C3 /* MediaPlayer.framework in Frameworks */,
 				0773481ED2F14ED39E0D492C /* libPods-EMiOSVideoCallDemo.a in Frameworks */,
 			);
@@ -574,7 +574,7 @@
 		7B300057D44D5796FAA0433A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C077C79724331A6F00263BDC /* Hyphenate.framework */,
+				C07FC7B0243D810800510715 /* Hyphenate.framework */,
 				C0D82B022424B10100C7E6C3 /* MediaPlayer.framework */,
 				C0A7748B240767B300E44315 /* MessageUI.framework */,
 				2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */,
@@ -935,7 +935,7 @@
 				C095A27723F0F1B300A09CAA /* Sources */,
 				C095A27823F0F1B300A09CAA /* Frameworks */,
 				C095A27923F0F1B300A09CAA /* Resources */,
-				C099A4562410C083009B8A06 /* Embed Frameworks */,
+				C07FC7AB243D7B2500510715 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1446,6 +1446,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
+				MARKETING_VERSION = 1.2.0;
 				MODULE_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "环信视频会议";
@@ -1488,6 +1489,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
+				MARKETING_VERSION = 1.2.0;
 				MODULE_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "环信视频会议";

@@ -30,6 +30,7 @@ static BOOL gIsInitializedSDK = NO;
 @interface RoomJoinViewController ()
 @property (nonatomic) NSString* roomName;
 @property (nonatomic) NSString* password;
+@property (nonatomic) UILabel* versionLable;
 //@property (nonatomic) UITextField* maxVideoCount;
 //@property (nonatomic) UITextField* maxTalkerCount;
 @end
@@ -167,12 +168,22 @@ int kHeightStart = 300;
     [self.view addSubview:self.joinAsAudience];
     
     UIButton* settingButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    settingButton.frame = CGRectMake(100, kHeightStart+300, mainBounds.size.width-200, 24);
+    settingButton.frame = CGRectMake(100, kHeightStart+280, mainBounds.size.width-200, 24);
     [settingButton setTitle:@"设置" forState:UIControlStateNormal];
     [settingButton setTintColor:[UIColor colorWithRed:0/255.0 green:175/255.0 blue:239/255.0 alpha:1.0]];
     [settingButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
     [settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:settingButton];
+    
+    _versionLable = [[UILabel alloc] initWithFrame:CGRectMake(100, kHeightStart+314, mainBounds.size.width-200, 30)];
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+     // app版本
+    NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    _versionLable.text = app_Version;
+    _versionLable.textAlignment = NSTextAlignmentCenter;
+    [_versionLable setFont:[UIFont systemFontOfSize:14]];
+    _versionLable.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1.0];
+    [self.view addSubview:_versionLable];
 }
 
 -(void)checkVersion
