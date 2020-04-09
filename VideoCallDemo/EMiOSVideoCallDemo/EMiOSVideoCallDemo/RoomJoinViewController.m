@@ -418,8 +418,6 @@ int kHeightStart = 300;
     roomConfig.isMerge = NO;
     roomConfig.isRecord = NO;
     roomConfig.isSupportWechatMiniProgram = NO;
-    //roomConfig.maxTalkerCount  = [self.maxTalkerCount.text intValue];
-    //roomConfig.maxVideoCount = [self.maxVideoCount.text intValue];
     [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:pswd role:role roomConfig:roomConfig completion:block];
 }
 

@@ -206,7 +206,7 @@
                 if(weakself.speakerName){
                     NSString* newmemid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,weakself.speakerName];
                     [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[newmemid] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
-                        if(!aError)
+                        if(aError)
                         {
                             [EMAlertController showErrorAlert:@"上麦失败"];
                         }else
