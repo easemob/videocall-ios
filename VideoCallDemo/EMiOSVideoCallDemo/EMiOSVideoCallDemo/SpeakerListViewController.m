@@ -399,6 +399,12 @@ static BOOL muteAll = NO;
 
 -(void)setMuteAll:(BOOL)mute
 {
+    [[[EMClient sharedClient] conferenceManager] muteAll:muteAll completion:^(EMError *aError) {
+        if(aError) {
+            [EMAlertController showErrorAlert:@"操作失败"];
+        }
+    }];
+    return;
     NSDate *datenow = [NSDate date];
     NSDictionary* dic = @{@"status":[NSNumber numberWithInt:mute],@"setter":[EMDemoOption sharedOptions].userid,@"timestamp":[NSNumber numberWithLong:(long)[datenow timeIntervalSince1970]]};
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];

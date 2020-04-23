@@ -428,7 +428,20 @@ int kHeightStart = 300;
     roomConfig.nickName = [NSString stringWithCString:[[EMDemoOption sharedOptions].nickName UTF8String] encoding:NSUTF8StringEncoding];
     roomConfig.isMerge = NO;
     roomConfig.isRecord = NO;
-    roomConfig.isSupportWechatMiniProgram = NO;
+    roomConfig.isSupportWechatMiniProgram = YES;
+    LiveConfig* liveconfig = [[LiveConfig alloc] init];
+    CDNCanvas* canvas = [[CDNCanvas alloc] init];
+    canvas.bgclr = 0;
+    canvas.bps = 800000;
+    canvas.codec = @"H264";
+    canvas.width = 640;
+    canvas.height = 480;
+    canvas.fps = 20;
+    liveconfig.canvas = canvas;
+    liveconfig.layoutStyle = GRID;
+    liveconfig.cdnUrl = @"rtmp://livepush.easemob.com/meeeting/App?auth_key=1587632206-0-0-5974dd8b374be214d4d8eff5756f34ca";
+    roomConfig.liveConfig = liveconfig;
+    
     [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:pswd role:role roomConfig:roomConfig completion:block];
 }
 

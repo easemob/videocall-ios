@@ -197,8 +197,27 @@
     return @"";
 }
 
+- (NSString *)getAdminId
+{
+    NSString *adminId = nil;
+    ConferenceViewController* pVC = [self getConfVC];
+    if(pVC) {
+    }
+    return adminId;
+}
+
 - (void)changeRole:(UIButton*)button
 {
+    
+    NSString* adminId =
+    [[[EMClient sharedClient] conferenceManager] requestTobeAdmin:[EMDemoOption sharedOptions].conference adminId: completion:^(EMError *aError) {
+        if(!aError){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [EMAlertController showInfoAlert:@"主持人申请已提交，请等待主持人审核"];
+            });
+        }
+    }];
+    return;
     if(button.tag == 4000){
         if([[EMDemoOption sharedOptions].conference.adminIds count] == 1) {
             [EMAlertController showErrorAlert:@"您是唯一主持人，禁止放弃主持人"];
@@ -224,9 +243,8 @@
             }];
         }];
     }else{
-        [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"request_tobe_admin" completion:^(EMError *aError) {
+        [[[EMClient sharedClient] conferenceManager] requestTobeAdmin:[EMDemoOption sharedOptions].conference completion:^(EMError *aError) {
             if(!aError){
-                __weak typeof(self) weakself = self;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [EMAlertController showInfoAlert:@"主持人申请已提交，请等待主持人审核"];
                 });
