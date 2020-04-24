@@ -15,6 +15,8 @@ NSString* kMicrophone = @"microphone";
 NSString* kResolution = @"resoltionrate";
 NSString* kNickname = @"nickname";
 NSString* kHeadImage = @"headimage";
+NSString* kCDN = @"cdn";
+NSString* kCDNUrl = @"cdnUrl";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -52,6 +54,8 @@ NSString* kHeadImage = @"headimage";
     [aCoder encodeInt:self.resolutionrate forKey:kResolution];
     [aCoder encodeObject:self.nickName forKey:kNickname];
     [aCoder encodeObject:self.headImage forKey:kHeadImage];
+    [aCoder encodeBool:self.openCDN forKey:kCDN];
+    [aCoder encodeObject:self.cdnUrl forKey:kCDNUrl];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -66,6 +70,8 @@ NSString* kHeadImage = @"headimage";
         self.resolutionrate = reso + ResolutionRate_720p;
         self.nickName = [aDecoder decodeObjectForKey:kNickname];
         self.headImage = [aDecoder decodeObjectForKey:kHeadImage];
+        self.cdnUrl = [aDecoder decodeObjectForKey:kCDNUrl];
+        self.openCDN = [aDecoder decodeBoolForKey:kCDN];
     }
     return self;
 }

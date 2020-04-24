@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *pubStreamId;
 @property (nonatomic, strong) NSMutableArray *streamIds;
 @property (nonatomic, strong) NSMutableArray *talkingStreamIds;
-@property (nonatomic) BOOL isSetSpeaker;
+@property (nonatomic) BOOL isSetMute;
 @property (nonatomic) EMConferenceRole role;
 @property (nonatomic) UITableView* tableView;
 @property (nonatomic) UILabel* audioVolume;

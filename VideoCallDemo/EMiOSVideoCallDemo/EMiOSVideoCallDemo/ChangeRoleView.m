@@ -47,7 +47,7 @@
     label.frame = CGRectMake(40, 6, 84, 16);
     label.numberOfLines = 0;
 
-    NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:@"小仙女小可爱"attributes: @{NSFontAttributeName: [UIFont fontWithName:@"Arial" size: 14],NSForegroundColorAttributeName: [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1.0]}];
+    NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:@"申请人"attributes: @{NSFontAttributeName: [UIFont fontWithName:@"Arial" size: 14],NSForegroundColorAttributeName: [UIColor colorWithRed:255/255.0 green:255/255.0 blue:255/255.0 alpha:1.0]}];
 
     label.attributedText = string;
     label.textAlignment = NSTextAlignmentLeft;
@@ -87,6 +87,8 @@
 
 - (void)RefuseAction
 {
+    [[[EMClient sharedClient] conferenceManager] responseReqSpeaker:[EMDemoOption sharedOptions].conference memId:self.memId result:1 completion:^(EMError *aError) {
+    }];
     self.desc.text = @"上麦申请已拒绝";
     [self.desc setFont:self.name.font];
     self.leftButton.hidden = YES;
@@ -127,6 +129,8 @@
                 [weakself exit];
             }
         }else{
+            [[[EMClient sharedClient] conferenceManager] responseReqSpeaker:[EMDemoOption sharedOptions].conference memId:self.memId result:0 completion:^(EMError *aError) {
+            }];
             self.desc.text = @"上麦成功";
             [self.desc setFont:self.name.font];
             self.leftButton.hidden = YES;
@@ -138,9 +142,6 @@
 
 -(void)exit
 {
-    [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:self.name.text completion:^(EMError *aError) {
-        
-    }];
     self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, 44);
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){

@@ -15,6 +15,21 @@
 #import "XDSDropDownMenu.h"
 #import "ProfileViewController.h"
 
+@interface UpdateCDNUrlAlertController : UIAlertController
+-(void)textChange:(UITextField*)textField;
+@end
+@implementation UpdateCDNUrlAlertController
+
+-(void)textChange:(UITextField *)textField
+{
+    if([self.textFields[0].text length] == 0)
+        self.actions[0].enabled = NO;
+    else
+        self.actions[0].enabled = YES;
+}
+
+@end
+
 @interface AccountSettingViewController ()<MFMailComposeViewControllerDelegate>
 
 @property (nonatomic) NSString* logPath;
@@ -45,7 +60,9 @@
 #pragma mark - Table View Data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section == 2)
-        return 3;
+    {
+        return 5;
+    }
     return 1;
 }
 
@@ -143,6 +160,28 @@
                     [button addTarget:self action:@selector(hideMenu:) forControlEvents:UIControlEventTouchUpOutside];
                     [cell addSubview:button];
                 }
+                if(row == 3) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"开启CDN推流(创建者设置有效)";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].openCDN];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 4) {
+                    cell.textLabel.text = [NSString stringWithFormat:@"cdn推流Url:%@",[EMDemoOption sharedOptions].cdnUrl ];
+                    cell.textLabel.numberOfLines = 0;
+                    
+                    UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                    opButton.frame = CGRectMake(self.tableView.frame.size.width - 40, 10, 40, 40);
+                    [opButton setTitle:@">" forState:UIControlStateNormal];
+                    opButton.titleLabel.textAlignment = NSTextAlignmentRight;
+                    [opButton.titleLabel setFont:[UIFont systemFontOfSize:16]];
+                    opButton.enabled = [EMDemoOption sharedOptions].openCDN;
+                    [opButton addTarget:self action:@selector(editCDNUrl:) forControlEvents:UIControlEventTouchUpInside];
+                    [cell addSubview:opButton];
+                }
             }else
                 if(section == 3) {
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -160,6 +199,35 @@
 -(void)backAction
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)editCDNUrl:(UIButton*)button
+{
+    __weak typeof(self) weakself = self;
+    UpdateCDNUrlAlertController *alertController = [UpdateCDNUrlAlertController alertControllerWithTitle:@"请输入CDN地址" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        //以下方法就可以实现在提示框中输入文本；
+        
+        //在AlertView中添加一个输入框
+        [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+            
+            textField.placeholder = @"CDN地址";
+            textField.text = [EMDemoOption sharedOptions].cdnUrl;
+            [[NSNotificationCenter defaultCenter] addObserver:alertController selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:textField];
+        }];
+        UIAlertAction* action = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            UITextField *envirnmentNameTextField = alertController.textFields.firstObject;
+            
+            [EMDemoOption sharedOptions].cdnUrl = envirnmentNameTextField.text;
+            [[EMDemoOption sharedOptions] archive];
+            [weakself.tableView reloadData];
+        }];
+        [alertController addAction:action];
+        
+        //添加一个取消按钮
+        [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:nil]];
+        
+        //present出AlertView
+        [self presentViewController:alertController animated:true completion:nil];
 }
 
 -(void)OperationAction:(UIButton*)button
@@ -229,6 +297,9 @@
         [EMDemoOption sharedOptions].openCamera = [aSwitch isOn];
     } else if (tag == 1 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].openMicrophone = [aSwitch isOn];
+    } else if (tag == 3 + 10000 + 10*2) {
+        [EMDemoOption sharedOptions].openCDN = [aSwitch isOn];
+        [self.tableView reloadData];
     }
     [[EMDemoOption sharedOptions] archive];
 }

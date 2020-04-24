@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KickSpeakerViewController : UITableViewController
--(void)setNewSpeaker:(NSString*)name;
+-(void)setNewSpeaker:(NSString*)name memId:(NSString *)memId;
 @end
 
 NS_ASSUME_NONNULL_END

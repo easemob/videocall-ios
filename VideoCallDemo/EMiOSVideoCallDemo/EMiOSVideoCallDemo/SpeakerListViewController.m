@@ -245,6 +245,18 @@ static BOOL muteAll = NO;
     }
 }
 
+- (NSString *)getMemIdByMemName:(NSString *)memName
+{
+    ConferenceViewController* pVC = [self getConfVC];
+    if([memName length] > 0 &&pVC) {
+        EMCallMember * member = [pVC.membersDict objectForKey:memName];
+        if(member) {
+            return member.memberId;
+        }
+    }
+    return nil;
+}
+
 -(void)OperationAction:(UIButton*)button
 {
     NSInteger tag = button.tag;
@@ -260,25 +272,17 @@ static BOOL muteAll = NO;
         NSString * actions = @"unmute";
         if(cell.enableVoice)
             actions = @"mute";
-        NSString* uid = [cell.memName substringFromIndex:([[EMDemoOption sharedOptions].appkey length]+1)];
-        NSDate *datenow = [NSDate date];
-        NSDictionary *params = @{@"action":actions, @"uids":@[uid],@"timestamp":[NSNumber numberWithLong:(long)[datenow timeIntervalSince1970]]};
-        NSError *jsonError = nil;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:NSJSONWritingPrettyPrinted error:&jsonError];
-        NSString *jsonStr = @"";
-        if (jsonData && !jsonError) {
-            jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        if([cell.memName isEqualToString:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid]]) {
+            [[[EMClient sharedClient] conferenceManager] updateConference:[EMDemoOption sharedOptions].conference isMute:cell.enableVoice];
+        }else {
+            NSString *memId = [self getMemIdByMemName:cell.memName];
+            if([memId length] > 0)
+               [[[EMClient sharedClient] conferenceManager] setMuteMember:[EMDemoOption sharedOptions].conference memId:memId mute:cell.enableVoice completion:^(EMError *aError) {
+                   if(aError) {
+                       [EMAlertController showErrorAlert:@"操作失败"];
+                   }
+            }];
         }
-        [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:jsonStr completion:^(EMError *aError) {
-         if(aError){
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 [EMAlertController showErrorAlert:@"操作失败"];
-             });
-         }else
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 [EMAlertController  showSuccessAlert:@"操作成功"];
-             });
-         }] ;
     }];
     [alertController addAction:muteAudio];
 
@@ -397,35 +401,13 @@ static BOOL muteAll = NO;
     }
 }
 
--(void)setMuteAll:(BOOL)mute
+- (void)setMuteAll:(BOOL)mute
 {
     [[[EMClient sharedClient] conferenceManager] muteAll:muteAll completion:^(EMError *aError) {
         if(aError) {
             [EMAlertController showErrorAlert:@"操作失败"];
         }
     }];
-    return;
-    NSDate *datenow = [NSDate date];
-    NSDictionary* dic = @{@"status":[NSNumber numberWithInt:mute],@"setter":[EMDemoOption sharedOptions].userid,@"timestamp":[NSNumber numberWithLong:(long)[datenow timeIntervalSince1970]]};
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
-
-    NSString *jsonString = [[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding];
-    if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin)
-       [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:@"muteall" value:jsonString completion:^(EMError *aError) {
-        if(aError){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [EMAlertController  showErrorAlert:@"操作失败"];
-            });
-        }else
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [EMAlertController  showSuccessAlert:@"操作成功"];
-            });
-        }] ;
-}
-
--(void)unmuteAllAction
-{
-    [self setMuteAll:NO];
 }
 
 /*
