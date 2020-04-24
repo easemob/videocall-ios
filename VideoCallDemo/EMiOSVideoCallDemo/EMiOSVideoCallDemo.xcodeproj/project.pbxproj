@@ -188,8 +188,6 @@
 		C070FA7E23FB78F900DC0F57 /* minimize_white@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C070FA0623FB78F900DC0F57 /* minimize_white@3x.png */; };
 		C0720AE723F641FC00E1FEC3 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */; };
 		C0720AF023F6454900E1FEC3 /* EMStreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AEF23F6454900E1FEC3 /* EMStreamView.m */; };
-		C07FC7B1243D810800510715 /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C07FC7B0243D810800510715 /* Hyphenate.framework */; };
-		C07FC7B2243D810800510715 /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C07FC7B0243D810800510715 /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C08470962405292B00B3771D /* admin.png in Resources */ = {isa = PBXBuildFile; fileRef = C08470952405292B00B3771D /* admin.png */; };
 		C095A28023F0F1B300A09CAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A27F23F0F1B300A09CAA /* AppDelegate.m */; };
 		C095A28923F0F1B300A09CAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C095A28723F0F1B300A09CAA /* Main.storyboard */; };
@@ -262,7 +260,31 @@
 		C0E7E34C2420AD4E00F074F6 /* Failed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0E7E3492420AD4D00F074F6 /* Failed@2x.png */; };
 		C0E7E34D2420AD4E00F074F6 /* Failed@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0E7E34A2420AD4D00F074F6 /* Failed@3x.png */; };
 		C0E7E34E2420AD4E00F074F6 /* Failed.png in Resources */ = {isa = PBXBuildFile; fileRef = C0E7E34B2420AD4E00F074F6 /* Failed.png */; };
+		C0EFC10A2452E8250032BD2F /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0EFC1092452E8250032BD2F /* ReplayKit.framework */; };
+		C0EFC10E2452E8250032BD2F /* SampleHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = C0EFC10D2452E8250032BD2F /* SampleHandler.m */; };
+		C0EFC1152452E8260032BD2F /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0EFC1092452E8250032BD2F /* ReplayKit.framework */; };
+		C0EFC1172452E8260032BD2F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0EFC1162452E8260032BD2F /* UIKit.framework */; };
+		C0EFC11B2452E8260032BD2F /* BroadcastSetupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0EFC11A2452E8260032BD2F /* BroadcastSetupViewController.m */; };
+		C0EFC11F2452E8260032BD2F /* SharedDesktopSetupUI.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C0EFC1142452E8260032BD2F /* SharedDesktopSetupUI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C0EFC1222452E8260032BD2F /* SharedDesktop.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C0EFC1082452E8250032BD2F /* SharedDesktop.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C0EFC11D2452E8260032BD2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C095A27323F0F1B300A09CAA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0EFC1132452E8260032BD2F;
+			remoteInfo = SharedDesktopSetupUI;
+		};
+		C0EFC1202452E8260032BD2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C095A27323F0F1B300A09CAA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0EFC1072452E8250032BD2F;
+			remoteInfo = SharedDesktop;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		C07FC7AB243D7B2500510715 /* Embed Frameworks */ = {
@@ -271,9 +293,20 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C07FC7B2243D810800510715 /* Hyphenate.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0EFC1292452E8260032BD2F /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C0EFC1222452E8260032BD2F /* SharedDesktop.appex in Embed App Extensions */,
+				C0EFC11F2452E8260032BD2F /* SharedDesktopSetupUI.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -473,7 +506,6 @@
 		C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
 		C0720AEE23F6454900E1FEC3 /* EMStreamView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMStreamView.h; sourceTree = "<group>"; };
 		C0720AEF23F6454900E1FEC3 /* EMStreamView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMStreamView.m; sourceTree = "<group>"; };
-		C07FC7B0243D810800510715 /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hyphenate.framework; path = EMiOSVideoCallDemo/Hyphenate.framework; sourceTree = "<group>"; };
 		C08470952405292B00B3771D /* admin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = admin.png; sourceTree = "<group>"; };
 		C095A27B23F0F1B300A09CAA /* 环信视频会议.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "环信视频会议.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C095A27E23F0F1B300A09CAA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -553,6 +585,19 @@
 		C0E7E3492420AD4D00F074F6 /* Failed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Failed@2x.png"; sourceTree = "<group>"; };
 		C0E7E34A2420AD4D00F074F6 /* Failed@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Failed@3x.png"; sourceTree = "<group>"; };
 		C0E7E34B2420AD4E00F074F6 /* Failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Failed.png; sourceTree = "<group>"; };
+		C0EFC1082452E8250032BD2F /* SharedDesktop.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SharedDesktop.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0EFC1092452E8250032BD2F /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
+		C0EFC10C2452E8250032BD2F /* SampleHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleHandler.h; sourceTree = "<group>"; };
+		C0EFC10D2452E8250032BD2F /* SampleHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleHandler.m; sourceTree = "<group>"; };
+		C0EFC10F2452E8250032BD2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C0EFC1142452E8260032BD2F /* SharedDesktopSetupUI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SharedDesktopSetupUI.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0EFC1162452E8260032BD2F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		C0EFC1192452E8260032BD2F /* BroadcastSetupViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BroadcastSetupViewController.h; sourceTree = "<group>"; };
+		C0EFC11A2452E8260032BD2F /* BroadcastSetupViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BroadcastSetupViewController.m; sourceTree = "<group>"; };
+		C0EFC11C2452E8260032BD2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C0EFC12A2452E88D0032BD2F /* 环信视频会议.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "环信视频会议.entitlements"; sourceTree = "<group>"; };
+		C0EFC12B2452E8D00032BD2F /* SharedDesktop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SharedDesktop.entitlements; sourceTree = "<group>"; };
+		C0EFC12C2452E8D90032BD2F /* SharedDesktopSetupUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SharedDesktopSetupUI.entitlements; sourceTree = "<group>"; };
 		C28A254B531F8735693459A3 /* Pods-EMiOSVideoCallDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EMiOSVideoCallDemo.debug.xcconfig"; path = "Target Support Files/Pods-EMiOSVideoCallDemo/Pods-EMiOSVideoCallDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -562,9 +607,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */,
-				C07FC7B1243D810800510715 /* Hyphenate.framework in Frameworks */,
 				C0D82B032424B10100C7E6C3 /* MediaPlayer.framework in Frameworks */,
 				0773481ED2F14ED39E0D492C /* libPods-EMiOSVideoCallDemo.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0EFC1052452E8250032BD2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0EFC10A2452E8250032BD2F /* ReplayKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0EFC1112452E8260032BD2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0EFC1152452E8260032BD2F /* ReplayKit.framework in Frameworks */,
+				C0EFC1172452E8260032BD2F /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,10 +635,11 @@
 		7B300057D44D5796FAA0433A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C07FC7B0243D810800510715 /* Hyphenate.framework */,
 				C0D82B022424B10100C7E6C3 /* MediaPlayer.framework */,
 				C0A7748B240767B300E44315 /* MessageUI.framework */,
 				2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */,
+				C0EFC1092452E8250032BD2F /* ReplayKit.framework */,
+				C0EFC1162452E8260032BD2F /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -747,6 +809,8 @@
 			isa = PBXGroup;
 			children = (
 				C095A27D23F0F1B300A09CAA /* EMiOSVideoCallDemo */,
+				C0EFC10B2452E8250032BD2F /* SharedDesktop */,
+				C0EFC1182452E8260032BD2F /* SharedDesktopSetupUI */,
 				C095A27C23F0F1B300A09CAA /* Products */,
 				C41EFB98BEB76BD2729DD521 /* Pods */,
 				7B300057D44D5796FAA0433A /* Frameworks */,
@@ -757,6 +821,8 @@
 			isa = PBXGroup;
 			children = (
 				C095A27B23F0F1B300A09CAA /* 环信视频会议.app */,
+				C0EFC1082452E8250032BD2F /* SharedDesktop.appex */,
+				C0EFC1142452E8260032BD2F /* SharedDesktopSetupUI.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -764,6 +830,7 @@
 		C095A27D23F0F1B300A09CAA /* EMiOSVideoCallDemo */ = {
 			isa = PBXGroup;
 			children = (
+				C0EFC12A2452E88D0032BD2F /* 环信视频会议.entitlements */,
 				C00F1FE323FF81EC007174DE /* XDSDropDownMenu */,
 				C0DB9CD123FEA9090057BA4C /* res */,
 				C070F98D23FB78F900DC0F57 /* CallImgs */,
@@ -915,6 +982,28 @@
 			path = res;
 			sourceTree = "<group>";
 		};
+		C0EFC10B2452E8250032BD2F /* SharedDesktop */ = {
+			isa = PBXGroup;
+			children = (
+				C0EFC12B2452E8D00032BD2F /* SharedDesktop.entitlements */,
+				C0EFC10C2452E8250032BD2F /* SampleHandler.h */,
+				C0EFC10D2452E8250032BD2F /* SampleHandler.m */,
+				C0EFC10F2452E8250032BD2F /* Info.plist */,
+			);
+			path = SharedDesktop;
+			sourceTree = "<group>";
+		};
+		C0EFC1182452E8260032BD2F /* SharedDesktopSetupUI */ = {
+			isa = PBXGroup;
+			children = (
+				C0EFC12C2452E8D90032BD2F /* SharedDesktopSetupUI.entitlements */,
+				C0EFC1192452E8260032BD2F /* BroadcastSetupViewController.h */,
+				C0EFC11A2452E8260032BD2F /* BroadcastSetupViewController.m */,
+				C0EFC11C2452E8260032BD2F /* Info.plist */,
+			);
+			path = SharedDesktopSetupUI;
+			sourceTree = "<group>";
+		};
 		C41EFB98BEB76BD2729DD521 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -936,15 +1025,52 @@
 				C095A27823F0F1B300A09CAA /* Frameworks */,
 				C095A27923F0F1B300A09CAA /* Resources */,
 				C07FC7AB243D7B2500510715 /* Embed Frameworks */,
+				C0EFC1292452E8260032BD2F /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C0EFC11E2452E8260032BD2F /* PBXTargetDependency */,
+				C0EFC1212452E8260032BD2F /* PBXTargetDependency */,
 			);
 			name = EMiOSVideoCallDemo;
 			productName = EMiOSVideoCallDemo;
 			productReference = C095A27B23F0F1B300A09CAA /* 环信视频会议.app */;
 			productType = "com.apple.product-type.application";
+		};
+		C0EFC1072452E8250032BD2F /* SharedDesktop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0EFC1262452E8260032BD2F /* Build configuration list for PBXNativeTarget "SharedDesktop" */;
+			buildPhases = (
+				C0EFC1042452E8250032BD2F /* Sources */,
+				C0EFC1052452E8250032BD2F /* Frameworks */,
+				C0EFC1062452E8250032BD2F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SharedDesktop;
+			productName = SharedDesktop;
+			productReference = C0EFC1082452E8250032BD2F /* SharedDesktop.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		C0EFC1132452E8260032BD2F /* SharedDesktopSetupUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0EFC1232452E8260032BD2F /* Build configuration list for PBXNativeTarget "SharedDesktopSetupUI" */;
+			buildPhases = (
+				C0EFC1102452E8260032BD2F /* Sources */,
+				C0EFC1112452E8260032BD2F /* Frameworks */,
+				C0EFC1122452E8260032BD2F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SharedDesktopSetupUI;
+			productName = SharedDesktopSetupUI;
+			productReference = C0EFC1142452E8260032BD2F /* SharedDesktopSetupUI.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -956,6 +1082,12 @@
 				ORGANIZATIONNAME = easemob;
 				TargetAttributes = {
 					C095A27A23F0F1B300A09CAA = {
+						CreatedOnToolsVersion = 11.3.1;
+					};
+					C0EFC1072452E8250032BD2F = {
+						CreatedOnToolsVersion = 11.3.1;
+					};
+					C0EFC1132452E8260032BD2F = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
 				};
@@ -974,6 +1106,8 @@
 			projectRoot = "";
 			targets = (
 				C095A27A23F0F1B300A09CAA /* EMiOSVideoCallDemo */,
+				C0EFC1072452E8250032BD2F /* SharedDesktop */,
+				C0EFC1132452E8260032BD2F /* SharedDesktopSetupUI */,
 			);
 		};
 /* End PBXProject section */
@@ -1219,6 +1353,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0EFC1062452E8250032BD2F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0EFC1122452E8260032BD2F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1271,7 +1419,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0EFC1042452E8250032BD2F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0EFC10E2452E8250032BD2F /* SampleHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0EFC1102452E8260032BD2F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0EFC11B2452E8260032BD2F /* BroadcastSetupViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C0EFC11E2452E8260032BD2F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0EFC1132452E8260032BD2F /* SharedDesktopSetupUI */;
+			targetProxy = C0EFC11D2452E8260032BD2F /* PBXContainerItemProxy */;
+		};
+		C0EFC1212452E8260032BD2F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0EFC1072452E8250032BD2F /* SharedDesktop */;
+			targetProxy = C0EFC1202452E8260032BD2F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		C095A28723F0F1B300A09CAA /* Main.storyboard */ = {
@@ -1418,6 +1595,7 @@
 			baseConfigurationReference = C28A254B531F8735693459A3 /* Pods-EMiOSVideoCallDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "EMiOSVideoCallDemo/环信视频会议.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -1461,6 +1639,7 @@
 			baseConfigurationReference = 0777C600A6E30C563B00F11D /* Pods-EMiOSVideoCallDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "EMiOSVideoCallDemo/环信视频会议.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -1499,6 +1678,86 @@
 			};
 			name = Release;
 		};
+		C0EFC1242452E8260032BD2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SharedDesktopSetupUI/SharedDesktopSetupUI.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 499WYUV8Q2;
+				INFOPLIST_FILE = SharedDesktopSetupUI/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktopSetupUI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C0EFC1252452E8260032BD2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SharedDesktopSetupUI/SharedDesktopSetupUI.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 499WYUV8Q2;
+				INFOPLIST_FILE = SharedDesktopSetupUI/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktopSetupUI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C0EFC1272452E8260032BD2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SharedDesktop/SharedDesktop.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 499WYUV8Q2;
+				INFOPLIST_FILE = SharedDesktop/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktop;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C0EFC1282452E8260032BD2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SharedDesktop/SharedDesktop.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 499WYUV8Q2;
+				INFOPLIST_FILE = SharedDesktop/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktop;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1516,6 +1775,24 @@
 			buildConfigurations = (
 				C095A29523F0F1B700A09CAA /* Debug */,
 				C095A29623F0F1B700A09CAA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0EFC1232452E8260032BD2F /* Build configuration list for PBXNativeTarget "SharedDesktopSetupUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0EFC1242452E8260032BD2F /* Debug */,
+				C0EFC1252452E8260032BD2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0EFC1262452E8260032BD2F /* Build configuration list for PBXNativeTarget "SharedDesktop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0EFC1272452E8260032BD2F /* Debug */,
+				C0EFC1282452E8260032BD2F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
