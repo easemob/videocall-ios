@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,strong) UIButton* settingButton;
 @property (nonatomic) UIScrollView* scrollView;
 @property (nonatomic) UIButton* switchCameraButton;
+@property (nonatomic) UIButton* sharedDesktopButton;
 @property (nonatomic, strong) UIButton *microphoneButton;
 @property (nonatomic, strong) UIButton *videoButton;
 @property (nonatomic, strong) UIButton *hangupButton;
@@ -35,9 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EMStreamView *curBigView;
 @property (nonatomic, assign) int timeLength;
 @property (strong, nonatomic) NSTimer *timeTimer;
+@property (strong, nonatomic) NSTimer *timeRecord;
 @property (nonatomic, strong) NSMutableDictionary *streamItemDict;
 @property (nonatomic, strong) NSMutableDictionary *membersDict;
 @property (nonatomic, strong) NSString *pubStreamId;
+@property (nonatomic, strong) NSString *desktopStreamId;
 @property (nonatomic, strong) NSMutableArray *streamIds;
 @property (nonatomic, strong) NSMutableArray *talkingStreamIds;
 @property (nonatomic) BOOL isSetMute;

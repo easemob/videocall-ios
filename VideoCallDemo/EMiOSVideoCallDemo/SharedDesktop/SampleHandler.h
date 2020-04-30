@@ -9,5 +9,5 @@
 #import <ReplayKit/ReplayKit.h>
 
 @interface SampleHandler : RPBroadcastSampleHandler
-
+@property (nonatomic) NSUserDefaults *sharedDefaults;
 @end

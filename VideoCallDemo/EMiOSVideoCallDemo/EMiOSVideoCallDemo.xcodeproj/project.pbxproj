@@ -200,6 +200,8 @@
 		C095A2B123F14CCD00A09CAA /* AccountSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C095A2B023F14CCD00A09CAA /* AccountSettingViewController.m */; };
 		C099A48A241269AD009B8A06 /* APP.png in Resources */ = {isa = PBXBuildFile; fileRef = C099A489241269AD009B8A06 /* APP.png */; };
 		C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0A7748B240767B300E44315 /* MessageUI.framework */; };
+		C0B5BECD245533E9007713F5 /* call_screenshare.png in Resources */ = {isa = PBXBuildFile; fileRef = C0B5BECC245533E9007713F5 /* call_screenshare.png */; };
+		C0B5BECF2455345F007713F5 /* call_screenshare_stop.png in Resources */ = {isa = PBXBuildFile; fileRef = C0B5BECE2455345F007713F5 /* call_screenshare_stop.png */; };
 		C0BD178923FF658B005E3B67 /* 上麦@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD177423FF658A005E3B67 /* 上麦@2x.png */; };
 		C0BD178B23FF658B005E3B67 /* 形状结合@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD177623FF658A005E3B67 /* 形状结合@3x.png */; };
 		C0BD178D23FF658B005E3B67 /* 形状结合@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BD177823FF658A005E3B67 /* 形状结合@2x.png */; };
@@ -524,6 +526,8 @@
 		C095A2B023F14CCD00A09CAA /* AccountSettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AccountSettingViewController.m; sourceTree = "<group>"; };
 		C099A489241269AD009B8A06 /* APP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = APP.png; sourceTree = "<group>"; };
 		C0A7748B240767B300E44315 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		C0B5BECC245533E9007713F5 /* call_screenshare.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = call_screenshare.png; sourceTree = "<group>"; };
+		C0B5BECE2455345F007713F5 /* call_screenshare_stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = call_screenshare_stop.png; sourceTree = "<group>"; };
 		C0BD177423FF658A005E3B67 /* 上麦@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "上麦@2x.png"; sourceTree = "<group>"; };
 		C0BD177623FF658A005E3B67 /* 形状结合@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "形状结合@3x.png"; sourceTree = "<group>"; };
 		C0BD177823FF658A005E3B67 /* 形状结合@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "形状结合@2x.png"; sourceTree = "<group>"; };
@@ -886,6 +890,8 @@
 				C0E7E3432420AD4000F074F6 /* Ask.png */,
 				C0E7E3452420AD4000F074F6 /* Ask@2x.png */,
 				C0E7E3442420AD4000F074F6 /* Ask@3x.png */,
+				C0B5BECE2455345F007713F5 /* call_screenshare_stop.png */,
+				C0B5BECC245533E9007713F5 /* call_screenshare.png */,
 				C0E7E3382420AD2700F074F6 /* Success.png */,
 				C0E7E3392420AD2700F074F6 /* Success@2x.png */,
 				C0E7E3372420AD2700F074F6 /* Success@3x.png */,
@@ -1157,6 +1163,7 @@
 				C070FA3223FB78F900DC0F57 /* animate_00040.png in Resources */,
 				C070FA6523FB78F900DC0F57 /* ring_gray@3x.png in Resources */,
 				C06FD408242C502100990BB1 /* floating@3x.png in Resources */,
+				C0B5BECF2455345F007713F5 /* call_screenshare_stop.png in Resources */,
 				C070FA2F23FB78F900DC0F57 /* animate_00082.png in Resources */,
 				C06FD404242C4FF600990BB1 /* switchDevice@3x.png in Resources */,
 				C06FD40A242C502100990BB1 /* floating.png in Resources */,
@@ -1306,6 +1313,7 @@
 				C070FA1923FB78F900DC0F57 /* animate_00050.png in Resources */,
 				C070FA7823FB78F900DC0F57 /* mute_red@3x.png in Resources */,
 				C00F201224002933007174DE /* videoclose@2x.png in Resources */,
+				C0B5BECD245533E9007713F5 /* call_screenshare.png in Resources */,
 				C070F98623FB78CD00DC0F57 /* alert_default@3x.png in Resources */,
 				C0BD178E23FF658B005E3B67 /* 上麦@3x.png in Resources */,
 				C0DB9CF723FEA9090057BA4C /* goback@2x.png in Resources */,
@@ -1685,7 +1693,9 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 499WYUV8Q2;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SharedDesktopSetupUI/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1694,7 +1704,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktopSetupUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1705,7 +1715,9 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 499WYUV8Q2;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SharedDesktopSetupUI/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1714,7 +1726,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktopSetupUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1726,6 +1738,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 499WYUV8Q2;
 				INFOPLIST_FILE = SharedDesktop/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1734,7 +1747,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1746,6 +1759,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 499WYUV8Q2;
 				INFOPLIST_FILE = SharedDesktop/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1754,7 +1768,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo.SharedDesktop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

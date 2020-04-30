@@ -28,4 +28,12 @@
     [self.extensionContext cancelRequestWithError:[NSError errorWithDomain:@"YourAppDomain" code:-1 userInfo:nil]];
 }
 
+- (void)viewDidLoad
+{
+}
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self userDidFinishSetup];
+}
+
 @end

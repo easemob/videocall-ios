@@ -14,12 +14,18 @@
 #import "KickSpeakerViewController.h"
 #import "ChangeRoleView.h"
 #import <MediaPlayer/MPVolumeView.h>
+#import "BroadcastSetupViewController.h"
 
 @interface ConferenceViewController ()
 @property (nonatomic) UIImageView* newtworkView;
 @property (nonatomic) UIImageView* showOrHideMenu;
 @property (nonatomic) UIButton* showOrHideMenuButton;
 @property (nonatomic) UIButton* selectDevice;
+@property (nonatomic) UIButton* recordButton;
+@property (nonatomic) RPBroadcastActivityViewController* broadVC;
+@property (nonatomic) NSUserDefaults *sharedDefaults;
+@property (nonatomic) RPBroadcastController*broadcastController;
+@property (nonatomic) RPSystemBroadcastPickerView *picker;
 @end
 
 @implementation ConferenceViewController
@@ -84,6 +90,19 @@
     }];
     float volume = [self getVolumeLevel];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(systemVolumeDidChangeNoti:) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
+    if (@available(iOS 13.0, *)) {
+        _picker.showsMicrophoneButton = NO;
+        _picker = [[RPSystemBroadcastPickerView alloc] initWithFrame:CGRectMake(10, 60, 100, 40)];
+        //你的app对用upload extension的 bundle id， 必须要填写对
+        _picker.preferredExtension = @"com.easemob.EMiOSVideoCallDemo.SharedDesktop";
+        _picker.center = self.view.center;
+        
+        self.sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.easemob"];
+        [self.sharedDefaults setObject:nil forKey:@"data"];
+        [self.sharedDefaults setObject:nil forKey:@"width"];
+        [self.sharedDefaults setObject:nil forKey:@"height"];
+        [self.sharedDefaults setObject:nil forKey:@"status"];
+    }
 }
 
 -(void)dealloc
@@ -149,14 +168,14 @@
     //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
     [self.settingButton setImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
     [self.settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.settingButton setTintColor:[UIColor whiteColor]];
+    [self.settingButton setTintColor:[UIColor blackColor]];
     [self.view addSubview:self.settingButton];
     
     self.selectDevice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.selectDevice.frame = CGRectMake(self.view.bounds.size.width - 50, 150, 40, 40);
     [self.selectDevice setImage:[UIImage imageNamed:@"switchDevice"] forState:UIControlStateNormal];
     [self.selectDevice addTarget:self action:@selector(selectDeviceAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.selectDevice setTintColor:[UIColor whiteColor]];
+    [self.selectDevice setTintColor:[UIColor blackColor]];
     [self.view addSubview:self.selectDevice];
     
     self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59, 73, 40, 10)];
@@ -187,8 +206,16 @@
     //[self.switchCameraButton setTintColor:[UIColor blueColor]];
     [self.switchCameraButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
     [self.switchCameraButton setEnabled:NO];
-    [self.switchCameraButton setTintColor:[UIColor whiteColor] ];
+    [self.switchCameraButton setTintColor:[UIColor blackColor] ];
     [self.view addSubview:_switchCameraButton];
+    
+    self.sharedDesktopButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    self.sharedDesktopButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
+    [self.sharedDesktopButton setImage:[UIImage imageNamed:@"call_screenshare"] forState:UIControlStateNormal];
+    [self.sharedDesktopButton setImage:[UIImage imageNamed:@"call_screenshare_stop"] forState:UIControlStateSelected];
+    [self.sharedDesktopButton addTarget:self action:@selector(recordAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.sharedDesktopButton setTintColor:[UIColor blackColor]];
+    [self.view addSubview:self.sharedDesktopButton];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-75, self.view.bounds.size.width, 75) style:UITableViewStylePlain];
     _tableView.backgroundColor = [UIColor grayColor];
@@ -501,23 +528,28 @@
             }
         }];
     }else{
-        if( [[EMDemoOption sharedOptions].conference.adminIds count] > 0) {
-            NSString * adminName = [[EMDemoOption sharedOptions].conference.adminIds objectAtIndex:0];
-            if([adminName length] > 0) {
-                EMCallMember* member = [self.membersDict objectForKey:adminName];
-                if(member) {
-                    [[[EMClient sharedClient] conferenceManager] requestTobeSpeaker:[EMDemoOption sharedOptions].conference adminId:member.memberId completion:^(EMError *aError) {
-                        if(!aError){
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [EMAlertController showInfoAlert:@"主持人申请已提交，请等待主持人审核"];
-                            });
-                        }
-                    }];
+        [[[EMClient sharedClient] conferenceManager] getConference:[EMDemoOption sharedOptions].conference.confId password:[EMDemoOption sharedOptions].roomPswd completion:^(EMCallConference *aCall, EMError *aError) {
+            [EMDemoOption sharedOptions].conference.adminIds = [aCall.adminIds copy];
+            if( [[EMDemoOption sharedOptions].conference.adminIds count] > 0) {
+                NSString * adminName = [[EMDemoOption sharedOptions].conference.adminIds objectAtIndex:0];
+                if([adminName length] > 0) {
+                    EMCallMember* member = [self.membersDict objectForKey:adminName];
+                    if(member) {
+                        [[[EMClient sharedClient] conferenceManager] requestTobeSpeaker:[EMDemoOption sharedOptions].conference adminId:member.memberId completion:^(EMError *aError) {
+                            if(!aError){
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [EMAlertController showInfoAlert:@"上麦申请已提交，请等待主持人审核"];
+                                });
+                            }
+                        }];
+                    }
                 }
+            }else {
+                [EMAlertController showInfoAlert:@"当前没有主持人"];
             }
-        }else {
-            [EMAlertController showInfoAlert:@"当前没有主持人"];
-        }
+            
+        }];
+        
     }
 }
 
@@ -835,7 +867,7 @@
         if([self.curBigView.displayView isKindOfClass:[EMCallLocalView class]])
         {
             EMCallLocalView*view = (EMCallLocalView*)self.curBigView.displayView;
-            view.scaleMode = EMCallViewScaleModeAspectFit;
+            view.scaleMode = EMCallViewScaleModeAspectFill;
         }
     }
 }
@@ -1173,13 +1205,12 @@
 - (void)conferenceDidUpdated:(EMCallConference *)aConference
                      muteAll:(BOOL)aMuteAll
 {
-    if(!aMuteAll && !self.isSetMute){
-        [[[EMClient sharedClient] conferenceManager] updateConference:aConference isMute:NO];
+    if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleSpeaker) {
+        __weak typeof(self) weakself = self;
+           dispatch_async(dispatch_get_main_queue(), ^{
+               [weakself muteUI:aMuteAll];
+           });
     }
-    __weak typeof(self) weakself = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [weakself muteUI:aMuteAll];
-    });
 }
 
 - (void)conferenceReqSpeaker:(EMCallConference*)aConference
@@ -1257,7 +1288,7 @@
     }
 }
 
-- (void)conferenceDidUpdated:(EMCallConference *)aConference setMute:(BOOL)aMute adminId:(NSString *)aAdminId
+- (void)conferenceDidUpdated:(EMCallConference *)aConference mute:(BOOL)aMute
 {
     if(!aMute && !self.isSetMute){
             [[[EMClient sharedClient] conferenceManager] updateConference:aConference isMute:NO];
@@ -1533,6 +1564,169 @@
     [self updateScrollViewPos];
 }
 
+
+-(CVPixelBufferRef)createCVPixelBufferRefFromNV12buffer:(unsigned char *)buffer width:(int)w height:(int)h {
+    NSDictionary *pixelAttributes = @{(NSString*)kCVPixelBufferIOSurfacePropertiesKey:@{}};
+    
+    CVPixelBufferRef pixelBuffer = NULL;
+    
+    CVReturn result = CVPixelBufferCreate(kCFAllocatorDefault,
+                                          w,
+                                          h,
+                                          kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                                          (__bridge CFDictionaryRef)(pixelAttributes),
+                                          &pixelBuffer);//kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+    
+    CVPixelBufferLockBaseAddress(pixelBuffer,0);
+    unsigned char *yDestPlane = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
+    
+    // Here y_ch0 is Y-Plane of YUV(NV12) data.
+    unsigned char *y_ch0 = buffer;
+    memcpy(yDestPlane, y_ch0, w * h);
+    unsigned char *uvDestPlane = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 1);
+    
+    // Here y_ch1 is UV-Plane of YUV(NV12) data.
+    unsigned char *y_ch1 = buffer + w * h;
+    memcpy(uvDestPlane, y_ch1, w * h/2);
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    
+    if (result != kCVReturnSuccess) {
+        NSLog(@"Unable to create cvpixelbuffer %d", result);
+    }
+    return pixelBuffer;
+}
+
+- (void)startRecordTimer
+{
+    _timeRecord = [NSTimer scheduledTimerWithTimeInterval:0.03 target:self selector:@selector(timeRecordAction:) userInfo:nil repeats:YES];
+}
+
+- (void)timeRecordAction:(id)sender
+{
+    NSNumber* status = [self.sharedDefaults objectForKey:@"status"];
+    NSNumber* width = [self.sharedDefaults objectForKey:@"width"];
+    NSNumber* height = [self.sharedDefaults objectForKey:@"height"];
+    NSNumber* result = [self.sharedDefaults objectForKey:@"result"];
+    NSNumber* timevalue = [self.sharedDefaults objectForKey:@"timevalue"];
+    NSNumber* timescale = [self.sharedDefaults objectForKey:@"timescale"];
+    NSNumber* count = [self.sharedDefaults objectForKey:@"gcount"];
+    static int gIndex = 0;
+    if(status && status.intValue == 2) {
+        [self.sharedDefaults setObject:[NSNumber numberWithInt:3] forKey:@"status"];
+        [self publishSharedDesktop];
+    }
+    if(result && result.intValue == 1){
+        [self.sharedDefaults setObject:[NSNumber numberWithInt:0] forKey:@"result"];
+        [_timeRecord invalidate];
+        _timeRecord = nil;
+        // 直播结束
+        __weak typeof(self) weakself = self;
+        //[weakself removeStreamWithId:weakself.desktopStreamId];
+        
+        [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:weakself.desktopStreamId completion:^(EMError *aError) {
+            weakself.desktopStreamId = nil;
+        }
+        ];
+    }
+    if(status && [status intValue] == 1){
+        gIndex = count.intValue;
+        [self.sharedDefaults setObject:[NSNumber numberWithInt:3] forKey:@"status"];
+        @autoreleasepool {
+            __block NSData* data = [self.sharedDefaults objectForKey:@"data"];
+            __block CVPixelBufferRef buffer = [self createCVPixelBufferRefFromNV12buffer:data.bytes width:[width intValue] height:[height intValue]];
+            CMTime t = CMTimeMake(timevalue.longValue, timescale.intValue);
+            [[[EMClient sharedClient] conferenceManager] inputVideoPixelBuffer:buffer sampleBufferTime:t rotation:UIDeviceOrientationPortrait conference:[EMDemoOption sharedOptions].conference publishedStreamId:_desktopStreamId completion:^(EMError *aError) {
+//                data = nil;
+            }];
+            CVPixelBufferRelease(buffer);
+        }
+    }
+}
+
+-(void)publishSharedDesktop
+{
+    EMStreamParam *pubConfig = [[EMStreamParam alloc] init];
+    pubConfig.streamName = [EMClient sharedClient].currentUsername;
+    pubConfig.enableVideo = NO;
+    pubConfig.isMute = NO;
+    
+    EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
+    pubConfig.maxAudioKbps = (int)options.maxAudioKbps;
+
+    pubConfig.videoResolution = EMCallVideoResolutionDefault;
+    pubConfig.type = EMStreamTypeDesktop;
+    pubConfig.desktopView = nil;
+    pubConfig.videoResolution = EMCallVideoResolution_Custom;
+    CGFloat scale = [UIScreen mainScreen].scale;
+    CGFloat screenX = [UIScreen mainScreen].bounds.size.width * scale;
+    CGFloat screenY = [UIScreen mainScreen].bounds.size.height * scale;
+    pubConfig.videoWidth = screenY;
+    pubConfig.videoHeight = screenX;
+
+    
+    __weak typeof(self) weakself = self;
+    //上传视频流
+    [[EMClient sharedClient].conferenceManager publishConference:[EMDemoOption sharedOptions].conference streamParam:pubConfig completion:^(NSString *aPubStreamId, EMError *aError) {
+        if (aError) {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"错误" message:@"上传共享桌面流失败，请重试" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+            [alertView show];
+            
+            return ;
+            
+            //TODO: 后续处理是怎么样的
+        }
+        
+        weakself.desktopStreamId = aPubStreamId;
+    }];
+}
+
+- (void)startSharedDesktop:(void (^)())aCompletion
+{
+    if(aCompletion)
+        aCompletion();
+}
+
+-(void)recordAction:(UIButton*)button
+{
+    if (@available(iOS 13.0, *)){
+        if([EMDemoOption sharedOptions].conference.role < EMConferenceRoleSpeaker) {
+            return;
+        }
+        for (UIView *view in _picker.subviews)
+        {
+            if ([view isKindOfClass:[UIButton class]])
+            {
+                [self.sharedDefaults setObject:[NSNumber numberWithInt:0] forKey:@"result"];
+                [self startRecordTimer];
+                [self startSharedDesktop:^(){
+                    [(UIButton*)view sendActionsForControlEvents:UIControlEventTouchUpInside];
+                }];
+            }
+        }
+    }else
+    {
+        [EMAlertController showInfoAlert:@"该功能需要iOS 13.0及以上版本，请升级系统"];
+    }
+}
+
+- (void)broadcastActivityViewController:(RPBroadcastActivityViewController *)broadcastActivityViewController didFinishWithBroadcastController:(RPBroadcastController *)broadcastController error:(NSError *)error
+{
+    self.broadcastController = broadcastController;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [broadcastActivityViewController dismissViewControllerAnimated:YES completion:nil];
+    });
+    [broadcastController startBroadcastWithHandler:^(NSError * _Nullable error) {
+
+    }];
+}
+
+- (void)stopAction:(UIButton*)button
+{
+    if(self.broadcastController)
+        [self.broadcastController finishBroadcastWithHandler:^(NSError * _Nullable error) {
+            
+        }];
+}
 /*
 #pragma mark - Navigation
 

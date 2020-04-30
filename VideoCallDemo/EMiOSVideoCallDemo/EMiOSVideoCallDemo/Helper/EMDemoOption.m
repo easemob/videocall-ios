@@ -36,6 +36,7 @@ NSString* kCDNUrl = @"cdnUrl";
     self.openMicrophone = YES;
     self.resolutionrate = ResolutionRate_480p;
     self.nickName = @"";
+    self.cdnUrl = @"";
 }
 
 - (void)archive

@@ -382,7 +382,10 @@ int kHeightStart = 300;
             if(aError.code == EMErrorInvalidPassword){
                 weakself.errorLable.text = @"密码错误";
             }else
-            if(aError.code == EMErrorCallSpeakerFull){
+            if (aError.code == EMErrorCallCDNError) {
+                weakself.errorLable.text = @"cdn推流设置错误";
+            }else
+            if (aError.code == EMErrorCallSpeakerFull){
                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"" message:@"主播人数已满，以观众身份进入" preferredStyle:UIAlertControllerStyleAlert];
                 
                 UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){
@@ -432,14 +435,10 @@ int kHeightStart = 300;
     if([EMDemoOption sharedOptions].openCDN) {
         LiveConfig* liveconfig = [[LiveConfig alloc] init];
         CDNCanvas* canvas = [[CDNCanvas alloc] init];
-        canvas.bgclr = 0;
-        canvas.bps = 800000;
-        canvas.codec = @"H264";
+        canvas.bgclr = 0x000000;
         canvas.width = 640;
         canvas.height = 480;
-        canvas.fps = 20;
         liveconfig.canvas = canvas;
-        liveconfig.layoutStyle = GRID;
         liveconfig.cdnUrl = [EMDemoOption sharedOptions].cdnUrl;
         roomConfig.liveConfig = liveconfig;
     }
