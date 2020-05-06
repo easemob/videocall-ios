@@ -61,7 +61,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section == 2)
     {
-        return 5;
+        return 6;
     }
     return 1;
 }
@@ -83,7 +83,7 @@
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         //[button setTitle:@"上传日志" forState:UIControlStateNormal];
-        button.frame = CGRectMake(10, 10, 40, 40);
+        button.frame = CGRectMake(5, 5, 40, 40);
         [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:button];
@@ -92,20 +92,20 @@
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             if(row == 0){
                 [[cell viewWithTag:6000] removeFromSuperview];
-                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(60, 10, 100, 40)];
+                UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(60, 1, 100, 40)];
                 label.text = [EMDemoOption sharedOptions].nickName;
                 label.tag = 6000;
                 [cell addSubview:label];
                 
                 UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-                opButton.frame = CGRectMake(self.tableView.frame.size.width - 40, 10, 40, 40);
+                opButton.frame = CGRectMake(self.tableView.frame.size.width - 40, 1, 40, 40);
                 [opButton setTitle:@">" forState:UIControlStateNormal];
                 opButton.titleLabel.textAlignment = NSTextAlignmentRight;
                 [opButton.titleLabel setFont:[UIFont systemFontOfSize:16]];
                 [opButton addTarget:self action:@selector(OperationAction:) forControlEvents:UIControlEventTouchUpInside];
                 [cell addSubview:opButton];
 
-                UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
+                UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 1, 40, 40)];
                 if([[EMDemoOption sharedOptions].headImage length] > 0) {
                     NSString* imageurl = [NSString stringWithFormat:@"https://download-sdk.oss-cn-beijing.aliyuncs.com/downloads/RtcDemo/headImage/%@" ,[EMDemoOption sharedOptions].headImage ];
                     [headimageView sd_setImageWithURL:[NSURL URLWithString:imageurl]];
@@ -120,7 +120,7 @@
                 if(row == 0) {
                     [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
                     cell.textLabel.text = @"加入时打开摄像头";
-                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
                     switchControl.tag = section*10 + row + 10000;
                     [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
                     [switchControl setOn:[EMDemoOption sharedOptions].openCamera];
@@ -129,7 +129,7 @@
                 if(row == 1) {
                     [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
                     cell.textLabel.text = @"加入时打开麦克风";
-                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
                     switchControl.tag = section*10 + row + 10000;
                     [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
                     [switchControl setOn:[EMDemoOption sharedOptions].openMicrophone];
@@ -155,26 +155,35 @@
                     }
                     [button setTitle:title forState:UIControlStateNormal];
                     button.tag = 1000;
-                    button.frame = CGRectMake(self.tableView.frame.size.width - 70, 10, 70, 40);
+                    button.frame = CGRectMake(self.tableView.frame.size.width - 70, 1, 70, 40);
                     [button addTarget:self action:@selector(setResolutionAction:) forControlEvents:UIControlEventTouchUpInside];
                     [button addTarget:self action:@selector(hideMenu:) forControlEvents:UIControlEventTouchUpOutside];
                     [cell addSubview:button];
                 }
                 if(row == 3) {
                     [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"开启服务端录制(创建者设置有效)";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].record];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 4) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
                     cell.textLabel.text = @"开启CDN推流(创建者设置有效)";
-                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 10, 50, 40)];
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
                     switchControl.tag = section*10 + row + 10000;
                     [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
                     [switchControl setOn:[EMDemoOption sharedOptions].openCDN];
                     [cell.contentView addSubview:switchControl];
                 }
-                if(row == 4) {
+                if(row == 5) {
                     cell.textLabel.text = [NSString stringWithFormat:@"cdn推流Url:%@",[EMDemoOption sharedOptions].cdnUrl ];
                     cell.textLabel.numberOfLines = 0;
                     
                     UIButton* opButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-                    opButton.frame = CGRectMake(self.tableView.frame.size.width - 40, 10, 40, 40);
+                    opButton.frame = CGRectMake(self.tableView.frame.size.width - 40, 1, 40, 40);
                     [opButton setTitle:@">" forState:UIControlStateNormal];
                     opButton.titleLabel.textAlignment = NSTextAlignmentRight;
                     [opButton.titleLabel setFont:[UIFont systemFontOfSize:16]];
@@ -188,7 +197,7 @@
                     cell.textLabel.text = @"遇到问题？请上传日志";
                     UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
                     [button setTitle:@"上传日志" forState:UIControlStateNormal];
-                    button.frame = CGRectMake(self.tableView.frame.size.width - 105, 5, 100, 40);
+                    button.frame = CGRectMake(self.tableView.frame.size.width - 105, 1, 100, 40);
                     [button addTarget:self action:@selector(sendLogAction) forControlEvents:UIControlEventTouchUpInside];
                     [cell addSubview:button];
                 }
@@ -298,6 +307,9 @@
     } else if (tag == 1 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].openMicrophone = [aSwitch isOn];
     } else if (tag == 3 + 10000 + 10*2) {
+        [EMDemoOption sharedOptions].record = [aSwitch isOn];
+        [self.tableView reloadData];
+    } else if (tag == 4 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].openCDN = [aSwitch isOn];
         [self.tableView reloadData];
     }
@@ -317,14 +329,14 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 60;
+    return 40;
 }
 //section头部视图
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
-view.backgroundColor = [UIColor clearColor];
-return view ;
+    UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 1)];
+    view.backgroundColor = [UIColor clearColor];
+    return view ;
 }
 //section底部间距
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section

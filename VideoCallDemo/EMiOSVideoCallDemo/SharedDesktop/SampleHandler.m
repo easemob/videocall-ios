@@ -14,6 +14,8 @@
 - (void)broadcastStartedWithSetupInfo:(NSDictionary<NSString *,NSObject *> *)setupInfo {
     // User has requested to start the broadcast. Setup info from the UI extension can be supplied but optional.
     NSLog(@"broadcastStartedWithSetupInfo");
+    _buffersize = 0;
+    _mYuvbuffer = nil;
     self.sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.easemob"];
     [self.sharedDefaults setObject:[NSNumber numberWithInt:0] forKey:@"result"];
     [self.sharedDefaults setObject:[NSNumber numberWithInt:2] forKey:@"status"];
@@ -30,6 +32,9 @@
 - (void)broadcastFinished {
     // User has requested to finish the broadcast.
     [self.sharedDefaults setObject:[NSNumber numberWithInt:1] forKey:@"result"];
+    if(_mYuvbuffer)
+        _mYuvbuffer = nil;
+    _buffersize = 0;
 }
 
 - (void)bufferToData:(CMSampleBufferRef)source
@@ -53,17 +58,27 @@
     //yuv中的uv所占的字节数
     size_t uv_size = y_size / 2;
 
-    uint8_t *yuv_frame = malloc(uv_size + y_size);
+    if(!_mYuvbuffer)
+    {
+        _mYuvbuffer = malloc(uv_size + y_size);
+        _buffersize = uv_size + y_size;
+    }else{
+        if(uv_size + y_size != _buffersize){
+            free(_mYuvbuffer);
+            _mYuvbuffer = malloc(uv_size + y_size);
+            _buffersize = uv_size + y_size;
+        }
+    }
 
     //获取CVImageBufferRef中的y数据
     uint8_t *y_frame = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
-    memcpy(yuv_frame, y_frame, y_size);
+    memcpy(_mYuvbuffer, y_frame, y_size);
 
     //获取CMVImageBufferRef中的uv数据
     uint8_t *uv_frame = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 1);
-    memcpy(yuv_frame + y_size, uv_frame, uv_size);
+    memcpy(_mYuvbuffer + y_size, uv_frame, uv_size);
     
-    NSData* data = [NSData dataWithBytes:yuv_frame length:(y_size + uv_size)];
+    NSData* data = [NSData dataWithBytes:_mYuvbuffer length:(y_size + uv_size)];
     [self.sharedDefaults setObject:data forKey:@"data"];
     [self.sharedDefaults setObject:[NSNumber numberWithInt:pixelWidth] forKey:@"width"];
     [self.sharedDefaults setObject:[NSNumber numberWithInt:pixelHeight] forKey:@"height"];
@@ -74,10 +89,6 @@
     data = nil;
 
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-    
-    free(yuv_frame);
-    
-    yuv_frame = nil;
 }
 
 - (void)processSampleBuffer:(CMSampleBufferRef)sampleBuffer withType:(RPSampleBufferType)sampleBufferType {

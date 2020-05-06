@@ -17,6 +17,7 @@ NSString* kNickname = @"nickname";
 NSString* kHeadImage = @"headimage";
 NSString* kCDN = @"cdn";
 NSString* kCDNUrl = @"cdnUrl";
+NSString* kRecord = @"record";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -36,7 +37,7 @@ NSString* kCDNUrl = @"cdnUrl";
     self.openMicrophone = YES;
     self.resolutionrate = ResolutionRate_480p;
     self.nickName = @"";
-    self.cdnUrl = @"";
+    self.cdnUrl = @"rtmp://livepush.easemob.com/meeting/lxm?auth_key=1588249443-0-0-c8e144ca1a92aab190b4248b8144cb5a";
 }
 
 - (void)archive
@@ -56,6 +57,7 @@ NSString* kCDNUrl = @"cdnUrl";
     [aCoder encodeObject:self.nickName forKey:kNickname];
     [aCoder encodeObject:self.headImage forKey:kHeadImage];
     [aCoder encodeBool:self.openCDN forKey:kCDN];
+    [aCoder encodeBool:self.record forKey:kRecord];
     [aCoder encodeObject:self.cdnUrl forKey:kCDNUrl];
 }
 
@@ -73,6 +75,7 @@ NSString* kCDNUrl = @"cdnUrl";
         self.headImage = [aDecoder decodeObjectForKey:kHeadImage];
         self.cdnUrl = [aDecoder decodeObjectForKey:kCDNUrl];
         self.openCDN = [aDecoder decodeBoolForKey:kCDN];
+        self.record = [aDecoder decodeBoolForKey:kRecord];
     }
     return self;
 }

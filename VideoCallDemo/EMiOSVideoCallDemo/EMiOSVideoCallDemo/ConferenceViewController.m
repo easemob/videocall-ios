@@ -13,7 +13,6 @@
 #import "EMAlertController.h"
 #import "KickSpeakerViewController.h"
 #import "ChangeRoleView.h"
-#import <MediaPlayer/MPVolumeView.h>
 #import "BroadcastSetupViewController.h"
 
 @interface ConferenceViewController ()
@@ -63,23 +62,6 @@
     return self;
 }
 
--(float) getVolumeLevel
-{
-    MPVolumeView *volumeView   = [[MPVolumeView alloc] init];
-    UISlider* volumeViewSlider;
-    for(UIView*view in [volumeView subviews])
-    {
-        if([[[view class] description] isEqualToString:@"MPVolumeSlider"])
-        {
-            volumeViewSlider =(UISlider*) view;
-            
-        }
-        
-    }
-    float val =[volumeViewSlider value];
-    return val;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view
@@ -88,8 +70,6 @@
     [[[EMClient sharedClient] conferenceManager] startMonitorSpeaker:[EMDemoOption sharedOptions].conference timeInterval:2 completion:^(EMError *aError) {
         
     }];
-    float volume = [self getVolumeLevel];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(systemVolumeDidChangeNoti:) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
     if (@available(iOS 13.0, *)) {
         _picker.showsMicrophoneButton = NO;
         _picker = [[RPSystemBroadcastPickerView alloc] initWithFrame:CGRectMake(10, 60, 100, 40)];
@@ -1648,7 +1628,7 @@
     EMStreamParam *pubConfig = [[EMStreamParam alloc] init];
     pubConfig.streamName = [EMClient sharedClient].currentUsername;
     pubConfig.enableVideo = NO;
-    pubConfig.isMute = NO;
+    pubConfig.isMute = YES;
     
     EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
     pubConfig.maxAudioKbps = (int)options.maxAudioKbps;
@@ -1657,9 +1637,8 @@
     pubConfig.type = EMStreamTypeDesktop;
     pubConfig.desktopView = nil;
     pubConfig.videoResolution = EMCallVideoResolution_Custom;
-    CGFloat scale = [UIScreen mainScreen].scale;
-    CGFloat screenX = [UIScreen mainScreen].bounds.size.width * scale;
-    CGFloat screenY = [UIScreen mainScreen].bounds.size.height * scale;
+    CGFloat screenX = [UIScreen mainScreen].bounds.size.width;
+    CGFloat screenY = [UIScreen mainScreen].bounds.size.height;
     pubConfig.videoWidth = screenY;
     pubConfig.videoHeight = screenX;
 

@@ -430,7 +430,7 @@ int kHeightStart = 300;
     roomConfig.ext = jsonStr;
     roomConfig.nickName = [NSString stringWithCString:[[EMDemoOption sharedOptions].nickName UTF8String] encoding:NSUTF8StringEncoding];
     roomConfig.isMerge = NO;
-    roomConfig.isRecord = NO;
+    roomConfig.isRecord = [EMDemoOption sharedOptions].record;
     roomConfig.isSupportWechatMiniProgram = YES;
     if([EMDemoOption sharedOptions].openCDN) {
         LiveConfig* liveconfig = [[LiveConfig alloc] init];

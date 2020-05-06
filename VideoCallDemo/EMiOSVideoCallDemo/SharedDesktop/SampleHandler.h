@@ -10,4 +10,6 @@
 
 @interface SampleHandler : RPBroadcastSampleHandler
 @property (nonatomic) NSUserDefaults *sharedDefaults;
+@property (nonatomic) unsigned long buffersize;
+@property (nonatomic) uint8_t * mYuvbuffer;
 @end

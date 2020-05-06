@@ -34,6 +34,7 @@ typedef NS_ENUM(int,EMResolutionRate) {
 @property (nonatomic) NSString* roomPswd;
 @property (nonatomic) EMCallConference* conference;
 @property (nonatomic) NSMutableDictionary* headImageDic;
+@property (nonatomic) BOOL record;
 
 + (instancetype)sharedOptions;
 - (void)archive;
