@@ -18,6 +18,8 @@ NSString* kHeadImage = @"headimage";
 NSString* kCDN = @"cdn";
 NSString* kCDNUrl = @"cdnUrl";
 NSString* kRecord = @"record";
+NSString* kMerge = @"merge";
+NSString* kBackCamera = @"backCamera";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -29,7 +31,7 @@ NSString* kRecord = @"record";
 - (void)initServerOptions
 {
     self.appkey = @"easemob-demo#chatdemoui";
-    self.specifyServer = YES;
+    self.specifyServer = NO;
     self.chatServer = @"116.85.43.118";
     self.chatPort = 6717;
     self.restServer = @"a1-hsb.easemob.com";
@@ -37,7 +39,12 @@ NSString* kRecord = @"record";
     self.openMicrophone = YES;
     self.resolutionrate = ResolutionRate_480p;
     self.nickName = @"";
-    self.cdnUrl = @"rtmp://livepush.easemob.com/meeting/lxm?auth_key=1588249443-0-0-c8e144ca1a92aab190b4248b8144cb5a";
+    self.cdnUrl = @"";
+    self.isMerge = NO;
+    self.isRecord = NO;
+    self.isBackCamera = NO;
+    self.liveWidth = 640;
+    self.liveHeight = 480;
 }
 
 - (void)archive
@@ -57,7 +64,9 @@ NSString* kRecord = @"record";
     [aCoder encodeObject:self.nickName forKey:kNickname];
     [aCoder encodeObject:self.headImage forKey:kHeadImage];
     [aCoder encodeBool:self.openCDN forKey:kCDN];
-    [aCoder encodeBool:self.record forKey:kRecord];
+    [aCoder encodeBool:self.isRecord forKey:kRecord];
+    [aCoder encodeBool:self.isMerge forKey:kMerge];
+    [aCoder encodeBool:self.isBackCamera forKey:kBackCamera];
     [aCoder encodeObject:self.cdnUrl forKey:kCDNUrl];
 }
 
@@ -75,7 +84,9 @@ NSString* kRecord = @"record";
         self.headImage = [aDecoder decodeObjectForKey:kHeadImage];
         self.cdnUrl = [aDecoder decodeObjectForKey:kCDNUrl];
         self.openCDN = [aDecoder decodeBoolForKey:kCDN];
-        self.record = [aDecoder decodeBoolForKey:kRecord];
+        self.isRecord = [aDecoder decodeBoolForKey:kRecord];
+        self.isMerge = [aDecoder decodeBoolForKey:kMerge];
+        self.isBackCamera = [aDecoder decodeBoolForKey:kBackCamera];
     }
     return self;
 }

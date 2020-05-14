@@ -227,6 +227,7 @@
                 [EMDemoOption sharedOptions].conference.adminIds = [aCall.adminIds copy];
                 [EMDemoOption sharedOptions].conference.memberCount = aCall.memberCount;
                 [EMDemoOption sharedOptions].conference.speakerIds = [aCall.speakerIds copy];
+                [EMDemoOption sharedOptions].conference.audiencesCount = aCall.audiencesCount;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.tableView reloadData];
                     ConferenceViewController* confrVC = [self getConfVC];

@@ -61,7 +61,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section == 2)
     {
-        return 6;
+        return 8;
     }
     return 1;
 }
@@ -162,23 +162,41 @@
                 }
                 if(row == 3) {
                     [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
-                    cell.textLabel.text = @"开启服务端录制(创建者设置有效)";
+                    cell.textLabel.text = @"使用后置摄像头";
                     UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
                     switchControl.tag = section*10 + row + 10000;
                     [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
-                    [switchControl setOn:[EMDemoOption sharedOptions].record];
+                    [switchControl setOn:[EMDemoOption sharedOptions].isBackCamera];
                     [cell.contentView addSubview:switchControl];
                 }
                 if(row == 4) {
                     [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
-                    cell.textLabel.text = @"开启CDN推流(创建者设置有效)";
+                    cell.textLabel.text = @"开启服务端录制";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].isRecord];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 5) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"开启录制合流";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].isMerge];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 6) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"开启CDN推流";
                     UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
                     switchControl.tag = section*10 + row + 10000;
                     [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
                     [switchControl setOn:[EMDemoOption sharedOptions].openCDN];
                     [cell.contentView addSubview:switchControl];
                 }
-                if(row == 5) {
+                if(row == 7) {
                     cell.textLabel.text = [NSString stringWithFormat:@"cdn推流Url:%@",[EMDemoOption sharedOptions].cdnUrl ];
                     cell.textLabel.numberOfLines = 0;
                     
@@ -307,9 +325,14 @@
     } else if (tag == 1 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].openMicrophone = [aSwitch isOn];
     } else if (tag == 3 + 10000 + 10*2) {
-        [EMDemoOption sharedOptions].record = [aSwitch isOn];
-        [self.tableView reloadData];
+        [EMDemoOption sharedOptions].isBackCamera = [aSwitch isOn];
     } else if (tag == 4 + 10000 + 10*2) {
+        [EMDemoOption sharedOptions].isRecord = [aSwitch isOn];
+        [self.tableView reloadData];
+    } else if (tag == 5 + 10000 + 10*2) {
+        [EMDemoOption sharedOptions].isMerge = [aSwitch isOn];
+        [self.tableView reloadData];
+    } else if (tag == 6 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].openCDN = [aSwitch isOn];
         [self.tableView reloadData];
     }

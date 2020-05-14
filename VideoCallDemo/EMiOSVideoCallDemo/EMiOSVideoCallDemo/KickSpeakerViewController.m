@@ -24,6 +24,7 @@
 @property(nonatomic) UIButton* selectButton;
 @property(nonatomic) NSString* speakerName;
 @property (nonatomic) NSString* speakerId;
+@property (nonatomic) NSMutableDictionary* normalStreams;
 @end
 
 @implementation KickSpeakerViewController
@@ -31,6 +32,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     _selectButton = nil;
+    self.normalStreams = [NSMutableDictionary dictionary];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -53,7 +55,16 @@
     ConferenceViewController* confVC = [self getConfVC];
     if(confVC) {
         NSArray* keys = [confVC.streamItemDict allKeys];
-        return keys.count;
+        [_normalStreams removeAllObjects];
+        for(NSString* key in keys) {
+            EMStreamItem*value = [confVC.streamItemDict objectForKey:key];
+            if(value && value.stream) {
+                if(value.stream.type == EMStreamTypeDesktop)
+                    continue;
+            }
+            [_normalStreams setObject:value forKey:key];
+        }
+        return _normalStreams.count;
     }
     return [EMDemoOption sharedOptions].conference.speakerIds.count;
 }
@@ -103,8 +114,8 @@
         [cell addSubview:checkbox];
         ConferenceViewController* confVC = [self getConfVC];
         if(confVC) {
-            NSArray* keys = [confVC.streamItemDict allKeys];
-            EMStreamItem*item = [confVC.streamItemDict objectForKey:keys[row]];
+            NSArray* keys = [_normalStreams allKeys];
+            EMStreamItem*item = [_normalStreams objectForKey:keys[row]];
             if(item){
                 //cell.textLabel.text = item.videoView.nameLabel.text;
                 cell.textLabel.numberOfLines = 0;

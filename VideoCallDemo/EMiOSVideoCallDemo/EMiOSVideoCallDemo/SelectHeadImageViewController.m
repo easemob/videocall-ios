@@ -100,8 +100,7 @@
             headimageView.image = [UIImage imageNamed:@"APP"];
         headimageView.contentMode = UIViewContentModeScaleAspectFill;
         [cell addSubview:headimageView];
-        
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
         UIButton *checkbox = [UIButton buttonWithType:UIButtonTypeCustom];
          
         CGRect checkboxRect = CGRectMake(self.tableView.frame.size.width - 50, 10, 40, 40);

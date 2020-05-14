@@ -269,7 +269,6 @@ int kHeightStart = 300;
 {
     [[EMClient sharedClient].chatManager addDelegate:self delegateQueue:nil];
     [[EMClient sharedClient].conferenceManager addDelegate:self delegateQueue:nil];
-    [[EMClient sharedClient].conferenceManager enableStatistics:YES];
 }
 
 -(void)settingAction:(UIButton*)settingButton
@@ -410,11 +409,13 @@ int kHeightStart = 300;
         [EMDemoOption sharedOptions].conference = aCall;
         [EMDemoOption sharedOptions].roomName = roomName;
         [EMDemoOption sharedOptions].roomPswd = pswd;
+        [EMDemoOption sharedOptions].muteAll = NO;
        
         ConferenceViewController* conferenceViewControler = [[ConferenceViewController alloc] initWithConfence:aCall role:role];
         [weakself.navigationController pushViewController:conferenceViewControler animated:NO];
         self.joinAsSpeaker.enabled = YES;
         self.joinAsAudience.enabled = YES;
+        [[EMClient sharedClient].conferenceManager enableStatistics:YES];
     };
     RoomConfig* roomConfig = [[RoomConfig alloc] init];
     roomConfig.confrType = EMConferenceTypeCommunication;
@@ -429,17 +430,20 @@ int kHeightStart = 300;
     }
     roomConfig.ext = jsonStr;
     roomConfig.nickName = [NSString stringWithCString:[[EMDemoOption sharedOptions].nickName UTF8String] encoding:NSUTF8StringEncoding];
-    roomConfig.isMerge = NO;
-    roomConfig.isRecord = [EMDemoOption sharedOptions].record;
-    roomConfig.isSupportWechatMiniProgram = YES;
+    roomConfig.isMerge = [EMDemoOption sharedOptions].isMerge;;
+    roomConfig.isRecord = [EMDemoOption sharedOptions].isRecord;
     if([EMDemoOption sharedOptions].openCDN) {
         LiveConfig* liveconfig = [[LiveConfig alloc] init];
         CDNCanvas* canvas = [[CDNCanvas alloc] init];
-        canvas.bgclr = 0x000000;
-        canvas.width = 640;
-        canvas.height = 480;
+        canvas.fps = 18;
+        canvas.kbps = 900;
+        canvas.codec = @"H264";
+        canvas.bgclr = 0x0000ff;
+        canvas.width = [EMDemoOption sharedOptions].liveWidth;
+        canvas.height = [EMDemoOption sharedOptions].liveHeight;
         liveconfig.canvas = canvas;
         liveconfig.cdnUrl = [EMDemoOption sharedOptions].cdnUrl;
+        liveconfig.layoutStyle = CUSTOM;
         roomConfig.liveConfig = liveconfig;
     }
     
