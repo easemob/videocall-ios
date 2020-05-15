@@ -18,7 +18,8 @@ cd ./VideoCallDemo/EMiOSVideoCallDemo
 pod install
 
 ```
-3.点击iOSVideoCallDemo.xcworkspace进入Demo
+3.下载3.6.7SDK到当前工程下，并引入工程
+4.点击iOSVideoCallDemo.xcworkspace进入Demo
 
 ## 代码结构
 多人音视频Demo主要包含3个target，SharedDesktop和SharedDesktopSetupUI用于实现共享桌面功能，EMiOSVideoCallDemo是注意target，实现类如下：
