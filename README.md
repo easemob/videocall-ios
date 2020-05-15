@@ -21,7 +21,7 @@ pod install
 3.点击iOSVideoCallDemo.xcworkspace进入Demo
 
 ## 代码结构
-多人音视频Demo主要包含的类如下：
+多人音视频Demo主要包含3个target，SharedDesktop和SharedDesktopSetupUI用于实现共享桌面功能，EMiOSVideoCallDemo是注意target，实现类如下：
 
 RoomJoinViewController 加入房间页面
 
@@ -37,7 +37,15 @@ KickSpeakerViewController 选人下麦页面
 
 EMStreamView                   视频小窗口类
 
-EMDemoOption                   会议管理类
+EMDemoOption                   会议管理类，存储会议的设置和单例属性
+
+ChangeRoleView                 管理员处理上麦申请页面
+
+ProfileVidwController          个人资料页面
+
+UpdateNicknameViewController   修改昵称页面
+
+SelectHeadImageViewController  修改头像页面
 
 
 ## 集成文档
