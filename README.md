@@ -19,6 +19,7 @@ pod install
 
 ```
 3.下载3.6.7SDK到当前工程下，并引入工程
+
 4.点击iOSVideoCallDemo.xcworkspace进入Demo
 
 ## 代码结构
