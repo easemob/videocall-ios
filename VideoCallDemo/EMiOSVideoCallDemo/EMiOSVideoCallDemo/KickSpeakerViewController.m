@@ -23,6 +23,8 @@
 @interface KickSpeakerViewController ()
 @property(nonatomic) UIButton* selectButton;
 @property(nonatomic) NSString* speakerName;
+@property (nonatomic) NSString* speakerId;
+@property (nonatomic) NSMutableDictionary* normalStreams;
 @end
 
 @implementation KickSpeakerViewController
@@ -30,6 +32,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     _selectButton = nil;
+    self.normalStreams = [NSMutableDictionary dictionary];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -52,7 +55,16 @@
     ConferenceViewController* confVC = [self getConfVC];
     if(confVC) {
         NSArray* keys = [confVC.streamItemDict allKeys];
-        return keys.count;
+        [_normalStreams removeAllObjects];
+        for(NSString* key in keys) {
+            EMStreamItem*value = [confVC.streamItemDict objectForKey:key];
+            if(value && value.stream) {
+                if(value.stream.type == EMStreamTypeDesktop)
+                    continue;
+            }
+            [_normalStreams setObject:value forKey:key];
+        }
+        return _normalStreams.count;
     }
     return [EMDemoOption sharedOptions].conference.speakerIds.count;
 }
@@ -102,8 +114,8 @@
         [cell addSubview:checkbox];
         ConferenceViewController* confVC = [self getConfVC];
         if(confVC) {
-            NSArray* keys = [confVC.streamItemDict allKeys];
-            EMStreamItem*item = [confVC.streamItemDict objectForKey:keys[row]];
+            NSArray* keys = [_normalStreams allKeys];
+            EMStreamItem*item = [_normalStreams objectForKey:keys[row]];
             if(item){
                 //cell.textLabel.text = item.videoView.nameLabel.text;
                 cell.textLabel.numberOfLines = 0;
@@ -201,16 +213,25 @@
             
             [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[selectName] role:EMConferenceRoleAudience completion:^(EMError *aError) {
                 if(aError){
+                    [[[EMClient sharedClient] conferenceManager] responseReqSpeaker:[EMDemoOption sharedOptions].conference memId:weakself.speakerId result:1 completion:^(EMError *aError) {
+                    }];
                     [EMAlertController showErrorAlert:@"下麦失败"];
                 }else
                 if(weakself.speakerName){
-                    NSString* newmemid = [NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,weakself.speakerName];
+                    NSString* newmemid = weakself.speakerName;
                     [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberNames:@[newmemid] role:EMConferenceRoleSpeaker completion:^(EMError *aError) {
                         if(aError)
                         {
                             [EMAlertController showErrorAlert:@"上麦失败"];
+                            [[[EMClient sharedClient] conferenceManager] responseReqSpeaker:[EMDemoOption sharedOptions].conference memId:weakself.speakerId result:1 completion:^(EMError *aError) {
+                            }];
                         }else
+                        {
+                            [[[EMClient sharedClient] conferenceManager] responseReqSpeaker:[EMDemoOption sharedOptions].conference memId:weakself.speakerId result:0 completion:^(EMError *aError) {
+                            }];
                             [EMAlertController showSuccessAlert:@"上麦成功"];
+                            return;
+                        }
                     }];
                 }
             }];
@@ -218,9 +239,10 @@
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
--(void)setNewSpeaker:(NSString*)name
+-(void)setNewSpeaker:(NSString*)name memId:(NSString *)memId
 {
     _speakerName = [name copy];
+    _speakerId = [memId copy];
 }
 /*
 // Override to support conditional editing of the table view.

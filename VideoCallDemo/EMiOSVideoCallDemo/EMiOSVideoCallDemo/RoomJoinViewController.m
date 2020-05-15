@@ -269,7 +269,6 @@ int kHeightStart = 300;
 {
     [[EMClient sharedClient].chatManager addDelegate:self delegateQueue:nil];
     [[EMClient sharedClient].conferenceManager addDelegate:self delegateQueue:nil];
-    [[EMClient sharedClient].conferenceManager enableStatistics:YES];
 }
 
 -(void)settingAction:(UIButton*)settingButton
@@ -382,7 +381,10 @@ int kHeightStart = 300;
             if(aError.code == EMErrorInvalidPassword){
                 weakself.errorLable.text = @"密码错误";
             }else
-            if(aError.code == EMErrorCallSpeakerFull){
+            if (aError.code == EMErrorCallCDNError) {
+                weakself.errorLable.text = @"cdn推流设置错误";
+            }else
+            if (aError.code == EMErrorCallSpeakerFull){
                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"" message:@"主播人数已满，以观众身份进入" preferredStyle:UIAlertControllerStyleAlert];
                 
                 UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action){
@@ -407,11 +409,13 @@ int kHeightStart = 300;
         [EMDemoOption sharedOptions].conference = aCall;
         [EMDemoOption sharedOptions].roomName = roomName;
         [EMDemoOption sharedOptions].roomPswd = pswd;
+        [EMDemoOption sharedOptions].muteAll = NO;
        
         ConferenceViewController* conferenceViewControler = [[ConferenceViewController alloc] initWithConfence:aCall role:role];
         [weakself.navigationController pushViewController:conferenceViewControler animated:NO];
         self.joinAsSpeaker.enabled = YES;
         self.joinAsAudience.enabled = YES;
+        [[EMClient sharedClient].conferenceManager enableStatistics:YES];
     };
     RoomConfig* roomConfig = [[RoomConfig alloc] init];
     roomConfig.confrType = EMConferenceTypeCommunication;
@@ -426,9 +430,23 @@ int kHeightStart = 300;
     }
     roomConfig.ext = jsonStr;
     roomConfig.nickName = [NSString stringWithCString:[[EMDemoOption sharedOptions].nickName UTF8String] encoding:NSUTF8StringEncoding];
-    roomConfig.isMerge = NO;
-    roomConfig.isRecord = NO;
-    roomConfig.isSupportWechatMiniProgram = NO;
+    roomConfig.isMerge = [EMDemoOption sharedOptions].isMerge;;
+    roomConfig.isRecord = [EMDemoOption sharedOptions].isRecord;
+    if([EMDemoOption sharedOptions].openCDN) {
+        LiveConfig* liveconfig = [[LiveConfig alloc] init];
+        CDNCanvas* canvas = [[CDNCanvas alloc] init];
+        canvas.fps = 18;
+        canvas.kbps = 900;
+        canvas.codec = @"H264";
+        canvas.bgclr = 0x0000ff;
+        canvas.width = [EMDemoOption sharedOptions].liveWidth;
+        canvas.height = [EMDemoOption sharedOptions].liveHeight;
+        liveconfig.canvas = canvas;
+        liveconfig.cdnUrl = [EMDemoOption sharedOptions].cdnUrl;
+        liveconfig.layoutStyle = CUSTOM;
+        roomConfig.liveConfig = liveconfig;
+    }
+    
     [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:pswd role:role roomConfig:roomConfig completion:block];
 }
 

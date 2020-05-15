@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSString* memName;
 
+@property (nonatomic) NSString* memId;
+
 // 定义回调
 typedef void(^KickMember)(NSString*);
 @property (nonatomic,copy) KickMember kickMem;

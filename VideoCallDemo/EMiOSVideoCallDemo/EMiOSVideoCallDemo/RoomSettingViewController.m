@@ -197,6 +197,19 @@
     return @"";
 }
 
+- (NSString *)getAdminId
+{
+    NSString *adminName = [[EMDemoOption sharedOptions].conference.adminIds objectAtIndex:0];
+    ConferenceViewController* pVC = [self getConfVC];
+    if([adminName length] > 0 &&pVC) {
+        EMCallMember * member = [pVC.membersDict objectForKey:adminName];
+        if(member) {
+            return member.memberId;
+        }
+    }
+    return nil;
+}
+
 - (void)changeRole:(UIButton*)button
 {
     if(button.tag == 4000){
@@ -214,6 +227,7 @@
                 [EMDemoOption sharedOptions].conference.adminIds = [aCall.adminIds copy];
                 [EMDemoOption sharedOptions].conference.memberCount = aCall.memberCount;
                 [EMDemoOption sharedOptions].conference.speakerIds = [aCall.speakerIds copy];
+                [EMDemoOption sharedOptions].conference.audiencesCount = aCall.audiencesCount;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.tableView reloadData];
                     ConferenceViewController* confrVC = [self getConfVC];
@@ -224,14 +238,16 @@
             }];
         }];
     }else{
-        [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:[EMDemoOption sharedOptions].userid value:@"request_tobe_admin" completion:^(EMError *aError) {
-            if(!aError){
-                __weak typeof(self) weakself = self;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [EMAlertController showInfoAlert:@"主持人申请已提交，请等待主持人审核"];
-                });
-            }
-        }];
+        NSString* adminId = [self getAdminId];
+        if([adminId length] > 0) {
+            [[[EMClient sharedClient] conferenceManager] requestTobeAdmin:[EMDemoOption sharedOptions].conference adminId:adminId completion:^(EMError *aError) {
+                if(!aError){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [EMAlertController showInfoAlert:@"主持人申请已提交，请等待主持人审核"];
+                    });
+                }
+            }];
+        }
     }
 }
 

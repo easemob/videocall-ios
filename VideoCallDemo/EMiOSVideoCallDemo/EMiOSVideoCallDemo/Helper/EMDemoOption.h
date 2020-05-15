@@ -27,11 +27,19 @@ typedef NS_ENUM(int,EMResolutionRate) {
 @property (nonatomic, copy) NSString *headImage;
 @property (nonatomic) BOOL openCamera;
 @property (nonatomic) BOOL openMicrophone;
+@property (nonatomic) BOOL openCDN;
+@property (nonatomic) NSString* cdnUrl;
 @property (nonatomic) EMResolutionRate resolutionrate;
 @property (nonatomic) NSString* roomName;
 @property (nonatomic) NSString* roomPswd;
 @property (nonatomic) EMCallConference* conference;
 @property (nonatomic) NSMutableDictionary* headImageDic;
+@property (nonatomic) BOOL isRecord;
+@property (nonatomic) BOOL isMerge;
+@property (nonatomic) BOOL isBackCamera;
+@property (nonatomic) long liveWidth;
+@property (nonatomic) long liveHeight;
+@property (nonatomic) BOOL muteAll;
 
 + (instancetype)sharedOptions;
 - (void)archive;

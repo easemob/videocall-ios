@@ -15,6 +15,11 @@ NSString* kMicrophone = @"microphone";
 NSString* kResolution = @"resoltionrate";
 NSString* kNickname = @"nickname";
 NSString* kHeadImage = @"headimage";
+NSString* kCDN = @"cdn";
+NSString* kCDNUrl = @"cdnUrl";
+NSString* kRecord = @"record";
+NSString* kMerge = @"merge";
+NSString* kBackCamera = @"backCamera";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -34,6 +39,12 @@ NSString* kHeadImage = @"headimage";
     self.openMicrophone = YES;
     self.resolutionrate = ResolutionRate_480p;
     self.nickName = @"";
+    self.cdnUrl = @"";
+    self.isMerge = NO;
+    self.isRecord = NO;
+    self.isBackCamera = NO;
+    self.liveWidth = 640;
+    self.liveHeight = 480;
 }
 
 - (void)archive
@@ -52,6 +63,11 @@ NSString* kHeadImage = @"headimage";
     [aCoder encodeInt:self.resolutionrate forKey:kResolution];
     [aCoder encodeObject:self.nickName forKey:kNickname];
     [aCoder encodeObject:self.headImage forKey:kHeadImage];
+    [aCoder encodeBool:self.openCDN forKey:kCDN];
+    [aCoder encodeBool:self.isRecord forKey:kRecord];
+    [aCoder encodeBool:self.isMerge forKey:kMerge];
+    [aCoder encodeBool:self.isBackCamera forKey:kBackCamera];
+    [aCoder encodeObject:self.cdnUrl forKey:kCDNUrl];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -66,6 +82,11 @@ NSString* kHeadImage = @"headimage";
         self.resolutionrate = reso + ResolutionRate_720p;
         self.nickName = [aDecoder decodeObjectForKey:kNickname];
         self.headImage = [aDecoder decodeObjectForKey:kHeadImage];
+        self.cdnUrl = [aDecoder decodeObjectForKey:kCDNUrl];
+        self.openCDN = [aDecoder decodeBoolForKey:kCDN];
+        self.isRecord = [aDecoder decodeBoolForKey:kRecord];
+        self.isMerge = [aDecoder decodeBoolForKey:kMerge];
+        self.isBackCamera = [aDecoder decodeBoolForKey:kBackCamera];
     }
     return self;
 }
