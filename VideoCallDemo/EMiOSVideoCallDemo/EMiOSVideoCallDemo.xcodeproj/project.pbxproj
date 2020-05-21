@@ -24,6 +24,8 @@
 		C00F20162400294F007174DE /* microphonenclose@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20132400294E007174DE /* microphonenclose@3x.png */; };
 		C00F20172400294F007174DE /* microphonenclose.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20142400294F007174DE /* microphonenclose.png */; };
 		C00F20182400294F007174DE /* microphonenclose@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20152400294F007174DE /* microphonenclose@2x.png */; };
+		C014363824754C4C0054A840 /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C014363724754C4C0054A840 /* Hyphenate.framework */; };
+		C014363924754C4C0054A840 /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C014363724754C4C0054A840 /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C01FAC03242B5CDC004774E1 /* Opposite.png in Resources */ = {isa = PBXBuildFile; fileRef = C01FAC02242B5CDC004774E1 /* Opposite.png */; };
 		C03E6BE324221675002C17EE /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C03E6BE224221675002C17EE /* ProfileViewController.m */; };
 		C03E6BE624221EE7002C17EE /* UpdateNicknameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C03E6BE524221EE7002C17EE /* UpdateNicknameViewController.m */; };
@@ -295,6 +297,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				C014363924754C4C0054A840 /* Hyphenate.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,6 +336,7 @@
 		C00F20132400294E007174DE /* microphonenclose@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "microphonenclose@3x.png"; sourceTree = "<group>"; };
 		C00F20142400294F007174DE /* microphonenclose.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = microphonenclose.png; sourceTree = "<group>"; };
 		C00F20152400294F007174DE /* microphonenclose@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "microphonenclose@2x.png"; sourceTree = "<group>"; };
+		C014363724754C4C0054A840 /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Hyphenate.framework; sourceTree = "<group>"; };
 		C01FAC02242B5CDC004774E1 /* Opposite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Opposite.png; sourceTree = "<group>"; };
 		C03E6BE124221675002C17EE /* ProfileViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		C03E6BE224221675002C17EE /* ProfileViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
@@ -611,6 +615,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */,
+				C014363824754C4C0054A840 /* Hyphenate.framework in Frameworks */,
 				C0D82B032424B10100C7E6C3 /* MediaPlayer.framework in Frameworks */,
 				0773481ED2F14ED39E0D492C /* libPods-EMiOSVideoCallDemo.a in Frameworks */,
 			);
@@ -639,6 +644,7 @@
 		7B300057D44D5796FAA0433A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C014363724754C4C0054A840 /* Hyphenate.framework */,
 				C0D82B022424B10100C7E6C3 /* MediaPlayer.framework */,
 				C0A7748B240767B300E44315 /* MessageUI.framework */,
 				2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */,
@@ -1632,7 +1638,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				MODULE_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "环信视频会议";
@@ -1676,7 +1682,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				MODULE_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "环信视频会议";
