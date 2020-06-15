@@ -1160,6 +1160,22 @@ static bool gCanSharedDesktop = YES;
     }
 }
 
+- (void)DesktopStreamDidPubFailed:(EMCallConference *)aConference error:(EMError*)aError
+{
+    if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
+        NSString* msg = [NSString stringWithFormat:@"Pub共享流失败：%@",aError.errorDescription ];
+        [_timeRecord invalidate];
+        _timeRecord = nil;
+        __weak typeof(self) weakself = self;
+        [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:weakself.desktopStreamId completion:^(EMError *aError) {
+            if(weakself.desktopStreamId != nil)
+                [weakself.myStreamIds removeObjectForKey:weakself.desktopStreamId];
+            weakself.desktopStreamId = nil;
+        }
+        ];
+        [EMAlertController showInfoAlert:msg];
+    }
+}
 - (void)streamUpdateDidFailed:(EMCallConference *)aConference error:(EMError *)aError
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
