@@ -166,7 +166,9 @@
 
     UIAlertAction *allowInteract = [UIAlertAction actionWithTitle:@"允许白板成员互动" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[[EMClient sharedClient] conferenceManager] updateWhiteboardRoomWithRoomId:weakself.wb.roomId username:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken intract:YES allUsers:YES serventIds:nil completion:^(EMError *aError) {
-            
+            if(!aError) {
+                [weakself.wkWebView reload];
+            }
         }];
     }];
     [alertController addAction:allowInteract];
