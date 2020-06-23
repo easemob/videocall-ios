@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WhiteBoardViewController : UIViewController
-- (instancetype)initWithWBUrl:(EMWhiteboard*)wb;
+- (instancetype)initWithWBUrl:(EMWhiteboard*)wb WKView:(WKWebView*)wkView;
+-(void)back;
 @end
 
 NS_ASSUME_NONNULL_END

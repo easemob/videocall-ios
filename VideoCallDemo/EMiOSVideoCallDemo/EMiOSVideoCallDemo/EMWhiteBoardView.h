@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,8 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface EMWhiteBoardView : UIView
-@property (nonatomic) UILabel* nameLabel;
 @property (nonatomic, weak) id<EMWhiteBoardViewDelegate> delegate;
+
+-(void)setWKView:(WKWebView*)wkView;
 @end
 
 NS_ASSUME_NONNULL_END

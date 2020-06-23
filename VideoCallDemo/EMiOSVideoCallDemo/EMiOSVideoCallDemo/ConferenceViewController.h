@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAdminView;
 
+-(void) wbBack;
+
 - (instancetype)initWithConfence:(EMCallConference*)call role:(EMConferenceRole)role;
 @end
 

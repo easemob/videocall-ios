@@ -9,9 +9,9 @@
 #import "WhiteBoardViewController.h"
 #import "AppDelegate.h"
 #import "EMAlertController.h"
-#import <WebKit/WebKit.h>
+#import "ConferenceViewController.h"
 
-@interface WhiteBoardViewController ()<WKNavigationDelegate>
+@interface WhiteBoardViewController ()
 @property (nonatomic) WKWebView *wkWebView;
 @property (nonatomic) EMWhiteboard* wb;
 @property (nonatomic) UIButton* backButton;
@@ -32,6 +32,8 @@
 {
     AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
     appDelegate.allowRotation = YES;
+    
+    [appDelegate application:[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:self.view.window];
     //调用横屏代码
         
     NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
@@ -41,12 +43,16 @@
     NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft];
        
     [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+    
+    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
     appDelegate.allowRotation = NO;
+    
+    [appDelegate application:[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:self.view.window];
     
     NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
        
@@ -55,13 +61,16 @@
     NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
        
     [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+    
+    [UIViewController attemptRotationToDeviceOrientation];
 }
 
-- (instancetype)initWithWBUrl:(EMWhiteboard*)wb
+- (instancetype)initWithWBUrl:(EMWhiteboard*)wb WKView:(WKWebView*)wkView
 {
     self = [super init];
     if(self) {
         _wb = wb;
+        _wkWebView = wkView;
     }
     return self;
 }
@@ -97,13 +106,14 @@
     config.preferences.javaScriptEnabled = YES;
     config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
     
-    _wkWebView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) configuration:config];
-    [_wkWebView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:_wb.roomURL]]];
-    _wkWebView.navigationDelegate = self;
-    [self.view addSubview:_wkWebView];
-    [self.wkWebView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
-    }];
+    if(_wkWebView)
+    {
+        [_wkWebView removeFromSuperview];
+        [self.view addSubview:_wkWebView];
+        [self.wkWebView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(self.view);
+        }];
+    };
     self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.backButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
     [self.backButton setImage:[UIImage imageNamed:@"wb-back"] forState:UIControlStateNormal];
@@ -133,6 +143,7 @@
         self.interactButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
         [self.interactButton setImage:[UIImage imageNamed:@"wb-interact"] forState:UIControlStateNormal];
         [self.interactButton addTarget:self action:@selector(interactAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.interactButton setHidden:YES];
         [self.view addSubview:self.interactButton];
         [self.interactButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(self.view).multipliedBy(1.9);
@@ -143,18 +154,23 @@
     }
 }
 
--(void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+-(ConferenceViewController*) getConfVC
 {
-    //如果是跳转一个新页面
-    if (navigationAction.targetFrame == nil) {
-        [_wkWebView loadRequest:navigationAction.request];
+    UIViewController* lastVC =  [self.navigationController.viewControllers objectAtIndex:(self.navigationController.viewControllers.count-2)];
+    if([lastVC isKindOfClass:[ConferenceViewController class]]){
+        ConferenceViewController* confVC = (ConferenceViewController*)lastVC;
+        return confVC;
     }
-    decisionHandler(WKNavigationActionPolicyAllow);
+    return nil;
 }
 
 - (void)back
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        ConferenceViewController*conVC = [self getConfVC];
+        if(conVC) {
+            [conVC wbBack];
+        }
         [self.navigationController popViewControllerAnimated:YES];
     });
 }
@@ -168,6 +184,9 @@
         [[[EMClient sharedClient] conferenceManager] updateWhiteboardRoomWithRoomId:weakself.wb.roomId username:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken intract:YES allUsers:YES serventIds:nil completion:^(EMError *aError) {
             if(!aError) {
                 [weakself.wkWebView reload];
+                [EMAlertController showSuccessAlert:@"操作成功"];
+            }else{
+                [EMAlertController showErrorAlert:[NSString stringWithFormat:@"操作失败：%@",aError.errorDescription]];
             }
         }];
     }];
@@ -175,7 +194,10 @@
 
     UIAlertAction *forbidInteract = [UIAlertAction actionWithTitle:@"禁止白板成员互动" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[[EMClient sharedClient] conferenceManager] updateWhiteboardRoomWithRoomId:weakself.wb.roomId username:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken intract:NO allUsers:YES serventIds:nil completion:^(EMError *aError) {
-            
+            if(aError) {
+                [EMAlertController showErrorAlert:[NSString stringWithFormat:@"操作失败：%@",aError.errorDescription]];
+            }else
+                [EMAlertController showSuccessAlert:@"操作成功"];
         }];
     }];
     [alertController addAction:forbidInteract];
@@ -193,10 +215,12 @@
         [[[EMClient sharedClient] conferenceManager] destroyWhiteboardRoomWithUsername:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken roomId:self.wb.roomId completion:^(EMError *aError) {
             if(!aError) {
                 [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:@"whiteBoard" completion:^(EMError *aError) {
-                    [self back];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    });
                 }];
             }else{
-                [EMAlertController showErrorAlert:@"退出失败"];
+                [EMAlertController showErrorAlert:[NSString stringWithFormat:@"退出失败：%@",aError.errorDescription]];
             }
         }];
     }]];

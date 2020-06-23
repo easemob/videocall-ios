@@ -29,6 +29,7 @@
 @property (nonatomic) EMWhiteBoardView* whiteBoardView;
 @property (nonatomic) EMWhiteboard *whiteBoard;
 @property (nonatomic) NSString* wbCreator;
+@property (nonatomic) WKWebView *wkWebView;
 @end
 
 @implementation ConferenceViewController
@@ -86,7 +87,7 @@ static bool gCanSharedDesktop = YES;
     [[[EMClient sharedClient] conferenceManager] startMonitorSpeaker:[EMDemoOption sharedOptions].conference timeInterval:2 completion:^(EMError *aError) {
         
     }];
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 12.0, *)) {
         _picker.showsMicrophoneButton = NO;
         _picker = [[RPSystemBroadcastPickerView alloc] initWithFrame:CGRectMake(10, 60, 100, 40)];
         //你的app对用upload extension的 bundle id， 必须要填写对
@@ -202,12 +203,17 @@ static bool gCanSharedDesktop = YES;
     [self.sharedDesktopButton setTintColor:[UIColor blackColor]];
     [self.view addSubview:self.sharedDesktopButton];
     
-    self.whiteBoardButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    UIView *view = [[UIView alloc] init];
+    view.frame = CGRectMake(self.view.bounds.size.width - 100, 100, 40, 40);
+
+    view.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.25].CGColor;
+    view.layer.cornerRadius = 20;
+    [self.view addSubview:view];
+    self.whiteBoardButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.whiteBoardButton.frame = CGRectMake(self.view.bounds.size.width - 100, 100, 40, 40);
     [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateNormal];
     [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateSelected];
     [self.whiteBoardButton addTarget:self action:@selector(joinWBAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.whiteBoardButton setTintColor:[UIColor blackColor]];
     [self.view addSubview:self.whiteBoardButton];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-75, self.view.bounds.size.width, 75) style:UITableViewStylePlain];
@@ -220,11 +226,21 @@ static bool gCanSharedDesktop = YES;
 
 -(void)joinWBAction
 {
-    if(self.whiteBoard) {
-        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:self.whiteBoard];
+    if(self.whiteBoard && self.wkWebView) {
+        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:self.whiteBoard WKView:self.wkWebView];
         [self.navigationController pushViewController:wbVC animated:NO];
     }else
         [self _joinWhiteBoardWithName:[EMDemoOption sharedOptions].roomName password:[EMDemoOption sharedOptions].roomPswd];
+}
+
+-(void)wbBack
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(self.wkWebView && self.whiteBoardView) {
+            [self.whiteBoardView setWKView:self.wkWebView];
+        }
+    });
+    
 }
 
 -(void)_joinWhiteBoardWithName:(NSString*)whiteBoardName password:(NSString*)password
@@ -237,10 +253,21 @@ static bool gCanSharedDesktop = YES;
             weakself.whiteBoardView.delegate = self;
             [weakself.scrollView addSubview:weakself.whiteBoardView];
             [weakself updateScrollView];
-            WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard];
+            WKWebViewConfiguration *config = [WKWebViewConfiguration new];
+            config.preferences = [WKPreferences new];
+            config.preferences.minimumFontSize = 10;
+            config.preferences.javaScriptEnabled = YES;
+            config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
+            weakself.wkWebView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) configuration:config];
+            [weakself.wkWebView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:aWhiteboard.roomURL]]];
+            WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard WKView:weakself.wkWebView];
             [weakself.navigationController pushViewController:wbVC animated:NO];
         } else {
             if (aError.code == EMErrorCallRoomNotExist) {
+                if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAudience) {
+                    [EMAlertController showErrorAlert:@"观众不能创建白板"];
+                    return;
+                }
                 [[EMClient sharedClient].conferenceManager createWhiteboardRoomWithUsername:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken roomName:whiteBoardName roomPassword:password interact:YES completion:^(EMWhiteboard *aWhiteboard, EMError *aError) {
                     if (!aError) {
                         weakself.whiteBoard = aWhiteboard;
@@ -260,7 +287,14 @@ static bool gCanSharedDesktop = YES;
                         weakself.whiteBoardView.delegate = self;
                         [weakself.scrollView addSubview:weakself.whiteBoardView];
                         [weakself updateScrollView];
-                        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard];
+                        WKWebViewConfiguration *config = [WKWebViewConfiguration new];
+                        config.preferences = [WKPreferences new];
+                        config.preferences.minimumFontSize = 10;
+                        config.preferences.javaScriptEnabled = YES;
+                        config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
+                        weakself.wkWebView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) configuration:config];
+                        [weakself.wkWebView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:aWhiteboard.roomURL]]];
+                        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard WKView:weakself.wkWebView];
                         [self.navigationController pushViewController:wbVC animated:NO];
                     } else {
                         [weakself showHint:aError.errorDescription];
@@ -509,8 +543,41 @@ static bool gCanSharedDesktop = YES;
     
 }
 
+-(BOOL)isCreator
+{
+    if(self.whiteBoard && [self.whiteBoard.roomURL length] > 0) {
+        NSArray* array = [self.whiteBoard.roomURL componentsSeparatedByString:@"?"];
+        if([array count] > 1) {
+            NSString* params = [array objectAtIndex:1];
+            NSArray* paramsArray = [params componentsSeparatedByString:@"&"];
+            for(NSString* param in paramsArray) {
+                NSArray* paramArray = [param componentsSeparatedByString:@"="];
+                NSString* key = [paramArray objectAtIndex:0];
+                if([key isEqualToString:@"isCreater"]) {
+                    NSString* value = [paramArray objectAtIndex:1];
+                    if([value isEqualToString:@"true"]) {
+                        return YES;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return NO;
+}
+
 - (void)_hangup:(BOOL)isDestroy
 {
+    if(self.whiteBoard && [self isCreator]) {
+        [[[EMClient sharedClient] conferenceManager] destroyWhiteboardRoomWithUsername:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken roomId:self.whiteBoard.roomId completion:^(EMError *aError) {
+            if(!aError) {
+            }
+        }];
+        [[[EMClient sharedClient] conferenceManager] deleteAttributeWithKey:@"whiteBoard" completion:^(EMError *aError) {
+            if(!aError) {
+            }
+        }];
+    }
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
@@ -523,6 +590,8 @@ static bool gCanSharedDesktop = YES;
             [[EMClient sharedClient].conferenceManager leaveConference:[EMDemoOption sharedOptions].conference completion:nil];
     }
     [self clearResource];
+    
+    
 
     [self dismissViewControllerAnimated:NO completion:nil];
     while (![self.navigationController.topViewController isKindOfClass:[self class]]) {
@@ -1163,7 +1232,7 @@ static bool gCanSharedDesktop = YES;
 - (void)DesktopStreamDidPubFailed:(EMCallConference *)aConference error:(EMError*)aError
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
-        NSString* msg = [NSString stringWithFormat:@"Pub共享流失败：%@",aError.errorDescription ];
+        NSString* msg = [NSString stringWithFormat:@"Pub共享桌面失败：%@",aError.errorDescription ];
         [_timeRecord invalidate];
         _timeRecord = nil;
         __weak typeof(self) weakself = self;
@@ -1465,6 +1534,10 @@ static bool gCanSharedDesktop = YES;
 {
     for(EMConferenceAttribute * attr in attrs){
         if(attr.action == EMConferenceAttributeDelete && [attr.key isEqualToString:@"whiteBoard"]) {
+            if([[self.navigationController topViewController] isKindOfClass:[WhiteBoardViewController class]]) {
+                WhiteBoardViewController* vc = (WhiteBoardViewController *)[self.navigationController topViewController];
+                [vc back];
+            }
             self.whiteBoard = nil;
             [self.whiteBoardView removeFromSuperview];
             self.whiteBoardView = nil;
@@ -1754,7 +1827,7 @@ static bool gCanSharedDesktop = YES;
 
 -(void)recordAction:(UIButton*)button
 {
-    if (@available(iOS 13.0, *)){
+    if (@available(iOS 12.0, *)){
         if([EMDemoOption sharedOptions].conference.role < EMConferenceRoleSpeaker) {
             return;
         }

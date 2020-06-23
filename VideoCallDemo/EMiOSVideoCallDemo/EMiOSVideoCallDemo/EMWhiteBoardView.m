@@ -22,19 +22,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
-        self.nameLabel = [[UILabel alloc] init];
-        self.nameLabel.textColor = [UIColor redColor];
-        self.nameLabel.font = [UIFont systemFontOfSize:18];
-        self.nameLabel.numberOfLines = 0;
-        self.nameLabel.text = @"白板";
-        [self addSubview:self.nameLabel];
-        [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.center.equalTo(self);
-            make.width.equalTo(@100);
-            make.height.equalTo(@40);
-        }];
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapAction:)];
-        
+        tap.delegate = self;
         [self addGestureRecognizer:tap];
     }
     return self;
@@ -48,5 +37,23 @@
             [_delegate whiteBoardViewDidTap];
         }
     }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+
+-(void)setWKView:(WKWebView*)wkView
+{
+    if(wkView)
+    {
+        [wkView removeFromSuperview];
+        [self addSubview:wkView];
+        [self sendSubviewToBack:wkView];
+        [wkView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(self);
+        }];
+    };
 }
 @end
