@@ -8,16 +8,18 @@
 
 #import <UIKit/UIKit.h>
 #import "EMStreamView.h"
+#import "EMWhiteBoardView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ConferenceViewController : UIViewController<EMConferenceManagerDelegate,EMStreamViewDelegate,UITableViewDelegate,UITableViewDataSource,UIGestureRecognizerDelegate>
+@interface ConferenceViewController : UIViewController<EMConferenceManagerDelegate,EMStreamViewDelegate,UITableViewDelegate,UITableViewDataSource,UIGestureRecognizerDelegate,EMWhiteBoardViewDelegate>
 @property(nonatomic,strong) UILabel* roomNameLable;
 @property(nonatomic,strong) UILabel* timeLabel;
 @property(nonatomic,strong) UIButton* settingButton;
 @property (nonatomic) UIScrollView* scrollView;
 @property (nonatomic) UIButton* switchCameraButton;
 @property (nonatomic) UIButton* sharedDesktopButton;
+@property (nonatomic) UIButton* whiteBoardButton;
 @property (nonatomic, strong) UIButton *microphoneButton;
 @property (nonatomic, strong) UIButton *videoButton;
 @property (nonatomic, strong) UIButton *hangupButton;
@@ -50,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSMutableDictionary* myStreamIds;
 
 - (void)updateAdminView;
+
+-(void) wbBack;
 
 - (instancetype)initWithConfence:(EMCallConference*)call role:(EMConferenceRole)role;
 @end

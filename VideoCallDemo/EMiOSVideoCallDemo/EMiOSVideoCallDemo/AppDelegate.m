@@ -31,7 +31,14 @@
 }
 
 -(UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-    return UIInterfaceOrientationMaskPortrait;//默认全局不支持横屏
+    if (self.allowRotation == YES) {
+        //横屏
+        return UIInterfaceOrientationMaskLandscape;
+        
+    }else{
+        //竖屏
+        return UIInterfaceOrientationMaskPortrait;
+    }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -43,5 +50,6 @@
 {
     [[EMClient sharedClient] applicationWillEnterForeground:application];
 }
+
 
 @end

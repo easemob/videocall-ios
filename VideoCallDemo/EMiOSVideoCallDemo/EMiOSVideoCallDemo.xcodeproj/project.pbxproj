@@ -24,8 +24,6 @@
 		C00F20162400294F007174DE /* microphonenclose@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20132400294E007174DE /* microphonenclose@3x.png */; };
 		C00F20172400294F007174DE /* microphonenclose.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20142400294F007174DE /* microphonenclose.png */; };
 		C00F20182400294F007174DE /* microphonenclose@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C00F20152400294F007174DE /* microphonenclose@2x.png */; };
-		C014363824754C4C0054A840 /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C014363724754C4C0054A840 /* Hyphenate.framework */; };
-		C014363924754C4C0054A840 /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C014363724754C4C0054A840 /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C01FAC03242B5CDC004774E1 /* Opposite.png in Resources */ = {isa = PBXBuildFile; fileRef = C01FAC02242B5CDC004774E1 /* Opposite.png */; };
 		C03E6BE324221675002C17EE /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C03E6BE224221675002C17EE /* ProfileViewController.m */; };
 		C03E6BE624221EE7002C17EE /* UpdateNicknameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C03E6BE524221EE7002C17EE /* UpdateNicknameViewController.m */; };
@@ -38,6 +36,20 @@
 		C05FE5E2240D1E3000E5B7D1 /* swtichcamera@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DC240D1E3000E5B7D1 /* swtichcamera@3x.png */; };
 		C05FE5E3240D1E3000E5B7D1 /* setting@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DD240D1E3000E5B7D1 /* setting@3x.png */; };
 		C05FE5E4240D1E3000E5B7D1 /* setting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C05FE5DE240D1E3000E5B7D1 /* setting@2x.png */; };
+		C0635F6624973B2500BB96D6 /* EMWhiteBoardView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0635F6524973B2500BB96D6 /* EMWhiteBoardView.m */; };
+		C0635F69249740DB00BB96D6 /* WhiteBoardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0635F68249740DB00BB96D6 /* WhiteBoardViewController.m */; };
+		C0635F732497542000BB96D6 /* wb-back@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F6A2497541F00BB96D6 /* wb-back@3x.png */; };
+		C0635F742497542000BB96D6 /* wb-back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F6B2497541F00BB96D6 /* wb-back@2x.png */; };
+		C0635F752497542100BB96D6 /* wb-interact@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F6C2497542000BB96D6 /* wb-interact@2x.png */; };
+		C0635F762497542100BB96D6 /* wb-interact@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F6D2497542000BB96D6 /* wb-interact@3x.png */; };
+		C0635F772497542100BB96D6 /* wb-back.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F6E2497542000BB96D6 /* wb-back.png */; };
+		C0635F782497542100BB96D6 /* wb-interact.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F6F2497542000BB96D6 /* wb-interact.png */; };
+		C0635F792497542100BB96D6 /* wb-exit@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F702497542000BB96D6 /* wb-exit@3x.png */; };
+		C0635F7A2497542100BB96D6 /* wb-exit.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F712497542000BB96D6 /* wb-exit.png */; };
+		C0635F7B2497542100BB96D6 /* wb-exit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F722497542000BB96D6 /* wb-exit@2x.png */; };
+		C0635F7F2497546F00BB96D6 /* wb@2.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F7C2497546F00BB96D6 /* wb@2.png */; };
+		C0635F802497546F00BB96D6 /* wb.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F7D2497546F00BB96D6 /* wb.png */; };
+		C0635F812497546F00BB96D6 /* wb@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0635F7E2497546F00BB96D6 /* wb@3x.png */; };
 		C06572E223F285C600532B27 /* EMDemoOption.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E123F285C600532B27 /* EMDemoOption.m */; };
 		C06572E523F2ACA400532B27 /* RoomSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E423F2ACA400532B27 /* RoomSettingViewController.m */; };
 		C06572E823F2BCF000532B27 /* SpeakerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C06572E723F2BCF000532B27 /* SpeakerListViewController.m */; };
@@ -297,7 +309,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C014363924754C4C0054A840 /* Hyphenate.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,7 +347,6 @@
 		C00F20132400294E007174DE /* microphonenclose@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "microphonenclose@3x.png"; sourceTree = "<group>"; };
 		C00F20142400294F007174DE /* microphonenclose.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = microphonenclose.png; sourceTree = "<group>"; };
 		C00F20152400294F007174DE /* microphonenclose@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "microphonenclose@2x.png"; sourceTree = "<group>"; };
-		C014363724754C4C0054A840 /* Hyphenate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Hyphenate.framework; sourceTree = "<group>"; };
 		C01FAC02242B5CDC004774E1 /* Opposite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Opposite.png; sourceTree = "<group>"; };
 		C03E6BE124221675002C17EE /* ProfileViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		C03E6BE224221675002C17EE /* ProfileViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
@@ -352,6 +362,22 @@
 		C05FE5DC240D1E3000E5B7D1 /* swtichcamera@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "swtichcamera@3x.png"; sourceTree = "<group>"; };
 		C05FE5DD240D1E3000E5B7D1 /* setting@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "setting@3x.png"; sourceTree = "<group>"; };
 		C05FE5DE240D1E3000E5B7D1 /* setting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "setting@2x.png"; sourceTree = "<group>"; };
+		C0635F6424973B2500BB96D6 /* EMWhiteBoardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMWhiteBoardView.h; sourceTree = "<group>"; };
+		C0635F6524973B2500BB96D6 /* EMWhiteBoardView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMWhiteBoardView.m; sourceTree = "<group>"; };
+		C0635F67249740DB00BB96D6 /* WhiteBoardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WhiteBoardViewController.h; sourceTree = "<group>"; };
+		C0635F68249740DB00BB96D6 /* WhiteBoardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WhiteBoardViewController.m; sourceTree = "<group>"; };
+		C0635F6A2497541F00BB96D6 /* wb-back@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-back@3x.png"; sourceTree = "<group>"; };
+		C0635F6B2497541F00BB96D6 /* wb-back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-back@2x.png"; sourceTree = "<group>"; };
+		C0635F6C2497542000BB96D6 /* wb-interact@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-interact@2x.png"; sourceTree = "<group>"; };
+		C0635F6D2497542000BB96D6 /* wb-interact@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-interact@3x.png"; sourceTree = "<group>"; };
+		C0635F6E2497542000BB96D6 /* wb-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-back.png"; sourceTree = "<group>"; };
+		C0635F6F2497542000BB96D6 /* wb-interact.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-interact.png"; sourceTree = "<group>"; };
+		C0635F702497542000BB96D6 /* wb-exit@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-exit@3x.png"; sourceTree = "<group>"; };
+		C0635F712497542000BB96D6 /* wb-exit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-exit.png"; sourceTree = "<group>"; };
+		C0635F722497542000BB96D6 /* wb-exit@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb-exit@2x.png"; sourceTree = "<group>"; };
+		C0635F7C2497546F00BB96D6 /* wb@2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb@2.png"; sourceTree = "<group>"; };
+		C0635F7D2497546F00BB96D6 /* wb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wb.png; sourceTree = "<group>"; };
+		C0635F7E2497546F00BB96D6 /* wb@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wb@3x.png"; sourceTree = "<group>"; };
 		C06572E023F285C600532B27 /* EMDemoOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMDemoOption.h; path = Helper/EMDemoOption.h; sourceTree = "<group>"; };
 		C06572E123F285C600532B27 /* EMDemoOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EMDemoOption.m; path = Helper/EMDemoOption.m; sourceTree = "<group>"; };
 		C06572E323F2ACA400532B27 /* RoomSettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomSettingViewController.h; sourceTree = "<group>"; };
@@ -615,7 +641,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0A7748C240767B300E44315 /* MessageUI.framework in Frameworks */,
-				C014363824754C4C0054A840 /* Hyphenate.framework in Frameworks */,
 				C0D82B032424B10100C7E6C3 /* MediaPlayer.framework in Frameworks */,
 				0773481ED2F14ED39E0D492C /* libPods-EMiOSVideoCallDemo.a in Frameworks */,
 			);
@@ -644,7 +669,6 @@
 		7B300057D44D5796FAA0433A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C014363724754C4C0054A840 /* Hyphenate.framework */,
 				C0D82B022424B10100C7E6C3 /* MediaPlayer.framework */,
 				C0A7748B240767B300E44315 /* MessageUI.framework */,
 				2E39DDC0074BF4727EFEBA18 /* libPods-EMiOSVideoCallDemo.a */,
@@ -870,6 +894,8 @@
 				C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */,
 				C0720AEE23F6454900E1FEC3 /* EMStreamView.h */,
 				C0720AEF23F6454900E1FEC3 /* EMStreamView.m */,
+				C0635F6424973B2500BB96D6 /* EMWhiteBoardView.h */,
+				C0635F6524973B2500BB96D6 /* EMWhiteBoardView.m */,
 				C06572E023F285C600532B27 /* EMDemoOption.h */,
 				C06572E123F285C600532B27 /* EMDemoOption.m */,
 				C0E7E3342420951800F074F6 /* ChangeRoleView.h */,
@@ -880,6 +906,8 @@
 				C03E6BE524221EE7002C17EE /* UpdateNicknameViewController.m */,
 				C03E6BE724225F31002C17EE /* SelectHeadImageViewController.h */,
 				C03E6BE824225F31002C17EE /* SelectHeadImageViewController.m */,
+				C0635F67249740DB00BB96D6 /* WhiteBoardViewController.h */,
+				C0635F68249740DB00BB96D6 /* WhiteBoardViewController.m */,
 			);
 			path = EMiOSVideoCallDemo;
 			sourceTree = "<group>";
@@ -990,6 +1018,18 @@
 				C06FD425242C6D8000990BB1 /* cameraclose.png */,
 				C06FD42B242CA12000990BB1 /* hideMenu.png */,
 				C06FD429242C9DC300990BB1 /* showMenu.png */,
+				C0635F6E2497542000BB96D6 /* wb-back.png */,
+				C0635F6B2497541F00BB96D6 /* wb-back@2x.png */,
+				C0635F6A2497541F00BB96D6 /* wb-back@3x.png */,
+				C0635F712497542000BB96D6 /* wb-exit.png */,
+				C0635F722497542000BB96D6 /* wb-exit@2x.png */,
+				C0635F702497542000BB96D6 /* wb-exit@3x.png */,
+				C0635F6F2497542000BB96D6 /* wb-interact.png */,
+				C0635F6C2497542000BB96D6 /* wb-interact@2x.png */,
+				C0635F6D2497542000BB96D6 /* wb-interact@3x.png */,
+				C0635F7D2497546F00BB96D6 /* wb.png */,
+				C0635F7C2497546F00BB96D6 /* wb@2.png */,
+				C0635F7E2497546F00BB96D6 /* wb@3x.png */,
 			);
 			path = res;
 			sourceTree = "<group>";
@@ -1132,6 +1172,7 @@
 				C0C033292436F42F003C541E /* networkinfo.png in Resources */,
 				C070FA2123FB78F900DC0F57 /* animate_00053.png in Resources */,
 				C070FA4123FB78F900DC0F57 /* animate_00076.png in Resources */,
+				C0635F752497542100BB96D6 /* wb-interact@2x.png in Resources */,
 				C00F1FF823FFBA25007174DE /* videostatus@2x.png in Resources */,
 				C0DB9D1323FEA9090057BA4C /* cbu@2x.png in Resources */,
 				C06FD423242C694800990BB1 /* audioopen@3x.png in Resources */,
@@ -1144,9 +1185,11 @@
 				C070FA3123FB78F900DC0F57 /* animate_00068.png in Resources */,
 				C070FA7C23FB78F900DC0F57 /* video_white@2x.png in Resources */,
 				C070FA4923FB78F900DC0F57 /* animate_00039.png in Resources */,
+				C0635F7F2497546F00BB96D6 /* wb@2.png in Resources */,
 				C070FA5D23FB78F900DC0F57 /* role_white@2x.png in Resources */,
 				C05FE5DF240D1E3000E5B7D1 /* switchcamera.png in Resources */,
 				C070FA2B23FB78F900DC0F57 /* animate_00043.png in Resources */,
+				C0635F762497542100BB96D6 /* wb-interact@3x.png in Resources */,
 				C070FA7D23FB78F900DC0F57 /* switchCamera_white@2x.png in Resources */,
 				C070FA1E23FB78F900DC0F57 /* animate_00051.png in Resources */,
 				C0DB9CFD23FEA9090057BA4C /* 下麦@2x.png in Resources */,
@@ -1181,6 +1224,7 @@
 				C070FA6223FB78F900DC0F57 /* micphone_white@2x.png in Resources */,
 				C0DB9D0023FEA9090057BA4C /* cbc.png in Resources */,
 				C095A2AE23F1412500A09CAA /* Images in Resources */,
+				C0635F742497542000BB96D6 /* wb-back@2x.png in Resources */,
 				C06FD403242C4FF600990BB1 /* switchDevice@2x.png in Resources */,
 				C070FA0723FB78F900DC0F57 /* bg_micro@3x.png in Resources */,
 				C070FA5C23FB78F900DC0F57 /* recorder_gray@3x.png in Resources */,
@@ -1245,6 +1289,7 @@
 				C08470962405292B00B3771D /* admin.png in Resources */,
 				C070FA5223FB78F900DC0F57 /* role_gray@3x.png in Resources */,
 				C070FA3023FB78F900DC0F57 /* animate_00083.png in Resources */,
+				C0635F7B2497542100BB96D6 /* wb-exit@2x.png in Resources */,
 				C070FA5323FB78F900DC0F57 /* answer@3x.png in Resources */,
 				C06FD42A242C9DC300990BB1 /* showMenu.png in Resources */,
 				C070FA2223FB78F900DC0F57 /* animate_00084.png in Resources */,
@@ -1260,6 +1305,7 @@
 				C070FA6E23FB78F900DC0F57 /* minimize_gray@2x.png in Resources */,
 				C070FA7523FB78F900DC0F57 /* speaker_gray@2x.png in Resources */,
 				C070FA2623FB78F900DC0F57 /* animate_00042.png in Resources */,
+				C0635F802497546F00BB96D6 /* wb.png in Resources */,
 				C070FA3323FB78F900DC0F57 /* animate_00054.png in Resources */,
 				C0E7E3412420AD3200F074F6 /* Warning.png in Resources */,
 				C0DB9CFF23FEA9090057BA4C /* 下麦.png in Resources */,
@@ -1288,6 +1334,7 @@
 				C0C0332A2436F42F003C541E /* networkinfo4.png in Resources */,
 				C095A28E23F0F1B700A09CAA /* LaunchScreen.storyboard in Resources */,
 				C070FA4B23FB78F900DC0F57 /* animate_00028.png in Resources */,
+				C0635F732497542000BB96D6 /* wb-back@3x.png in Resources */,
 				C070F98423FB78CD00DC0F57 /* alert_error@2x.png in Resources */,
 				C070FA7223FB78F900DC0F57 /* switchCamera_gray@2x.png in Resources */,
 				C095A28B23F0F1B700A09CAA /* Assets.xcassets in Resources */,
@@ -1311,9 +1358,11 @@
 				C095A28923F0F1B300A09CAA /* Main.storyboard in Resources */,
 				C0BD179623FF658B005E3B67 /* 形状@3x.png in Resources */,
 				C070FA1823FB78F900DC0F57 /* animate_00078.png in Resources */,
+				C0635F782497542100BB96D6 /* wb-interact.png in Resources */,
 				C070FA4A23FB78F900DC0F57 /* animate_00038.png in Resources */,
 				C070FA4823FB78F900DC0F57 /* animate_00075.png in Resources */,
 				C070FA4423FB78F900DC0F57 /* animate_00060.png in Resources */,
+				C0635F7A2497542100BB96D6 /* wb-exit.png in Resources */,
 				C070FA0A23FB78F900DC0F57 /* floating_voice@2x.png in Resources */,
 				C0E7E33B2420AD2700F074F6 /* Success.png in Resources */,
 				C070FA1923FB78F900DC0F57 /* animate_00050.png in Resources */,
@@ -1322,6 +1371,7 @@
 				C0B5BECD245533E9007713F5 /* call_screenshare.png in Resources */,
 				C070F98623FB78CD00DC0F57 /* alert_default@3x.png in Resources */,
 				C0BD178E23FF658B005E3B67 /* 上麦@3x.png in Resources */,
+				C0635F772497542100BB96D6 /* wb-back.png in Resources */,
 				C0DB9CF723FEA9090057BA4C /* goback@2x.png in Resources */,
 				C00F201124002933007174DE /* videoclose.png in Resources */,
 				C070FA7A23FB78F900DC0F57 /* hangup@2x.png in Resources */,
@@ -1333,6 +1383,7 @@
 				C0DB9D0723FEA9090057BA4C /* microphoneselect.png in Resources */,
 				C0BD179E23FF683B005E3B67 /* 成员.png in Resources */,
 				C0DB9CF923FEA9090057BA4C /* goback@3x.png in Resources */,
+				C0635F792497542100BB96D6 /* wb-exit@3x.png in Resources */,
 				C070FA4F23FB78F900DC0F57 /* micphone_gray@2x.png in Resources */,
 				C070F98C23FB78CD00DC0F57 /* alert_info@2x.png in Resources */,
 				C070FA1A23FB78F900DC0F57 /* animate_00044.png in Resources */,
@@ -1340,6 +1391,7 @@
 				C06FD41E242C692A00990BB1 /* cameraopen.png in Resources */,
 				C0BD179323FF658B005E3B67 /* 形状.png in Resources */,
 				C0E7E34E2420AD4E00F074F6 /* Failed.png in Resources */,
+				C0635F812497546F00BB96D6 /* wb@3x.png in Resources */,
 				C070FA5023FB78F900DC0F57 /* recorder_white@2x.png in Resources */,
 				C070FA1023FB78F900DC0F57 /* animate_00032.png in Resources */,
 				C070FA5123FB78F900DC0F57 /* kbps_gray@3x.png in Resources */,
@@ -1422,6 +1474,7 @@
 				C0E7E3362420951800F074F6 /* ChangeRoleView.m in Sources */,
 				C095A28023F0F1B300A09CAA /* AppDelegate.m in Sources */,
 				C0720AF023F6454900E1FEC3 /* EMStreamView.m in Sources */,
+				C0635F6624973B2500BB96D6 /* EMWhiteBoardView.m in Sources */,
 				C06572E523F2ACA400532B27 /* RoomSettingViewController.m in Sources */,
 				C0720AE723F641FC00E1FEC3 /* UIViewController+HUD.m in Sources */,
 				C06572E823F2BCF000532B27 /* SpeakerListViewController.m in Sources */,
@@ -1430,6 +1483,7 @@
 				C095A29123F0F1B700A09CAA /* main.m in Sources */,
 				C095A2A023F1217200A09CAA /* RoomJoinViewController.m in Sources */,
 				C06572E223F285C600532B27 /* EMDemoOption.m in Sources */,
+				C0635F69249740DB00BB96D6 /* WhiteBoardViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
