@@ -51,4 +51,4 @@ SelectHeadImageViewController  修改头像页面
 
 
 ## 集成文档
-多人音视频集成文档参见官方文档：http://docs-im.easemob.com/im/ios/basics/multiuserconference
+多人音视频集成文档参见官方文档：http://docs-im.easemob.com/rtc/conference/ios
