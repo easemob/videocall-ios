@@ -18,7 +18,7 @@ cd ./VideoCallDemo/EMiOSVideoCallDemo
 pod install
 
 ```
-3.下载3.6.7SDK到当前工程下，并引入工程
+3.下载HyphenateSDK到当前工程下，并引入工程
 
 4.点击iOSVideoCallDemo.xcworkspace进入Demo
 
