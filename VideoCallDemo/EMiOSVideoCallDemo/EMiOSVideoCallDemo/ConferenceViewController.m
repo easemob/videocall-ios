@@ -87,7 +87,7 @@ static bool gCanSharedDesktop = YES;
     [[[EMClient sharedClient] conferenceManager] startMonitorSpeaker:[EMDemoOption sharedOptions].conference timeInterval:2 completion:^(EMError *aError) {
         
     }];
-    if (@available(iOS 12.0, *)) {
+    if (@available(iOS 13.0, *)) {
         _picker.showsMicrophoneButton = NO;
         _picker = [[RPSystemBroadcastPickerView alloc] initWithFrame:CGRectMake(10, 60, 100, 40)];
         //你的app对用upload extension的 bundle id， 必须要填写对
@@ -100,7 +100,6 @@ static bool gCanSharedDesktop = YES;
         [self.sharedDefaults setObject:nil forKey:@"height"];
         [self.sharedDefaults setObject:nil forKey:@"status"];
     }
-    
 }
 
 -(void)dealloc
@@ -112,6 +111,36 @@ static bool gCanSharedDesktop = YES;
 -(void)viewDidAppear:(BOOL)animated
 {
     gCanSharedDesktop = YES;
+}
+
+- (void)_addLive:(NSString*)url
+{
+    LiveConfig* liveconfig = [[LiveConfig alloc] init];
+    LiveCanvas* canvas = [[LiveCanvas alloc] init];
+    canvas.fps = 18;
+    canvas.kbps = 900;
+    canvas.codec = @"H264";
+    canvas.bgclr = 0x0000ff;
+    if([EMDemoOption sharedOptions].livePureAudio) {
+        canvas.width = 0;
+        canvas.height = 0;
+    }else{
+        canvas.width = 1280;
+        canvas.height = 768;
+    }
+    liveconfig.canvas = canvas;
+    liveconfig.cdnUrl = url;
+    liveconfig.layoutStyle = CUSTOM;
+    liveconfig.record = YES;
+    AudioConfig* audioConfig = [[AudioConfig alloc] init];
+    audioConfig.bps = LiveAudioBps_8K;
+    audioConfig.channels = 1;
+    audioConfig.samples = LiveAudioSampleRate_32K;
+    liveconfig.audioCfg = audioConfig;
+    [[[EMClient sharedClient] conferenceManager] addConferenceLive:[EMDemoOption sharedOptions].conference  LiveCfg:liveconfig completion:^(EMError *aError) {
+        if(aError){
+        }
+    }];
 }
 
 - (UIView*)toastView
@@ -813,7 +842,6 @@ static bool gCanSharedDesktop = YES;
                                  displayView:(UIView *)aDisplayView
                                       stream:(EMCallStream *)aStream
 {
-    
     CGRect frame;
     if([self.streamItemDict count] == 0 || !self.curBigView){
         frame = self.view.bounds;
@@ -1113,8 +1141,6 @@ static bool gCanSharedDesktop = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakself updateScrollView];
         });
-        if([EMDemoOption sharedOptions].conference.isCreator && [EMDemoOption sharedOptions].openCDN)
-            [weakself _upadteLiveRegions];
     }
 }
 
@@ -1343,8 +1369,45 @@ static bool gCanSharedDesktop = YES;
     if (![aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
         return;
     }
+    
     [self.myStreamIds setObject:streamId forKey:rtcId];
 }
+
+- (void)streamStateUpdated:(EMCallConference*)aConference type:(EMMediaType)aType state:(EMMediaState)state streamId:(NSString*)streamId
+{
+    if (![aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
+        return;
+    }
+    NSString* type = @"音频";
+    if(aType == EMMediaTypeVideo)
+        type = @"视频";
+    NSString* dataState = @"无数据";
+    if(state == EMMediaStateNormal) {
+        dataState = @"正常";
+    }
+    NSString* aStream = streamId;
+    if([streamId length] > 0) {
+        EMStreamItem* stream = [self.streamItemDict objectForKey:streamId];
+        if(stream) {
+            NSString* memberName = stream.stream.memberName;
+            EMCallMember* member = [self.membersDict objectForKey:memberName];
+            if(member) {
+                if([member.nickname length] > 0) {
+                    aStream = member.nickname;
+                }
+            }else{
+                aStream = memberName;
+            }
+        }
+    }
+    NSString *message = [NSString stringWithFormat:@"流%@ %@通信%@", aStream,type,dataState];
+    [self showHint:message];
+}
+
+- (void)confrenceDidUpdated:(EMCallConference*)aConference state:(EMConferenceState)aState
+{
+}
+
 //用户A用户B在同一个会议中，用户A开始说话时，用户B会收到该回调
 - (void)conferenceSpeakerDidChange:(EMCallConference *)aConference
                  speakingStreamIds:(NSArray *)aStreamIds
@@ -1481,6 +1544,11 @@ static bool gCanSharedDesktop = YES;
         }]];
         [weakself presentViewController:alert animated:YES completion:nil];
     });
+}
+
+- (void)conferenceDidUpdated:(EMCallConference*)aConference liveCfg:(NSDictionary*) aLiveConfig
+{
+    
 }
 
 - (void)muteUI:(BOOL)aMute
@@ -1827,7 +1895,7 @@ static bool gCanSharedDesktop = YES;
 
 -(void)recordAction:(UIButton*)button
 {
-    if (@available(iOS 12.0, *)){
+    if (@available(iOS 13.0, *)){
         if([EMDemoOption sharedOptions].conference.role < EMConferenceRoleSpeaker) {
             return;
         }
@@ -1865,6 +1933,18 @@ static bool gCanSharedDesktop = YES;
 }
 
 - (void)_upadteLiveRegions
+{
+    if([EMDemoOption sharedOptions].conference.liveCfgs) {
+        NSArray* allKeys = [[EMDemoOption sharedOptions].conference.liveCfgs allKeys];
+        for(NSString* key in allKeys) {
+            [self _upadteLiveRegionsWithLiveId:key];
+        }
+    }else{
+        [self _upadteLiveRegionsWithLiveId:[EMDemoOption sharedOptions].conference.liveId];
+    }
+}
+
+- (void)_upadteLiveRegionsWithLiveId:(NSString*)liveId
 {
     // 先计算出总共有多少个流
     long streamcounts = [self.streamItemDict count];
@@ -1931,7 +2011,7 @@ static bool gCanSharedDesktop = YES;
     }
     gZorder++;
     //更新布局
-    [[[EMClient sharedClient] conferenceManager] updateConference:[EMDemoOption sharedOptions].conference setRegions:regionsList completion:^(EMError *aError) {
+    [[[EMClient sharedClient] conferenceManager] updateConference:[EMDemoOption sharedOptions].conference liveId:liveId setRegions:regionsList completion:^(EMError *aError) {
         if(aError) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [EMAlertController showErrorAlert:[NSString stringWithFormat:@"setRegions failed:%@",aError.errorDescription]];

@@ -61,7 +61,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section == 2)
     {
-        return 8;
+        return 9;
     }
     return 1;
 }
@@ -209,6 +209,16 @@
                     [opButton addTarget:self action:@selector(editCDNUrl:) forControlEvents:UIControlEventTouchUpInside];
                     [cell addSubview:opButton];
                 }
+                if(row == 8) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"开启纯音频推流";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].livePureAudio];
+                    switchControl.enabled = [EMDemoOption sharedOptions].openCDN;
+                    [cell.contentView addSubview:switchControl];
+                }
             }else
                 if(section == 3) {
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -239,7 +249,7 @@
             
             textField.placeholder = @"CDN地址";
             textField.text = [EMDemoOption sharedOptions].cdnUrl;
-            [[NSNotificationCenter defaultCenter] addObserver:alertController selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:textField];
+            //[[NSNotificationCenter defaultCenter] addObserver:alertController selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:textField];
         }];
         UIAlertAction* action = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             UITextField *envirnmentNameTextField = alertController.textFields.firstObject;
@@ -334,6 +344,9 @@
         [self.tableView reloadData];
     } else if (tag == 6 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].openCDN = [aSwitch isOn];
+        [self.tableView reloadData];
+    }else if (tag == 8 + 10000 + 10*2) {
+        [EMDemoOption sharedOptions].livePureAudio = [aSwitch isOn];
         [self.tableView reloadData];
     }
     [[EMDemoOption sharedOptions] archive];
