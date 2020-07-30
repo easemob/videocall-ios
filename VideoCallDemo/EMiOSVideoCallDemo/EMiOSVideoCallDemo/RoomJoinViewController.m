@@ -430,20 +430,31 @@ int kHeightStart = 300;
     }
     roomConfig.ext = jsonStr;
     roomConfig.nickName = [NSString stringWithCString:[[EMDemoOption sharedOptions].nickName UTF8String] encoding:NSUTF8StringEncoding];
-    roomConfig.isMerge = [EMDemoOption sharedOptions].isMerge;;
+    roomConfig.isMerge = [EMDemoOption sharedOptions].isMerge;
     roomConfig.isRecord = [EMDemoOption sharedOptions].isRecord;
     if([EMDemoOption sharedOptions].openCDN) {
         LiveConfig* liveconfig = [[LiveConfig alloc] init];
-        CDNCanvas* canvas = [[CDNCanvas alloc] init];
+        LiveCanvas* canvas = [[LiveCanvas alloc] init];
         canvas.fps = 18;
         canvas.kbps = 900;
         canvas.codec = @"H264";
         canvas.bgclr = 0x0000ff;
-        canvas.width = [EMDemoOption sharedOptions].liveWidth;
-        canvas.height = [EMDemoOption sharedOptions].liveHeight;
+        if([EMDemoOption sharedOptions].livePureAudio) {
+            canvas.width = 0;
+            canvas.height = 0;
+        }else{
+            canvas.width = [EMDemoOption sharedOptions].liveWidth;
+            canvas.height = [EMDemoOption sharedOptions].liveHeight;
+        }
         liveconfig.canvas = canvas;
         liveconfig.cdnUrl = [EMDemoOption sharedOptions].cdnUrl;
         liveconfig.layoutStyle = CUSTOM;
+        liveconfig.record = YES;
+        AudioConfig* audioConfig = [[AudioConfig alloc] init];
+        audioConfig.bps = LiveAudioBps_128K;
+        audioConfig.channels = 1;
+        audioConfig.samples = LiveAudioSampleRate_16K;
+        liveconfig.audioCfg = audioConfig;
         roomConfig.liveConfig = liveconfig;
     }
     

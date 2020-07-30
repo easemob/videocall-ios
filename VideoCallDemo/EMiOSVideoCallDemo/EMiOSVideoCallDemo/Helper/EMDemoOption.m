@@ -20,6 +20,7 @@ NSString* kCDNUrl = @"cdnUrl";
 NSString* kRecord = @"record";
 NSString* kMerge = @"merge";
 NSString* kBackCamera = @"backCamera";
+NSString* kLivePureAudio = @"livePureAudio";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -45,6 +46,7 @@ NSString* kBackCamera = @"backCamera";
     self.isBackCamera = NO;
     self.liveWidth = 640;
     self.liveHeight = 480;
+    self.livePureAudio = NO;
 }
 
 - (void)archive
@@ -68,6 +70,7 @@ NSString* kBackCamera = @"backCamera";
     [aCoder encodeBool:self.isMerge forKey:kMerge];
     [aCoder encodeBool:self.isBackCamera forKey:kBackCamera];
     [aCoder encodeObject:self.cdnUrl forKey:kCDNUrl];
+    [aCoder encodeBool:self.livePureAudio forKey:kLivePureAudio];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -87,6 +90,7 @@ NSString* kBackCamera = @"backCamera";
         self.isRecord = [aDecoder decodeBoolForKey:kRecord];
         self.isMerge = [aDecoder decodeBoolForKey:kMerge];
         self.isBackCamera = [aDecoder decodeBoolForKey:kBackCamera];
+        self.livePureAudio = [aDecoder decodeBoolForKey:kLivePureAudio];
     }
     return self;
 }
