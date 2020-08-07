@@ -1692,7 +1692,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.1;
 				MODULE_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "环信视频会议";
@@ -1736,7 +1736,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/EMiOSVideoCallDemo/Hyphenate.framework",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.1;
 				MODULE_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.easemob.EMiOSVideoCallDemo;
 				PRODUCT_NAME = "环信视频会议";
