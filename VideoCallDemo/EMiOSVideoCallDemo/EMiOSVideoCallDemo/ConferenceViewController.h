@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIButton* sharedDesktopButton;
 @property (nonatomic) UIButton* whiteBoardButton;
 @property (nonatomic, strong) UIButton *microphoneButton;
+//@property (nonatomic, strong) UIButton *startRecordButton;
+//@property (nonatomic, strong) UIButton *stopRecordButton;
 @property (nonatomic, strong) UIButton *videoButton;
 @property (nonatomic, strong) UIButton *hangupButton;
 @property (nonatomic, strong) UIButton *membersButton;

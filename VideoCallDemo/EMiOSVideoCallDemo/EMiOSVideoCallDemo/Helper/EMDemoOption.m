@@ -21,6 +21,8 @@ NSString* kRecord = @"record";
 NSString* kMerge = @"merge";
 NSString* kBackCamera = @"backCamera";
 NSString* kLivePureAudio = @"livePureAudio";
+NSString* kSpecifyServer = @"specifyServer";
+NSString* kIsClarityFirst = @"isClarityFirst";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -47,6 +49,8 @@ NSString* kLivePureAudio = @"livePureAudio";
     self.liveWidth = 640;
     self.liveHeight = 480;
     self.livePureAudio = NO;
+    self.recordExt = RecordExtAUTO;
+    self.isClarityFirst = NO;
 }
 
 - (void)archive
@@ -71,6 +75,8 @@ NSString* kLivePureAudio = @"livePureAudio";
     [aCoder encodeBool:self.isBackCamera forKey:kBackCamera];
     [aCoder encodeObject:self.cdnUrl forKey:kCDNUrl];
     [aCoder encodeBool:self.livePureAudio forKey:kLivePureAudio];
+    [aCoder encodeBool:self.specifyServer forKey:kSpecifyServer];
+    [aCoder encodeBool:self.isClarityFirst forKey:kIsClarityFirst];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -91,6 +97,8 @@ NSString* kLivePureAudio = @"livePureAudio";
         self.isMerge = [aDecoder decodeBoolForKey:kMerge];
         self.isBackCamera = [aDecoder decodeBoolForKey:kBackCamera];
         self.livePureAudio = [aDecoder decodeBoolForKey:kLivePureAudio];
+        self.specifyServer = [aDecoder decodeBoolForKey:kSpecifyServer];
+        self.isClarityFirst = [aDecoder decodeBoolForKey:kIsClarityFirst];
     }
     return self;
 }
@@ -117,6 +125,19 @@ NSString* kLivePureAudio = @"livePureAudio";
     }
     
     return retModel;
+}
+
+-(void)setTheSpecifyServer:(BOOL)specifyServer
+{
+    if(self.specifyServer != specifyServer) {
+        if([[EMClient sharedClient] isLoggedIn])
+            [[EMClient sharedClient] logout:NO completion:^(EMError *aError) {
+                
+            }];
+        self.specifyServer = specifyServer;
+        self.userid = @"";
+        self.pswd = @"";
+    }
 }
 
 @end

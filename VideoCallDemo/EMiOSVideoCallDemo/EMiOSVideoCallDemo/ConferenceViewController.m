@@ -52,6 +52,10 @@ static bool gCanSharedDesktop = YES;
             [weakself updateAdminView];
         }];
         
+        EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
+        options.isClarityFirst = [EMDemoOption sharedOptions].isClarityFirst;
+        //options.minVideoKbps = 600;
+        
         EMConferenceRole currole = call.role;
         if (currole != EMConferenceRoleAudience) {
             [weakself pubLocalStreamWithEnableVideo:[EMDemoOption sharedOptions].openCamera completion:^(NSString *aPubStreamId, EMError *aError) {
@@ -100,6 +104,9 @@ static bool gCanSharedDesktop = YES;
         [self.sharedDefaults setObject:nil forKey:@"height"];
         [self.sharedDefaults setObject:nil forKey:@"status"];
     }
+//    if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin) {
+//        [self _addLive:@""];
+//    }
 }
 
 -(void)dealloc
@@ -137,6 +144,7 @@ static bool gCanSharedDesktop = YES;
     audioConfig.channels = 1;
     audioConfig.samples = LiveAudioSampleRate_32K;
     liveconfig.audioCfg = audioConfig;
+    liveconfig.recordExt = [EMDemoOption sharedOptions].recordExt;
     [[[EMClient sharedClient] conferenceManager] addConferenceLive:[EMDemoOption sharedOptions].conference  LiveCfg:liveconfig completion:^(EMError *aError) {
         if(aError){
         }
@@ -244,7 +252,19 @@ static bool gCanSharedDesktop = YES;
     [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateSelected];
     [self.whiteBoardButton addTarget:self action:@selector(joinWBAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.whiteBoardButton];
+    /*
+    self.startRecordButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.startRecordButton.frame = CGRectMake(self.view.bounds.size.width - 100, 150, 40, 40);
+    [self.startRecordButton setTitle:@"开始" forState:UIControlStateNormal];
+    [self.startRecordButton addTarget:self action:@selector(startRecordAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.startRecordButton];
     
+    self.stopRecordButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.stopRecordButton.frame = CGRectMake(self.view.bounds.size.width - 100, 200, 40, 40);
+    [self.stopRecordButton setTitle:@"停止" forState:UIControlStateNormal];
+    [self.stopRecordButton addTarget:self action:@selector(stopRecordAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.stopRecordButton];
+    */
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-75, self.view.bounds.size.width, 75) style:UITableViewStylePlain];
     _tableView.backgroundColor = [UIColor grayColor];
     _tableView.delegate = self;
@@ -252,7 +272,71 @@ static bool gCanSharedDesktop = YES;
     [self.view addSubview:_tableView];
     self.view.backgroundColor = [UIColor grayColor];
 }
+/*
+-(void)startRecordAction
+{
+    __weak typeof(self) weakself = self;
+    if([[EMDemoOption sharedOptions].conference.liveCfgs count] > 0){
+        NSArray* allKeys = [[EMDemoOption sharedOptions].conference.liveCfgs allKeys];
+        for(NSString* liveId in allKeys) {
+            [[[EMClient sharedClient] conferenceManager] enableRecordLiveStream:[EMDemoOption sharedOptions].conference liveId:liveId enabled:YES completion:^(EMError *aError) {
+                if(aError){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakself showHint:[NSString stringWithFormat:@"开启失败 %@",aError.description]];
+                    });
+                }else
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakself showHint:@"开启成功"];
+                    });
+            }];
+        }
+    }else{
+        [[[EMClient sharedClient] conferenceManager] enableRecordLiveStream:[EMDemoOption sharedOptions].conference liveId:[EMDemoOption sharedOptions].conference.liveId enabled:YES completion:^(EMError *aError) {
+            if(aError){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakself showHint:[NSString stringWithFormat:@"开启失败 %@",aError.description]];
+                });
+            }else
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakself showHint:@"开启成功"];
+                });
+        }];
+    }
+}
 
+-(void)stopRecordAction
+{
+    __weak typeof(self) weakself = self;
+    if([[EMDemoOption sharedOptions].conference.liveCfgs count] > 0){
+        NSArray* allKeys = [[EMDemoOption sharedOptions].conference.liveCfgs allKeys];
+        for(NSString* liveId in allKeys) {
+            [[[EMClient sharedClient] conferenceManager] enableRecordLiveStream:[EMDemoOption sharedOptions].conference liveId:liveId enabled:NO completion:^(EMError *aError) {
+                if(aError){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakself showHint:[NSString stringWithFormat:@"停止失败 %@",aError.description]];
+                    });
+                }else
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakself showHint:@"停止成功"];
+                    });
+                    
+            }];
+        }
+    }else{
+        [[[EMClient sharedClient] conferenceManager] enableRecordLiveStream:[EMDemoOption sharedOptions].conference liveId:[EMDemoOption sharedOptions].conference.liveId enabled:NO completion:^(EMError *aError) {
+            if(aError){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakself showHint:[NSString stringWithFormat:@"停止失败 %@",aError.description]];
+                });
+                
+            }else
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakself showHint:@"停止成功"];
+                });
+        }];
+    }
+}
+*/
 -(void)joinWBAction
 {
     if(self.whiteBoard && self.wkWebView) {
@@ -495,7 +579,8 @@ static bool gCanSharedDesktop = YES;
 - (void)playWithSpeaker
 {
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-    [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
+                        error:nil];
     [audioSession setActive:YES error:nil];
 }
 
@@ -792,8 +877,10 @@ static bool gCanSharedDesktop = YES;
 
     UIAlertAction *IphoneAction = [UIAlertAction actionWithTitle:@"iPhone内置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self switchBluetooth:NO];
+        
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionAllowBluetooth
+                            error:nil];
         [audioSession setActive:YES error:nil];
     }];
     [alertController addAction:IphoneAction];
@@ -930,7 +1017,6 @@ static bool gCanSharedDesktop = YES;
     pubConfig.isMute = ![EMDemoOption sharedOptions].openMicrophone;
     
     EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-    [options setMinVideoKbps:600];
     pubConfig.maxAudioKbps = (int)options.maxAudioKbps;
     switch ([EMDemoOption sharedOptions].resolutionrate) {
         case ResolutionRate_720p:
@@ -1636,7 +1722,7 @@ static bool gCanSharedDesktop = YES;
     if(aReport) {
 //        NSLog(@"video bps:%d",aReport.localVideoActualBps);
 //        NSLog(@"width:%d,height:%d",aReport.localCaptureWidth,aReport.localCaptureHeight);
-//        NSLog(@"encodewidth:%d,encodeheight:%d",aReport.localEncodedWidth,aReport.localEncodedHeight);
+//        NSLog(@"encodewidth:%d,encodeheight:%d,fps:%d",aReport.localEncodedWidth,aReport.localEncodedHeight,aReport.localEncodedFps);
 //        NSLog(@"target bps:%d",aReport.localVideoTargetBps);
     }
 }
