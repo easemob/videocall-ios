@@ -455,6 +455,7 @@ int kHeightStart = 300;
         audioConfig.channels = 1;
         audioConfig.samples = LiveAudioSampleRate_16K;
         liveconfig.audioCfg = audioConfig;
+        liveconfig.recordExt = [EMDemoOption sharedOptions].recordExt;
         roomConfig.liveConfig = liveconfig;
     }
     

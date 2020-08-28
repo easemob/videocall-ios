@@ -34,6 +34,7 @@
 
 @property (nonatomic) NSString* logPath;
 @property (nonatomic) XDSDropDownMenu *sexDropDownMenu;
+@property (nonatomic) XDSDropDownMenu *recordExtDropDownMenu;
 @property (nonatomic) UIButton* btn;
 @end
 
@@ -50,6 +51,7 @@
     self.title = @"设置";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _sexDropDownMenu = [[XDSDropDownMenu alloc] init];
+    _recordExtDropDownMenu = [[XDSDropDownMenu alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -61,7 +63,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section == 2)
     {
-        return 9;
+        return 12;
     }
     return 1;
 }
@@ -219,6 +221,55 @@
                     switchControl.enabled = [EMDemoOption sharedOptions].openCDN;
                     [cell.contentView addSubview:switchControl];
                 }
+                if(row == 9) {
+                    [[cell viewWithTag:3000] removeFromSuperview];
+                    cell.textLabel.text = @"音频格式";
+                    UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                    NSString* title = @"auto";
+                    switch ([EMDemoOption sharedOptions].recordExt) {
+                        case RecordExtWAV:
+                            title = @"wav";
+                            break;
+                        case RecordExtMP3:
+                            title = @"mp3";
+                            break;
+                        case RecordExtMP4:
+                            title = @"mp4";
+                            break;
+                        case RecordExtM4A:
+                            title = @"m4a";
+                            break;
+                        case RecordExtAUTO:
+                            title = @"auto";
+                            break;
+                        default:
+                            break;
+                    }
+                    [button setTitle:title forState:UIControlStateNormal];
+                    button.tag = 3000;
+                    button.frame = CGRectMake(self.tableView.frame.size.width - 70, 1, 70, 40);
+                    [button addTarget:self action:@selector(setRecordExtAction:) forControlEvents:UIControlEventTouchUpInside];
+                    [button addTarget:self action:@selector(hideRecordExtMenu:) forControlEvents:UIControlEventTouchUpOutside];
+                    [cell addSubview:button];
+                }
+                if(row == 10) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"沙箱环境";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].specifyServer];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 11) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"清晰度优先";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].isClarityFirst];
+                    [cell.contentView addSubview:switchControl];
+                }
             }else
                 if(section == 3) {
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -293,30 +344,83 @@
     button.tag = 2000;
 }
 
+-(void)setRecordExtAction:(UIButton*)button
+{
+    self.btn = button;
+    NSArray *arr = @[@"mp3",@"wav",@"m4a",@"mp4",@"auto"];
+    CGRect btnFrame = [button.superview convertRect:button.frame toView:self.view];
+    btnFrame.origin.y = btnFrame.origin.y - 100;
+    _recordExtDropDownMenu.delegate = self;//代理
+    btnFrame.origin.y -= 40;
+    if(button.tag == 4000){
+        [_recordExtDropDownMenu hideDropDownMenuWithBtnFrame:btnFrame];
+        button.tag = 3000;
+        return;
+    }
+    [_recordExtDropDownMenu showDropDownMenu:button withButtonFrame:btnFrame arrayOfTitle:arr arrayOfImage:nil animationDirection:@"down"];
+    //添加到主视图上
+    [self.view addSubview:_recordExtDropDownMenu];
+    
+    //将dropDownMenu的tag值设为2000，表示已经打开了dropDownMenu
+    button.tag = 4000;
+}
+
 -(void)hideMenu:(UIButton*)button
+{
+    CGRect btnFrame = [button.superview convertRect:button.frame toView:self.view];
+    _recordExtDropDownMenu.delegate = self;//代理
+    btnFrame.origin.y -= 40;
+    [_recordExtDropDownMenu hideDropDownMenuWithBtnFrame:btnFrame];
+    button.tag = 1000;
+    return;
+}
+
+-(void)hideRecordExtMenu:(UIButton*)button
 {
     CGRect btnFrame = [button.superview convertRect:button.frame toView:self.view];
     _sexDropDownMenu.delegate = self;//代理
     btnFrame.origin.y -= 40;
     [_sexDropDownMenu hideDropDownMenuWithBtnFrame:btnFrame];
-    button.tag = 1000;
+    button.tag = 3000;
     return;
 }
     
 - (void)setDropDownDelegate:(XDSDropDownMenu *)sender
 {
-    self.btn.tag = 1000;
-    NSString* title = [self.btn currentTitle];
-    if([title isEqualToString:@"720p"]){
-        [EMDemoOption sharedOptions].resolutionrate = ResolutionRate_720p;
+    if(sender == self.sexDropDownMenu){
+        self.btn.tag = 1000;
+        NSString* title = [self.btn currentTitle];
+        if([title isEqualToString:@"720p"]){
+            [EMDemoOption sharedOptions].resolutionrate = ResolutionRate_720p;
+        }
+        if([title isEqualToString:@"480p"]){
+            [EMDemoOption sharedOptions].resolutionrate = ResolutionRate_480p;
+        }
+        if([title isEqualToString:@"360p"]){
+            [EMDemoOption sharedOptions].resolutionrate = ResolutionRate_360p;
+        }
+        [[EMDemoOption sharedOptions] archive];
     }
-    if([title isEqualToString:@"480p"]){
-        [EMDemoOption sharedOptions].resolutionrate = ResolutionRate_480p;
+    if(sender == self.recordExtDropDownMenu) {
+        self.btn.tag = 3000;
+        NSString* title = [self.btn currentTitle];
+        if([title isEqualToString:@"mp3"]){
+            [EMDemoOption sharedOptions].recordExt = RecordExtMP3;
+        }
+        if([title isEqualToString:@"wav"]){
+            [EMDemoOption sharedOptions].recordExt = RecordExtWAV;
+        }
+        if([title isEqualToString:@"mp4"]){
+            [EMDemoOption sharedOptions].recordExt = RecordExtMP4;
+        }
+        if([title isEqualToString:@"m4a"]){
+            [EMDemoOption sharedOptions].recordExt = RecordExtM4A;
+        }
+        if([title isEqualToString:@"auto"]){
+            [EMDemoOption sharedOptions].recordExt = RecordExtAUTO;
+        }
+        //[[EMDemoOption sharedOptions] archive];
     }
-    if([title isEqualToString:@"360p"]){
-        [EMDemoOption sharedOptions].resolutionrate = ResolutionRate_360p;
-    }
-    [[EMDemoOption sharedOptions] archive];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -347,6 +451,12 @@
         [self.tableView reloadData];
     }else if (tag == 8 + 10000 + 10*2) {
         [EMDemoOption sharedOptions].livePureAudio = [aSwitch isOn];
+        [self.tableView reloadData];
+    }else if (tag == 10 + 10000 + 10*2 ) {
+        [[EMDemoOption sharedOptions] setTheSpecifyServer:[aSwitch isOn]];
+        [self.tableView reloadData];
+    }else if (tag == 11 + 10000 + 10*2 ) {
+        [EMDemoOption sharedOptions].isClarityFirst = [aSwitch isOn];
         [self.tableView reloadData];
     }
     [[EMDemoOption sharedOptions] archive];

@@ -30,6 +30,7 @@ typedef NS_ENUM(int,EMResolutionRate) {
 @property (nonatomic) BOOL openCDN;
 @property (nonatomic) NSString* cdnUrl;
 @property (nonatomic) EMResolutionRate resolutionrate;
+@property (nonatomic) RecordExt recordExt;
 @property (nonatomic) NSString* roomName;
 @property (nonatomic) NSString* roomPswd;
 @property (nonatomic) EMCallConference* conference;
@@ -41,9 +42,11 @@ typedef NS_ENUM(int,EMResolutionRate) {
 @property (nonatomic) long liveHeight;
 @property (nonatomic) BOOL muteAll;
 @property (nonatomic) BOOL livePureAudio;
+@property (nonatomic) BOOL isClarityFirst;
 
 + (instancetype)sharedOptions;
 - (void)archive;
+- (void)setTheSpecifyServer:(BOOL)specifyServer;
 
 @end
 
