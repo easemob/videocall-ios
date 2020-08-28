@@ -18,7 +18,7 @@ cd ./VideoCallDemo/EMiOSVideoCallDemo
 pod install
 
 ```
-3.下载3.6.7SDK到当前工程下，并引入工程
+3.下载HyphenateSDK到当前工程下，并引入工程
 
 4.点击iOSVideoCallDemo.xcworkspace进入Demo
 
@@ -51,4 +51,4 @@ SelectHeadImageViewController  修改头像页面
 
 
 ## 集成文档
-多人音视频集成文档参见官方文档：http://docs-im.easemob.com/im/ios/basics/multiuserconference
+多人音视频集成文档参见官方文档：http://docs-im.easemob.com/rtc/conference/ios
