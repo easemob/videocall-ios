@@ -30,6 +30,8 @@
 @property (nonatomic) EMWhiteboard *whiteBoard;
 @property (nonatomic) NSString* wbCreator;
 @property (nonatomic) WKWebView *wkWebView;
+@property (nonatomic) AVAudioSessionCategory category;
+@property (nonatomic) AVAudioSessionCategoryOptions option;
 @end
 
 @implementation ConferenceViewController
@@ -79,6 +81,24 @@ static bool gCanSharedDesktop = YES;
     gCanSharedDesktop = YES;
 }
 
+-(void)audioInterruption:(NSNotification*)param
+{
+    if(param && param.userInfo) {
+        NSNumber* state = [param.userInfo objectForKey:AVAudioSessionInterruptionTypeKey];
+        if([state intValue] == AVAudioSessionInterruptionTypeBegan) {
+            AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+            self.category = audioSession.category;
+            self.option = audioSession.categoryOptions;
+            [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategorySoloAmbient error:nil];
+        }else if([state intValue] == AVAudioSessionInterruptionTypeEnded){
+            AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+            [audioSession setCategory:self.category withOptions: self.option error:nil];
+            [audioSession setActive:YES error:nil];
+        }
+    }
+    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view
@@ -86,6 +106,7 @@ static bool gCanSharedDesktop = YES;
     _desktopStreamId = nil;
     [self setupSubViews];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyWindowActive:) name:UIWindowDidBecomeVisibleNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
 
     [[[EMClient sharedClient] conferenceManager] addDelegate:self delegateQueue:nil];
     [[[EMClient sharedClient] conferenceManager] startMonitorSpeaker:[EMDemoOption sharedOptions].conference timeInterval:2 completion:^(EMError *aError) {
