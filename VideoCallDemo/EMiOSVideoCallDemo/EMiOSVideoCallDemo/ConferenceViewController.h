@@ -8,11 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "EMStreamView.h"
-#import "EMWhiteBoardView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ConferenceViewController : UIViewController<EMConferenceManagerDelegate,EMStreamViewDelegate,UITableViewDelegate,UITableViewDataSource,UIGestureRecognizerDelegate,EMWhiteBoardViewDelegate>
+@interface ConferenceViewController : UIViewController<EMConferenceManagerDelegate,EMStreamViewDelegate,UITableViewDelegate,UITableViewDataSource,UIGestureRecognizerDelegate>
 @property(nonatomic,strong) UILabel* roomNameLable;
 @property(nonatomic,strong) UILabel* timeLabel;
 @property(nonatomic,strong) UIButton* settingButton;

@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WhiteBoardViewController : UIViewController
-- (instancetype)initWithWBUrl:(EMWhiteboard*)wb WKView:(WKWebView*)wkView;
+- (instancetype)initWithWBUrl:(EMWhiteboard*)wb;
 -(void)back;
 @end
 

@@ -14,6 +14,7 @@
 #import "UIViewController+HUD.h"
 #import "XDSDropDownMenu.h"
 #import "ProfileViewController.h"
+//#define ENABLE_AUDIORECORD
 
 @interface UpdateCDNUrlAlertController : UIAlertController
 -(void)textChange:(UITextField*)textField;
@@ -63,7 +64,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if(section == 2)
     {
-        return 12;
+        return 13;
     }
     return 1;
 }
@@ -211,6 +212,7 @@
                     [opButton addTarget:self action:@selector(editCDNUrl:) forControlEvents:UIControlEventTouchUpInside];
                     [cell addSubview:opButton];
                 }
+#ifdef ENABLE_AUDIORECORD
                 if(row == 8) {
                     [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
                     cell.textLabel.text = @"开启纯音频推流";
@@ -252,6 +254,7 @@
                     [button addTarget:self action:@selector(hideRecordExtMenu:) forControlEvents:UIControlEventTouchUpOutside];
                     [cell addSubview:button];
                 }
+#endif
                 if(row == 10) {
                     [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
                     cell.textLabel.text = @"沙箱环境";
@@ -268,6 +271,15 @@
                     switchControl.tag = section*10 + row + 10000;
                     [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
                     [switchControl setOn:[EMDemoOption sharedOptions].isClarityFirst];
+                    [cell.contentView addSubview:switchControl];
+                }
+                if(row == 12) {
+                    [[cell viewWithTag:section*10 + row + 10000] removeFromSuperview];
+                    cell.textLabel.text = @"以观众加入";
+                    UISwitch*switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 65, 1, 50, 40)];
+                    switchControl.tag = section*10 + row + 10000;
+                    [switchControl addTarget:self action:@selector(cellSwitchValueChanged:) forControlEvents:UIControlEventValueChanged];
+                    [switchControl setOn:[EMDemoOption sharedOptions].isJoinAsAudience];
                     [cell.contentView addSubview:switchControl];
                 }
             }else
@@ -458,6 +470,9 @@
     }else if (tag == 11 + 10000 + 10*2 ) {
         [EMDemoOption sharedOptions].isClarityFirst = [aSwitch isOn];
         [self.tableView reloadData];
+    }else if (tag == 12 + 10000 + 10*2 ) {
+        [EMDemoOption sharedOptions].isJoinAsAudience = [aSwitch isOn];
+        [self.tableView reloadData];
     }
     [[EMDemoOption sharedOptions] archive];
 }
@@ -475,6 +490,10 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+#ifndef ENABLE_AUDIORECORD
+    if((indexPath.row == 8 || indexPath.row == 9) && indexPath.section == 2)
+        return 0;
+#endif
     return 40;
 }
 //section头部视图

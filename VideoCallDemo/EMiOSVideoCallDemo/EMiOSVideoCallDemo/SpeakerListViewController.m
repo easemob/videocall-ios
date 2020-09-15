@@ -10,6 +10,7 @@
 #import "EMDemoOption.h"
 #import "ConferenceViewController.h"
 #import "EMAlertController.h"
+#import "AppDelegate.h"
 
 @interface UICustomTableViewCell : UITableViewCell
 @property (nonatomic) NSString* memName;
@@ -45,6 +46,30 @@
 -(void)backAction
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)_forcePortrait
+{
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
+    appDelegate.curOrientationMask = UIInterfaceOrientationMaskPortrait;
+    appDelegate.allowRotation = NO;
+    //调用横屏代码
+
+    NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
+
+    [[UIDevice currentDevice] setValue:resetOrientationTarget forKey:@"orientation"];
+
+    NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
+
+    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self _forcePortrait];
+    [self.navigationController setNavigationBarHidden:YES];
 }
 
 #pragma mark - Table view data source

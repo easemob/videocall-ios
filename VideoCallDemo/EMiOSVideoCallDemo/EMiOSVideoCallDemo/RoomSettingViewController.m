@@ -12,6 +12,7 @@
 #import <MessageUI/MessageUI.h>
 #import "EMAlertController/EMAlertController.h"
 #import "ConferenceViewController.h"
+#import "AppDelegate.h"
 
 @interface RoomSettingViewController ()<MFMailComposeViewControllerDelegate>
 @property (nonatomic) NSString* logPath;
@@ -35,6 +36,29 @@
 -(void)backAction
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)_forcePortrait
+{
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
+    appDelegate.curOrientationMask = UIInterfaceOrientationMaskPortrait;
+    appDelegate.allowRotation = NO;
+    //调用横屏代码
+
+    NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
+
+    [[UIDevice currentDevice] setValue:resetOrientationTarget forKey:@"orientation"];
+
+    NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
+
+    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self _forcePortrait];
+    [self.navigationController setNavigationBarHidden:YES];
 }
 
 

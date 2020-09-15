@@ -33,12 +33,10 @@
 -(UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
     if (self.allowRotation == YES) {
         //横屏
-        return UIInterfaceOrientationMaskLandscape;
-        
-    }else{
-        //竖屏
-        return UIInterfaceOrientationMaskPortrait;
+        return UIInterfaceOrientationMaskAll;
+
     }
+    return self.curOrientationMask;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application

@@ -28,6 +28,8 @@ typedef enum {
 
 @property (nonatomic, strong) UILabel *nickNameLabel;
 
+@property (nonatomic) UIActivityIndicatorView * activity;
+
 @property (nonatomic) StreamStatus status;
 
 @property (nonatomic) BOOL enableVoice;
@@ -39,6 +41,7 @@ typedef enum {
 @property (nonatomic, strong) id ext;
 
 @property (nonatomic) BOOL isAdmin;
+
 
 @end
 

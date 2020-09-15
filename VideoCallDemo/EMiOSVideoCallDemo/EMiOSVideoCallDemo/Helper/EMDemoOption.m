@@ -23,6 +23,7 @@ NSString* kBackCamera = @"backCamera";
 NSString* kLivePureAudio = @"livePureAudio";
 NSString* kSpecifyServer = @"specifyServer";
 NSString* kIsClarityFirst = @"isClarityFirst";
+NSString* kIsJoinAsAudience = @"isJoinAsAudience";
 @implementation EMDemoOption
 -(instancetype)init{
     EMDemoOption* p = [super init];
@@ -51,6 +52,7 @@ NSString* kIsClarityFirst = @"isClarityFirst";
     self.livePureAudio = NO;
     self.recordExt = RecordExtAUTO;
     self.isClarityFirst = NO;
+    self.isJoinAsAudience = NO;
 }
 
 - (void)archive
@@ -77,6 +79,7 @@ NSString* kIsClarityFirst = @"isClarityFirst";
     [aCoder encodeBool:self.livePureAudio forKey:kLivePureAudio];
     [aCoder encodeBool:self.specifyServer forKey:kSpecifyServer];
     [aCoder encodeBool:self.isClarityFirst forKey:kIsClarityFirst];
+    [aCoder encodeBool:self.isJoinAsAudience forKey:kIsJoinAsAudience];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -99,6 +102,7 @@ NSString* kIsClarityFirst = @"isClarityFirst";
         self.livePureAudio = [aDecoder decodeBoolForKey:kLivePureAudio];
         self.specifyServer = [aDecoder decodeBoolForKey:kSpecifyServer];
         self.isClarityFirst = [aDecoder decodeBoolForKey:kIsClarityFirst];
+        self.isJoinAsAudience = [aDecoder decodeBoolForKey:kIsJoinAsAudience];
     }
     return self;
 }

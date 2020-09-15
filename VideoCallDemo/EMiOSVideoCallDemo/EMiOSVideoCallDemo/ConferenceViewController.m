@@ -15,8 +15,11 @@
 #import "ChangeRoleView.h"
 #import "BroadcastSetupViewController.h"
 #import "WhiteBoardViewController.h"
+#import "SharedDesktopViewController.h"
+#import "AppDelegate.h"
+#import "InviteViewController.h"
 
-@interface ConferenceViewController ()
+@interface ConferenceViewController ()<UIScrollViewDelegate>
 @property (nonatomic) UIImageView* newtworkView;
 @property (nonatomic) UIImageView* showOrHideMenu;
 @property (nonatomic) UIButton* showOrHideMenuButton;
@@ -26,17 +29,25 @@
 @property (nonatomic) NSUserDefaults *sharedDefaults;
 @property (nonatomic) RPBroadcastController*broadcastController;
 @property (nonatomic) RPSystemBroadcastPickerView *picker;
-@property (nonatomic) EMWhiteBoardView* whiteBoardView;
 @property (nonatomic) EMWhiteboard *whiteBoard;
 @property (nonatomic) NSString* wbCreator;
 @property (nonatomic) WKWebView *wkWebView;
 @property (nonatomic) AVAudioSessionCategory category;
 @property (nonatomic) AVAudioSessionCategoryOptions option;
+@property (nonatomic) UISwipeGestureRecognizer * recognizer;
+@property (nonatomic) EMCallRemoteView *remoteDesktopView;
+@property (nonatomic) SharedDesktopViewController* sharedDesktopVC;
+@property (nonatomic) UIButton* inviteButton;
+@property (nonatomic) NSString* remoteDesktopStreamId;
+@property (nonatomic) UIView* toastView;
+@property (nonatomic) UIView* netbackView;
 @end
 
 @implementation ConferenceViewController
 static int gZorder = 1;
 static bool gCanSharedDesktop = YES;
+static int gSmallVideoSize = 100;
+static int gBottomMenuHeight = 60;
 
 - (instancetype)initWithConfence:(EMCallConference*)call role:(EMConferenceRole)role
 {
@@ -107,6 +118,7 @@ static bool gCanSharedDesktop = YES;
     [self setupSubViews];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyWindowActive:) name:UIWindowDidBecomeVisibleNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioInterruption:) name:AVAudioSessionInterruptionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
 
     [[[EMClient sharedClient] conferenceManager] addDelegate:self delegateQueue:nil];
     [[[EMClient sharedClient] conferenceManager] startMonitorSpeaker:[EMDemoOption sharedOptions].conference timeInterval:2 completion:^(EMError *aError) {
@@ -125,6 +137,9 @@ static bool gCanSharedDesktop = YES;
         [self.sharedDefaults setObject:nil forKey:@"height"];
         [self.sharedDefaults setObject:nil forKey:@"status"];
     }
+    self.recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeFrom:)];
+    [self.recognizer setDirection:(UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight)];
+    [self.view addGestureRecognizer:self.recognizer];
 //    if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAdmin) {
 //        [self _addLive:@""];
 //    }
@@ -133,7 +148,6 @@ static bool gCanSharedDesktop = YES;
 -(void)dealloc
 {
     [[EMClient sharedClient].conferenceManager removeDelegate:self];
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -174,25 +188,39 @@ static bool gCanSharedDesktop = YES;
 
 - (UIView*)toastView
 {
-    UIView *view = [[UIView alloc] init];
-    view.frame = CGRectMake(16,50,116,40);
+    if(_toastView == nil){
+        _toastView = [[UIView alloc] init];
+        _toastView.frame = CGRectMake(16,50,116,40);
 
-    view.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.25].CGColor;
-    view.layer.cornerRadius = 22.5;
-    return view;
+        _toastView.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.25].CGColor;
+        _toastView.layer.cornerRadius = 22.5;
+    }
+    return _toastView;
+}
+
+- (UIView*)netbackView
+{
+    if(_netbackView == nil){
+        _netbackView = [[UIView alloc] init];
+        _netbackView.frame = CGRectMake(19, 53, 36, 36);
+        _netbackView.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.25].CGColor;
+        _netbackView.layer.cornerRadius = 18;
+    }
+    return _netbackView;
 }
 
 -(void) setupSubViews
 {
     self.isSetMute = YES;
-    [self.view addSubview:[self toastView]];
-    self.newtworkView = [[UIImageView alloc] initWithFrame:CGRectMake(19,53,34,34)];
+    [self.view addSubview:self.toastView];
+    self.newtworkView = [[UIImageView alloc] initWithFrame:CGRectMake(20,53,30,30)];
     self.newtworkView.image = [UIImage imageNamed:@"networkinfo"];
     [self.view addSubview:self.newtworkView];
-    self.roomNameLable = [[UILabel alloc] initWithFrame:CGRectMake(59,53, 48, 20)];
+    [self.view addSubview:self.netbackView];
+    self.roomNameLable = [[UILabel alloc] initWithFrame:CGRectMake(59,50, 48, 25)];
     self.roomNameLable.text = [EMDemoOption sharedOptions].roomName;
     self.roomNameLable.textColor = [UIColor whiteColor];
-    [self.roomNameLable setFont:[UIFont fontWithName:@"Arial" size:12]];
+    [self.roomNameLable setFont:[UIFont fontWithName:@"Arial" size:16]];
     [self.view addSubview:self.roomNameLable];
     
     self.showOrHideMenuButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -200,27 +228,51 @@ static bool gCanSharedDesktop = YES;
     self.showOrHideMenuButton.frame = CGRectMake(self.view.bounds.size.width - 50, 50, 40, 40);
     [self.showOrHideMenuButton addTarget:self action:@selector(showOrHideAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.showOrHideMenuButton];
+    [self.showOrHideMenuButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.top.equalTo(self.view).with.offset(50);
+        make.right.equalTo(self.view).with.offset(-10);
+    }];
     
     self.showOrHideMenu = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 50, 50, 40, 40)];
     //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
     UIImage* image = [UIImage imageNamed:@"showMenu"];
     self.showOrHideMenu.image = image;
     [self.view addSubview:self.showOrHideMenu];
+    [self.showOrHideMenu mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.top.equalTo(self.view).with.offset(50);
+        make.right.equalTo(self.view).with.offset(-10);
+    }];
     
     self.settingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.settingButton.frame = CGRectMake(self.view.bounds.size.width - 50, 100, 40, 40);
     //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
     [self.settingButton setImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
     [self.settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.settingButton setTintColor:[UIColor blackColor]];
+    [self.settingButton setTintColor:[UIColor whiteColor]];
     [self.view addSubview:self.settingButton];
+//    [self.settingButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.width.equalTo(@40);
+//        make.height.equalTo(@40);
+//        make.top.equalTo(self.view).with.offset(120);
+//        make.right.equalTo(self.view).with.offset(-10);
+//    }];
     
     self.selectDevice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.selectDevice.frame = CGRectMake(self.view.bounds.size.width - 50, 150, 40, 40);
     [self.selectDevice setImage:[UIImage imageNamed:@"switchDevice"] forState:UIControlStateNormal];
     [self.selectDevice addTarget:self action:@selector(selectDeviceAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.selectDevice setTintColor:[UIColor blackColor]];
+    [self.selectDevice setTintColor:[UIColor whiteColor]];
     [self.view addSubview:self.selectDevice];
+    [self.selectDevice mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.top.equalTo(@50);
+        make.left.equalTo(@140);
+    }];
     
     self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59, 73, 40, 10)];
     self.timeLabel.textColor = [UIColor whiteColor];
@@ -229,9 +281,10 @@ static bool gCanSharedDesktop = YES;
     [self.view addSubview:self.timeLabel];
     [self startTimer];
     
-    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 180, self.view.bounds.size.width, 100)];
+    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 180, self.view.bounds.size.width, gSmallVideoSize)];
     self.scrollView.showsHorizontalScrollIndicator = NO;
-    self.scrollView.contentSize = CGSizeMake(100*8, 100);
+    self.scrollView.contentSize = CGSizeMake(gSmallVideoSize*8, gSmallVideoSize);
+    self.scrollView.delegate = self;
     [self.view addSubview:self.scrollView];
     
     self.switchCameraButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -250,29 +303,65 @@ static bool gCanSharedDesktop = YES;
     //[self.switchCameraButton setTintColor:[UIColor blueColor]];
     [self.switchCameraButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
     [self.switchCameraButton setEnabled:NO];
-    [self.switchCameraButton setTintColor:[UIColor blackColor] ];
+    [self.switchCameraButton setTintColor:[UIColor whiteColor] ];
     [self.view addSubview:_switchCameraButton];
+    [self.switchCameraButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.top.equalTo(@50);
+        make.left.equalTo(self.selectDevice.mas_right).with.offset(10);
+    }];
+//    [self.switchCameraButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.width.equalTo(@40);
+//        make.height.equalTo(@40);
+//        make.top.equalTo(self.view).with.offset(200);
+//        make.right.equalTo(self.view).with.offset(-10);
+//    }];
     
     self.sharedDesktopButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.sharedDesktopButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
     [self.sharedDesktopButton setImage:[UIImage imageNamed:@"call_screenshare"] forState:UIControlStateNormal];
     [self.sharedDesktopButton setImage:[UIImage imageNamed:@"call_screenshare_stop"] forState:UIControlStateSelected];
     [self.sharedDesktopButton addTarget:self action:@selector(recordAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.sharedDesktopButton setTintColor:[UIColor blackColor]];
+    [self.sharedDesktopButton setTintColor:[UIColor whiteColor]];
     [self.view addSubview:self.sharedDesktopButton];
+    [self.sharedDesktopButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.top.equalTo(self.view).with.offset(50);
+        make.right.equalTo(self.view).with.offset(-60);
+    }];
     
     UIView *view = [[UIView alloc] init];
     view.frame = CGRectMake(self.view.bounds.size.width - 100, 100, 40, 40);
 
-    view.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.25].CGColor;
+    view.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.30].CGColor;
     view.layer.cornerRadius = 20;
+    [view setTintColor:[UIColor whiteColor]];
     [self.view addSubview:view];
+    [view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.top.equalTo(self.view).with.offset(100);
+        make.right.equalTo(self.view).with.offset(-60);
+    }];
     self.whiteBoardButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.whiteBoardButton.frame = CGRectMake(self.view.bounds.size.width - 100, 100, 40, 40);
     [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateNormal];
     [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateSelected];
     [self.whiteBoardButton addTarget:self action:@selector(joinWBAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.whiteBoardButton];
+    [self.whiteBoardButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.top.equalTo(self.view).with.offset(100);
+        make.right.equalTo(self.view).with.offset(-60);
+    }];
+    self.inviteButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.inviteButton.frame = CGRectMake(self.view.bounds.size.width - 100, 150, 40, 40);
+    [self.view addSubview:self.inviteButton];
+    [self.inviteButton setTitle:@"邀请" forState:UIControlStateNormal];
+    [self.inviteButton addTarget:self action:@selector(inviteAction) forControlEvents:UIControlEventTouchUpInside];
     /*
     self.startRecordButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.startRecordButton.frame = CGRectMake(self.view.bounds.size.width - 100, 150, 40, 40);
@@ -286,12 +375,37 @@ static bool gCanSharedDesktop = YES;
     [self.stopRecordButton addTarget:self action:@selector(stopRecordAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.stopRecordButton];
     */
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-75, self.view.bounds.size.width, 75) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-gBottomMenuHeight, self.view.bounds.size.width, gBottomMenuHeight) style:UITableViewStylePlain];
     _tableView.backgroundColor = [UIColor grayColor];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.height.equalTo(@(gBottomMenuHeight));
+        make.width.equalTo(self.view);
+        make.left.equalTo(self.view);
+        make.bottom.equalTo(self.view);
+    }];
+    [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(self.view);
+        make.height.equalTo(@(gSmallVideoSize));
+        make.left.equalTo(self.view);
+        make.bottom.equalTo(self.view).with.offset(-gBottomMenuHeight);
+    }];
     self.view.backgroundColor = [UIColor grayColor];
+}
+- (void)inviteAction
+{
+    InviteViewController* vc = [[InviteViewController alloc] init];
+    [self addChildViewController:vc];
+    [self.view addSubview:vc.view];
+    [vc.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(self.view);
+        make.height.equalTo(self.view).with.multipliedBy(0.5);
+        make.bottom.equalTo(self.view);
+        make.left.equalTo(self.view);
+    }];
+    [vc didMoveToParentViewController:self];
 }
 /*
 -(void)startRecordAction
@@ -360,21 +474,15 @@ static bool gCanSharedDesktop = YES;
 */
 -(void)joinWBAction
 {
+    if([self.desktopStreamId length] > 0 || self.sharedDesktopVC){
+        [EMAlertController showInfoAlert:@"正在进行共享任务，不能共享白板"];
+        return;
+    }
     if(self.whiteBoard && self.wkWebView) {
-        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:self.whiteBoard WKView:self.wkWebView];
+        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:self.whiteBoard];
         [self.navigationController pushViewController:wbVC animated:NO];
     }else
         [self _joinWhiteBoardWithName:[EMDemoOption sharedOptions].roomName password:[EMDemoOption sharedOptions].roomPswd];
-}
-
--(void)wbBack
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if(self.wkWebView && self.whiteBoardView) {
-            [self.whiteBoardView setWKView:self.wkWebView];
-        }
-    });
-    
 }
 
 -(void)_joinWhiteBoardWithName:(NSString*)whiteBoardName password:(NSString*)password
@@ -383,18 +491,7 @@ static bool gCanSharedDesktop = YES;
     [[EMClient sharedClient].conferenceManager joinWhiteboardRoomWithName:whiteBoardName username:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken roomPassword:password completion:^(EMWhiteboard *aWhiteboard, EMError *aError) {
         if (!aError) {
             weakself.whiteBoard = aWhiteboard;
-            weakself.whiteBoardView = [[EMWhiteBoardView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-            weakself.whiteBoardView.delegate = self;
-            [weakself.scrollView addSubview:weakself.whiteBoardView];
-            [weakself updateScrollView];
-            WKWebViewConfiguration *config = [WKWebViewConfiguration new];
-            config.preferences = [WKPreferences new];
-            config.preferences.minimumFontSize = 10;
-            config.preferences.javaScriptEnabled = YES;
-            config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-            weakself.wkWebView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) configuration:config];
-            [weakself.wkWebView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:aWhiteboard.roomURL]]];
-            WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard WKView:weakself.wkWebView];
+            WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard];
             [weakself.navigationController pushViewController:wbVC animated:NO];
         } else {
             if (aError.code == EMErrorCallRoomNotExist) {
@@ -402,7 +499,11 @@ static bool gCanSharedDesktop = YES;
                     [EMAlertController showErrorAlert:@"观众不能创建白板"];
                     return;
                 }
-                [[EMClient sharedClient].conferenceManager createWhiteboardRoomWithUsername:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken roomName:whiteBoardName roomPassword:password interact:YES completion:^(EMWhiteboard *aWhiteboard, EMError *aError) {
+                EMWhiteboardConfig* wbConfig = [[EMWhiteboardConfig alloc] init];
+                wbConfig.interact = NO;
+                wbConfig.layout = EMWBLayoutTop;
+                wbConfig.ratio = @"2:1";
+                [[EMClient sharedClient].conferenceManager createWhiteboardRoomWithUsername:[EMClient sharedClient].currentUsername userToken:[EMClient sharedClient].accessUserToken roomName:whiteBoardName roomPassword:password config:wbConfig completion:^(EMWhiteboard *aWhiteboard, EMError *aError) {
                     if (!aError) {
                         weakself.whiteBoard = aWhiteboard;
                         NSDate *date = [NSDate dateWithTimeIntervalSinceNow:0]; // 获取当前时间0秒后的时间
@@ -417,18 +518,7 @@ static bool gCanSharedDesktop = YES;
                         [[[EMClient sharedClient] conferenceManager] setConferenceAttribute:@"whiteBoard" value:jsonStr completion:^(EMError *aError) {
                             
                         }];
-                        weakself.whiteBoardView = [[EMWhiteBoardView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-                        weakself.whiteBoardView.delegate = self;
-                        [weakself.scrollView addSubview:weakself.whiteBoardView];
-                        [weakself updateScrollView];
-                        WKWebViewConfiguration *config = [WKWebViewConfiguration new];
-                        config.preferences = [WKPreferences new];
-                        config.preferences.minimumFontSize = 10;
-                        config.preferences.javaScriptEnabled = YES;
-                        config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-                        weakself.wkWebView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) configuration:config];
-                        [weakself.wkWebView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:aWhiteboard.roomURL]]];
-                        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard WKView:weakself.wkWebView];
+                        WhiteBoardViewController* wbVC = [[WhiteBoardViewController alloc] initWithWBUrl:weakself.whiteBoard];
                         [self.navigationController pushViewController:wbVC animated:NO];
                     } else {
                         [weakself showHint:aError.errorDescription];
@@ -443,7 +533,7 @@ static bool gCanSharedDesktop = YES;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 75;
+    return gBottomMenuHeight;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -479,7 +569,6 @@ static bool gCanSharedDesktop = YES;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     NSInteger section = indexPath.section;
-    NSInteger row = indexPath.row;
     static NSString *cellIdentifier = @"cellID";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:
@@ -510,6 +599,18 @@ static bool gCanSharedDesktop = YES;
         self.microphoneLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
         [cell addSubview:self.microphoneButton];
         [cell addSubview:self.microphoneLable];
+        [self.microphoneButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(0.2);
+            make.width.equalTo(@(iconsize));
+            make.top.equalTo(@5);
+            make.height.equalTo(@(iconsize));
+        }];
+        [self.microphoneLable mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(0.2);
+            make.width.equalTo(cell).multipliedBy(0.2);
+            make.top.equalTo(@30);
+            make.height.equalTo(@30);
+        }];
         
         self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.videoButton.frame = CGRectMake(padding + (padding+size) + offset, top, iconsize, iconsize);
@@ -525,6 +626,18 @@ static bool gCanSharedDesktop = YES;
         self.videoLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
         [cell addSubview:self.videoButton];
         [cell addSubview:self.videoLable];
+        [self.videoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(0.6);
+            make.width.equalTo(@(iconsize));
+            make.top.equalTo(@5);
+            make.height.equalTo(@(iconsize));
+        }];
+        [self.videoLable mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(0.6);
+            make.width.equalTo(cell).multipliedBy(0.2);
+            make.top.equalTo(@30);
+            make.height.equalTo(@30);
+        }];
         
         self.hangupButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         self.hangupButton.frame = CGRectMake(padding + (padding+size) * 2 + offset, top, iconsize, iconsize);
@@ -540,6 +653,18 @@ static bool gCanSharedDesktop = YES;
         [self.hangupLable setFont:[UIFont fontWithName:@"Arial" size:10]];
         [cell addSubview:self.hangupButton];
         [cell addSubview:self.hangupLable];
+        [self.hangupButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell);
+            make.width.equalTo(@(iconsize));
+            make.top.equalTo(@5);
+            make.height.equalTo(@(iconsize));
+        }];
+        [self.hangupLable mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell);
+            make.width.equalTo(cell).multipliedBy(0.2);
+            make.top.equalTo(@30);
+            make.height.equalTo(@30);
+        }];
         
         self.membersButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         self.membersButton.frame = CGRectMake(padding + (padding+size) * 3 + offset, top, iconsize, iconsize);
@@ -556,6 +681,18 @@ static bool gCanSharedDesktop = YES;
         self.membersLable.textAlignment = NSTextAlignmentCenter;
         [self.membersLable setFont:[UIFont fontWithName:@"Arial" size:10]];
         [cell addSubview:self.membersLable];
+        [self.membersButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(1.4);
+            make.width.equalTo(@(iconsize));
+            make.top.equalTo(@5);
+            make.height.equalTo(@(iconsize));
+        }];
+        [self.membersLable mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(1.4);
+            make.width.equalTo(cell).multipliedBy(0.2);
+            make.top.equalTo(@30);
+            make.height.equalTo(@30);
+        }];
         
         self.roleButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         self.roleButton.frame = CGRectMake(padding + (padding+size) * 4 + offset, top, iconsize, iconsize);
@@ -586,6 +723,18 @@ static bool gCanSharedDesktop = YES;
         [self.roleButton addTarget:self action:@selector(roleChangeAction) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:self.roleButton];
         [cell addSubview:self.roleLable];
+        [self.roleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(1.8);
+            make.width.equalTo(@(iconsize));
+            make.top.equalTo(@5);
+            make.height.equalTo(@(iconsize));
+        }];
+        [self.roleLable mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(cell).multipliedBy(1.8);
+            make.width.equalTo(cell).multipliedBy(0.2);
+            make.top.equalTo(@30);
+            make.height.equalTo(@30);
+        }];
     }
     return cell;
 }
@@ -717,22 +866,40 @@ static bool gCanSharedDesktop = YES;
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
     [audioSession setActive:YES error:nil];
-    if([EMDemoOption sharedOptions].conference) {
-        [[EMClient sharedClient].conferenceManager stopMonitorSpeaker:[EMDemoOption sharedOptions].conference];
-        if(isDestroy)
-            [[EMClient sharedClient].conferenceManager destroyConferenceWithId:[EMDemoOption sharedOptions].conference.confId completion:nil];
-        else
-            [[EMClient sharedClient].conferenceManager leaveConference:[EMDemoOption sharedOptions].conference completion:nil];
+    for(NSString* streamId in self.streamItemDict) {
+        EMStreamItem* item = [self.streamItemDict objectForKey:streamId];
+        if(item && item.stream && [item.stream.streamId length] > 0) {
+            [[[EMClient sharedClient] conferenceManager] unsubscribeConference:[EMDemoOption sharedOptions].conference streamId:item.stream.streamId completion:^(EMError *aError) {
+                
+            }];
+        }
     }
-    [self clearResource];
-    
-    
-
-    [self dismissViewControllerAnimated:NO completion:nil];
-    while (![self.navigationController.topViewController isKindOfClass:[self class]]) {
-        [self.navigationController popViewControllerAnimated:NO];
-    }
-    [self.navigationController popViewControllerAnimated:NO];
+    if([self.pubStreamId length] > 0)
+       [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
+        
+    }];
+    if([self.desktopStreamId length] > 0)
+       [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.desktopStreamId completion:^(EMError *aError) {
+        
+    }];
+    __weak typeof(self) weakself = self;
+    void(^block)(EMError*err) = ^(EMError*err){
+        [weakself clearResource];
+        [weakself dismissViewControllerAnimated:NO completion:nil];
+        while (![weakself.navigationController.topViewController isKindOfClass:[self class]]) {
+            [weakself.navigationController popViewControllerAnimated:NO];
+        }
+        [weakself.navigationController popViewControllerAnimated:NO];
+    };
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if([EMDemoOption sharedOptions].conference) {
+            [[EMClient sharedClient].conferenceManager stopMonitorSpeaker:[EMDemoOption sharedOptions].conference];
+            if(isDestroy)
+                [[EMClient sharedClient].conferenceManager destroyConferenceWithId:[EMDemoOption sharedOptions].conference.confId completion:block];
+            else
+                [[EMClient sharedClient].conferenceManager leaveConference:[EMDemoOption sharedOptions].conference completion:block];
+        }
+    });
 }
 
 - (void)hangupAction
@@ -771,6 +938,7 @@ static bool gCanSharedDesktop = YES;
     for (UIView *subview in self.scrollView.subviews) {
         [subview removeFromSuperview];
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [EMDemoOption sharedOptions].conference = nil;
     [[[EMClient sharedClient] conferenceManager] removeDelegate:self];
     [UIApplication sharedApplication].idleTimerDisabled = NO;
@@ -784,11 +952,22 @@ static bool gCanSharedDesktop = YES;
             [EMAlertController showInfoAlert:@"您是唯一主播，当前禁止下播"];
             return;
         }
-        [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberName:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid] role:EMConferenceRoleAudience completion:^(EMError *aError) {
-            if(!aError) {
-                [EMAlertController showInfoAlert:@"下麦成功"];
-            }
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"下麦后将不能发布语音视频" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+        UIAlertAction *downAction = [UIAlertAction actionWithTitle:@"确认下麦" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberName:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid] role:EMConferenceRoleAudience completion:^(EMError *aError) {
+                if(!aError) {
+                    [EMAlertController showInfoAlert:@"下麦成功"];
+                }
+            }];
         }];
+        [alertController addAction:downAction];
+
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"取消", @"Cancel") style: UIAlertActionStyleCancel handler:nil]];
+
+        [self presentViewController:alertController animated:YES completion:nil];
+        
     }else{
         [[[EMClient sharedClient] conferenceManager] getConference:[EMDemoOption sharedOptions].conference.confId password:[EMDemoOption sharedOptions].roomPswd completion:^(EMCallConference *aCall, EMError *aError) {
             [EMDemoOption sharedOptions].conference.adminIds = [aCall.adminIds copy];
@@ -940,8 +1119,7 @@ static bool gCanSharedDesktop = YES;
 - (CGRect)getNewVideoViewFrame
 {
     NSInteger count = [self.streamItemDict count];
-    int viewSize = 100;
-    CGRect frame = CGRectMake(self.scrollView.bounds.origin.x + 100*(count-1), self.scrollView.bounds.origin.y, 100, viewSize);
+    CGRect frame = CGRectMake(self.scrollView.bounds.origin.x + gSmallVideoSize*(count-1), self.scrollView.bounds.origin.y, gSmallVideoSize, gSmallVideoSize);
     
     return frame;
 }
@@ -1063,52 +1241,57 @@ static bool gCanSharedDesktop = YES;
     pubConfig.localView = localView;
     
     __weak typeof(self) weakself = self;
-    //上传本地摄像头的数据流
-    [[EMClient sharedClient].conferenceManager publishConference:[EMDemoOption sharedOptions].conference streamParam:pubConfig completion:^(NSString *aPubStreamId, EMError *aError) {
+    void(^block)(NSString *aPubStreamId, EMError *aError) = ^(NSString *aPubStreamId, EMError *aError){
         if (aError) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"错误" message:@"上传本地视频流失败，请重试" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
-            [alertView show];
-            
-            if (aCompletionBlock) {
-                aCompletionBlock(nil, aError);
-            }
-            
-            return ;
-            
-            //TODO: 后续处理是怎么样的
-        }
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"错误" message:@"上传本地视频流失败，请重试" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+                    [alertView show];
+                    
+                    if (aCompletionBlock) {
+                        aCompletionBlock(nil, aError);
+                    }
+                    
+                    return ;
+                    
+                    //TODO: 后续处理是怎么样的
+                }
+                
+                if(aEnableVideo) {
+                    [[EMClient sharedClient].conferenceManager updateConference:[EMDemoOption sharedOptions].conference enableVideo:aEnableVideo];
+                }
+                weakself.videoButton.enabled = YES;
+                weakself.videoButton.selected = aEnableVideo;
+                weakself.microphoneButton.selected = [EMDemoOption sharedOptions].openMicrophone;
+                weakself.isSetMute = pubConfig.isMute;
+                [weakself updateMicrophoneLable];
+                [weakself updateVidelLable];
+                weakself.switchCameraButton.enabled = aEnableVideo;
         
-        if(aEnableVideo) {
-            [[EMClient sharedClient].conferenceManager updateConference:[EMDemoOption sharedOptions].conference enableVideo:aEnableVideo];
-        }
-        weakself.videoButton.enabled = YES;
-        weakself.videoButton.selected = aEnableVideo;
-        weakself.microphoneButton.selected = [EMDemoOption sharedOptions].openMicrophone;
-        weakself.isSetMute = pubConfig.isMute;
-        [weakself updateMicrophoneLable];
-        [weakself updateVidelLable];
-        weakself.switchCameraButton.enabled = aEnableVideo;
+                weakself.pubStreamId = aPubStreamId;
+                //设置视频界面
+                EMStreamItem *videoItem = [self setupNewStreamItemWithName:pubConfig.streamName displayView:localView stream:nil];
+                videoItem.videoView.enableVideo = aEnableVideo;
+                videoItem.videoView.enableVoice = [EMDemoOption sharedOptions].openMicrophone;
+                [weakself.streamItemDict setObject:videoItem forKey:aPubStreamId];
+                [weakself.streamIds addObject:aPubStreamId];
         
-        weakself.pubStreamId = aPubStreamId;
-        //设置视频界面
-        EMStreamItem *videoItem = [self setupNewStreamItemWithName:pubConfig.streamName displayView:localView stream:nil];
-        videoItem.videoView.enableVideo = aEnableVideo;
-        videoItem.videoView.enableVoice = [EMDemoOption sharedOptions].openMicrophone;
-        [weakself.streamItemDict setObject:videoItem forKey:aPubStreamId];
-        [weakself.streamIds addObject:aPubStreamId];
-        
-        if (aCompletionBlock) {
-            aCompletionBlock(aPubStreamId, nil);
-        }
-    }];
+                if (aCompletionBlock) {
+                    aCompletionBlock(aPubStreamId, nil);
+                }
+    };
+    //上传本地摄像头的数据流
+    [[EMClient sharedClient].conferenceManager publishConference:[EMDemoOption sharedOptions].conference streamParam:pubConfig completion:block];
 }
 //
 - (void)_subStream:(EMCallStream *)aStream
 {
     EMCallRemoteView *remoteView = [[EMCallRemoteView alloc] init];
-    remoteView.scaleMode = EMCallViewScaleModeAspectFill;
-    EMStreamItem *videoItem = [self setupNewStreamItemWithName:aStream.userName displayView:remoteView stream:aStream];
-    videoItem.videoView.enableVideo = aStream.enableVideo;
+    remoteView.scaleMode = EMCallViewScaleModeAspectFit;
+    EMStreamItem *videoItem = nil;
+    if(aStream.type != EMStreamTypeDesktop) {
+        videoItem = [self setupNewStreamItemWithName:aStream.userName displayView:remoteView stream:aStream];
+        videoItem.videoView.enableVideo = aStream.enableVideo;
+    }
+    
     
     __weak typeof(self) weakSelf = self;
     //订阅其他人的数据流，，即订阅当前会议上麦主播的数据流
@@ -1119,9 +1302,17 @@ static bool gCanSharedDesktop = YES;
             [weakSelf.streamItemDict removeObjectForKey:aStream.streamId];
             return ;
         }
-        
-        videoItem.videoView.enableVoice = aStream.enableVoice;
-        [weakSelf updateAdminView];
+        if(aStream.type == EMStreamTypeDesktop){
+            self.remoteDesktopStreamId = aStream.streamId;
+            self.remoteDesktopView = remoteView;
+            self.sharedDesktopVC = [[SharedDesktopViewController alloc] initWithSharedDesktopView:self.remoteDesktopView];
+            [self.navigationController pushViewController:self.sharedDesktopVC animated:NO];
+            return;
+        }
+        if(videoItem) {
+            videoItem.videoView.enableVoice = aStream.enableVoice;
+            [weakSelf updateAdminView];
+        }
     }];
 }
 
@@ -1138,6 +1329,10 @@ static bool gCanSharedDesktop = YES;
             EMCallLocalView*view = (EMCallLocalView*)self.curBigView.displayView;
             view.scaleMode = EMCallViewScaleModeAspectFill;
         }
+        [self.curBigView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.equalTo(self.view);
+            make.height.equalTo(self.view);
+        }];
     }
 }
 
@@ -1181,7 +1376,8 @@ static bool gCanSharedDesktop = YES;
     {
         [curbigview removeFromSuperview];
         //curbigview.frame = aVideoView.frame;
-        curbigview.frame = CGRectMake(aVideoView.frame.origin.x, aVideoView.frame.origin.y, 150, 150);
+        
+        curbigview.frame = CGRectMake(aVideoView.frame.origin.x, aVideoView.frame.origin.y, gSmallVideoSize, gSmallVideoSize);
         //curbigview.displayView.frame = aVideoView.displayView.frame;
         [self.scrollView addSubview:curbigview];
     }
@@ -1203,17 +1399,41 @@ static bool gCanSharedDesktop = YES;
     [self updateCurBigViewFrame];
 }
 
-- (void)whiteBoardViewDidTap
-{
-    [self joinWBAction];
-}
-
 -(void)updateScrollViewPos
 {
     if(_tableView.hidden){
-        _scrollView.frame = CGRectMake(0, self.view.bounds.size.height - 105, self.view.bounds.size.width, 150);
+        if(_scrollView.bounds.size.height == gSmallVideoSize) {
+            [_scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.equalTo(self.view);
+                make.height.equalTo(@(gSmallVideoSize));
+                make.left.equalTo(self.view);
+                make.bottom.equalTo(self.view);
+            }];
+        }else{
+            [_scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.height.equalTo(self.view);
+                make.width.equalTo(@(gSmallVideoSize));
+                make.right.equalTo(self.view);
+                make.bottom.equalTo(self.view);
+            }];
+        }
+        
     }else{
-        _scrollView.frame = CGRectMake(0, self.view.bounds.size.height - 180, self.view.bounds.size.width, 150);
+        if(_scrollView.bounds.size.height == gSmallVideoSize) {
+            [_scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.equalTo(self.view);
+                make.height.equalTo(@(gSmallVideoSize));
+                make.left.equalTo(self.view);
+                make.bottom.equalTo(self.view).with.offset(-gBottomMenuHeight);
+            }];
+        }else{
+            [_scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.height.equalTo(self.view);
+                make.width.equalTo(@(gSmallVideoSize));
+                make.right.equalTo(self.view);
+                make.bottom.equalTo(self.view);
+            }];
+        }
     }
 }
 
@@ -1247,6 +1467,7 @@ static bool gCanSharedDesktop = YES;
         __weak typeof(self) weakself = self;
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakself updateScrollView];
+            [weakself updateVideoSub];
         });
     }
 }
@@ -1255,10 +1476,25 @@ static bool gCanSharedDesktop = YES;
            removeStream:(EMCallStream *)aStream
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
+        if(aStream.type == EMStreamTypeDesktop){
+            UIViewController* curVC = [self.navigationController topViewController];
+            if(self.sharedDesktopVC){
+                [self.sharedDesktopVC dismissViewControllerAnimated:NO completion:^{
+                    
+                }];
+                if([curVC isKindOfClass:[SharedDesktopViewController class]]){
+                    [self.navigationController popViewControllerAnimated:NO];
+                }
+            }
+            
+            self.remoteDesktopView = nil;
+            return;
+        }
         [self removeStreamWithId:aStream.streamId];
         __weak typeof(self) weakself = self;
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakself updateScrollView];
+            [weakself updateVideoSub];
         });
         if([EMDemoOption sharedOptions].conference.isCreator && [EMDemoOption sharedOptions].openCDN)
             [weakself _upadteLiveRegions];
@@ -1394,13 +1630,16 @@ static bool gCanSharedDesktop = YES;
                    error:(EMError *)aError
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
-        NSString* msg = @"会议已关闭";
-        if(aReason == EMCallEndReasonBeenkicked)
-            msg = @"你被踢出会议";
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:msg delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
-        [alertView show];
+        __weak typeof(self) weakself = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+//            NSString* msg = @"会议已关闭";
+//            if(aReason == EMCallEndReasonBeenkicked)
+//                msg = @"你被踢出会议";
+//            [EMAlertController showInfoAlert:msg];
+            
+            [weakself _hangup:NO];
+        });
         
-        [self _hangup:NO];
     }
 }
 //数据流有更新（是否静音，视频是否可用）(有人静音自己/关闭视频)
@@ -1441,6 +1680,9 @@ static bool gCanSharedDesktop = YES;
         }
         if([EMDemoOption sharedOptions].conference.isCreator && [EMDemoOption sharedOptions].openCDN)
             [self _upadteLiveRegions];
+        if ([aStreamId isEqualToString:self.remoteDesktopStreamId] && self.sharedDesktopVC) {
+            [self.sharedDesktopVC.activity stopAnimating];
+        }
         
 //        if (!self.microphoneButton.isSelected && self.videoButton.isSelected && !self.isSetSpeaker) {
 //            self.isSetSpeaker = YES;
@@ -1714,9 +1956,6 @@ static bool gCanSharedDesktop = YES;
                 [vc back];
             }
             self.whiteBoard = nil;
-            [self.whiteBoardView removeFromSuperview];
-            self.whiteBoardView = nil;
-            [self updateScrollView];
             [EMAlertController showInfoAlert:@"互动白板已结束"];
         }else{
             if([attr.key isEqualToString:@"whiteBoard"]) {
@@ -1763,6 +2002,7 @@ static bool gCanSharedDesktop = YES;
                 weakself.microphoneButton.enabled = YES;
                 weakself.switchCameraButton.enabled = YES;
                 [weakself updateScrollView];
+                [weakself updateVideoSub];
             }];
         }
         NSMutableArray* adminIds = [[EMDemoOption sharedOptions].conference.adminIds mutableCopy];
@@ -1789,6 +2029,7 @@ static bool gCanSharedDesktop = YES;
                 [weakself removeStreamWithId:weakself.pubStreamId];
                 weakself.pubStreamId = nil;
                 [weakself updateScrollView];
+                [weakself updateVideoSub];
                 if([EMDemoOption sharedOptions].conference.isCreator && [EMDemoOption sharedOptions].openCDN)
                     [weakself _upadteLiveRegions];
             }];
@@ -1830,9 +2071,42 @@ static bool gCanSharedDesktop = YES;
     }
 }
 
+-(void)updateVideoSub
+{
+    CGRect rect = CGRectMake(self.scrollView.contentOffset.x, self.scrollView.contentOffset.y, self.scrollView.contentSize.width, self.scrollView.contentSize.height);
+    BOOL(^block)(CGRect frame) = ^(CGRect frame){
+        if(frame.origin.x >= (rect.origin.x + rect.size.width) || (frame.origin.x + frame.size.width) <= rect.origin.x)
+            return NO;
+        if(frame.origin.y >= (rect.origin.y + rect.size.height) || (frame.origin.y + frame.size.height) <= rect.origin.y)
+            return NO;
+        return YES;
+    };
+    
+    for(NSString* key in self.streamItemDict){
+        EMStreamItem* item = [self.streamItemDict objectForKey:key];
+        if(self.curBigView != item.videoView) {
+            if(item.stream && item.stream.enableVideo) {
+                if(block(item.videoView.frame))
+                {
+                    [[[EMClient sharedClient] conferenceManager] updateConference:[EMDemoOption sharedOptions].conference streamId:item.stream.streamId remoteVideoView:item.videoView.displayView completion:^(EMError *aError) {
+                        
+                    }];
+                }else{
+                    [[[EMClient sharedClient] conferenceManager] updateConference:[EMDemoOption sharedOptions].conference streamId:item.stream.streamId remoteVideoView:nil completion:^(EMError *aError) {
+                        
+                    }];
+                }
+            }
+        }
+    }
+}
+
 -(void)updateScrollView
 {
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     int index = 0;
+    //BOOL bPortrait = (orientation == UIDeviceOrientationPortrait || orientation == UIDeviceOrientationPortraitUpsideDown);
+    BOOL bPortrait = (self.scrollView.frame.origin.x == 0);
     for(NSString* key in self.streamItemDict){
         EMStreamItem* item = [self.streamItemDict objectForKey:key];
         if(self.curBigView != item.videoView) {
@@ -1844,19 +2118,28 @@ static bool gCanSharedDesktop = YES;
                 EMCallLocalView*view = (EMCallLocalView*)item.videoView.displayView;
                 view.scaleMode = EMCallViewScaleModeAspectFill;
             }
-            item.videoView.frame = CGRectMake(100*index, 0, 100, 100);
+            //item.videoView.frame = CGRectMake(gSmallVideoSize*index, 0, gSmallVideoSize, gSmallVideoSize);
+            [item.videoView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                if(bPortrait) {
+                    make.left.equalTo(@(gSmallVideoSize*index));
+                    make.top.equalTo(@0);
+                    make.width.equalTo(@(gSmallVideoSize));
+                    make.height.equalTo(@(gSmallVideoSize));
+                }else{
+                    make.left.equalTo(@0);
+                    make.top.equalTo(@(gSmallVideoSize*index));
+                    make.width.equalTo(@(gSmallVideoSize));
+                    make.height.equalTo(@(gSmallVideoSize));
+                }
+            }];
             index++;
         }
     }
     long count = self.streamItemDict.count;
-    if(self.whiteBoardView) {
-        self.whiteBoardView.frame = CGRectMake(100*index, 0, 100, 100);
-        count++;
-    }
-    if(count * 100 > self.view.bounds.size.width){
-        self.scrollView.contentSize = CGSizeMake(count*100,100);
+    if(count * gSmallVideoSize > bPortrait?self.view.bounds.size.width:self.view.bounds.size.height){
+        self.scrollView.contentSize = bPortrait?CGSizeMake(count*gSmallVideoSize,gSmallVideoSize):CGSizeMake(gSmallVideoSize,count*gSmallVideoSize);
     }else
-        self.scrollView.contentSize = CGSizeMake(self.view.bounds.size.width, 100);
+        self.scrollView.contentSize = bPortrait?CGSizeMake(self.view.bounds.size.width, gSmallVideoSize):CGSizeMake( gSmallVideoSize,self.view.bounds.size.height);
 }
 
 -(void)updateAdminView
@@ -1876,6 +2159,13 @@ static bool gCanSharedDesktop = YES;
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.tableView setHidden:!self.tableView.hidden];
+    [self.selectDevice setHidden:!self.selectDevice.hidden];
+    [self.switchCameraButton setHidden:!self.switchCameraButton.hidden];
+    [self.netbackView setHidden:!self.netbackView.hidden];
+    [self.toastView setHidden:!self.toastView.hidden];
+    [self.roomNameLable setHidden:!self.roomNameLable.hidden];
+    [self.timeLabel setHidden:!self.timeLabel.hidden];
+    [self.newtworkView setHidden:!self.newtworkView.hidden];
     [self updateScrollViewPos];
 }
 
@@ -1932,7 +2222,6 @@ static bool gCanSharedDesktop = YES;
         [self.sharedDefaults setObject:[NSNumber numberWithInt:0] forKey:@"result"];
         [_timeRecord invalidate];
         _timeRecord = nil;
-        // 直播结束
         __weak typeof(self) weakself = self;
         //[weakself removeStreamWithId:weakself.desktopStreamId];
         
@@ -2002,6 +2291,10 @@ static bool gCanSharedDesktop = YES;
 
 -(void)recordAction:(UIButton*)button
 {
+    if(self.whiteBoard || [self.desktopStreamId length] > 0){
+        [EMAlertController showInfoAlert:@"正在进行共享任务，不能再共享桌面"];
+        return;
+    }
     if (@available(iOS 13.0, *)){
         if([EMDemoOption sharedOptions].conference.role < EMConferenceRoleSpeaker) {
             return;
@@ -2056,6 +2349,8 @@ static bool gCanSharedDesktop = YES;
     // 先计算出总共有多少个流
     long streamcounts = [self.streamItemDict count];
     if( [self.desktopStreamId length] > 0)
+        streamcounts++;
+    if([self.remoteDesktopStreamId length] > 0)
         streamcounts++;
     // 然后计算出需要多少行和列展示，每个流占据的宽和高
     long column = sqrt(streamcounts);
@@ -2116,6 +2411,19 @@ static bool gCanSharedDesktop = YES;
         region.z = gZorder;
         [regionsList addObject:region];
     }
+    if([self.remoteDesktopStreamId length] > 0) {
+        long curRow = index/column;
+        long curColumn = index - curRow * column;
+        LiveRegion* region = [[LiveRegion alloc] init];
+        region.streamId = self.remoteDesktopStreamId;
+        region.style = LiveRegionStyleFit;
+        region.x = curColumn * cellWidth;
+        region.y = curRow * cellHeight;
+        region.w = cellWidth;
+        region.h = cellHeight;
+        region.z = gZorder;
+        [regionsList addObject:region];
+    }
     gZorder++;
     //更新布局
     [[[EMClient sharedClient] conferenceManager] updateConference:[EMDemoOption sharedOptions].conference liveId:liveId setRegions:regionsList completion:^(EMError *aError) {
@@ -2136,4 +2444,82 @@ static bool gCanSharedDesktop = YES;
 }
 */
 
+#pragma mark - UIScrollViewDelegate
+// called on finger up if the user dragged. decelerate is true if it will continue moving afterwards
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    NSLog(@"scrollViewDidEndDragging will");
+    if (!decelerate) {
+        [self updateVideoSub];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView      // called when scroll view grinds to a halt
+{
+    NSLog(@"scrollViewDidEndDecelerating");
+    [self updateVideoSub];
+}
+
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
+    appDelegate.allowRotation = YES;
+}
+#pragma mark - UIDeviceOrientationDidChangeNotification
+- (void)orientationDidChange:(NSNotification *)notification {
+  [self setCorrectViewOrientation];
+}
+
+- (void)setCorrectViewOrientation {
+    // Get current device orientation.
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if (deviceOrientation == UIInterfaceOrientationPortraitUpsideDown || deviceOrientation == UIInterfaceOrientationPortrait) {
+        self.tableView.layer.cornerRadius = 0;
+        [_tableView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.height.equalTo(@(gBottomMenuHeight));
+            make.width.equalTo(self.view);
+            make.left.equalTo(self.view);
+            make.bottom.equalTo(self.view);
+        }];
+        _scrollView.frame = CGRectMake(0, _tableView.isHidden?self.view.bounds.size.height-gSmallVideoSize:self.view.bounds.size.height-gSmallVideoSize-gBottomMenuHeight, self.view.bounds.size.width, gSmallVideoSize);
+        [self.scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.width.equalTo(self.view);
+            make.height.equalTo(@(gSmallVideoSize));
+            make.left.equalTo(self.view);
+            if(_tableView.isHidden)
+                make.bottom.equalTo(self.view);
+            else
+                make.bottom.equalTo(self.view).with.offset(-gBottomMenuHeight);
+        }];
+        [self updateScrollView];
+      
+    } else if (deviceOrientation == UIInterfaceOrientationLandscapeRight || deviceOrientation == UIInterfaceOrientationLandscapeLeft) {
+        self.tableView.layer.cornerRadius = self.tableView.bounds.size.height/2;
+        [_tableView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.height.equalTo(@(gBottomMenuHeight));
+            make.width.equalTo(self.view).with.multipliedBy(0.4);
+            make.left.equalTo(self.view);
+            make.bottom.equalTo(self.view).with.offset(-5);
+        }];
+        _scrollView.frame = CGRectMake(self.view.bounds.size.width-gSmallVideoSize, 0, gSmallVideoSize, self.view.bounds.size.height);
+        [_scrollView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.width.equalTo(@100);
+            make.height.equalTo(self.view);
+            make.right.equalTo(self.view);
+            make.bottom.equalTo(self.view);
+        }];
+        [self updateScrollView];
+    }
+}
+
+#pragma mark -
+
+- (void)handleSwipeFrom:(UISwipeGestureRecognizer*)recognizer
+{
+    if(self.remoteDesktopView) {
+        self.sharedDesktopVC = [[SharedDesktopViewController alloc] initWithSharedDesktopView:self.remoteDesktopView];
+        [self.navigationController pushViewController:self.sharedDesktopVC animated:NO];
+    }
+}
 @end

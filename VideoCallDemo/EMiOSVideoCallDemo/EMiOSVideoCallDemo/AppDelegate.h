@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) UIWindow *window;
 @property (nonatomic) BOOL allowRotation;
+@property (nonatomic) UIInterfaceOrientationMask curOrientationMask;
 -(UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window;
 @end
 

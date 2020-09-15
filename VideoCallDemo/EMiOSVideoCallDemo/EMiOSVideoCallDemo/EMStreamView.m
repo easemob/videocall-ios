@@ -23,18 +23,21 @@
     self = [super initWithFrame:frame];
     if (self) {
         _enableVoice = YES;
-        
+        self.layer.borderWidth = 0.5;
+        self.layer.borderColor = [UIColor grayColor].CGColor;
+        self.backgroundColor = [UIColor grayColor];
         self.bgView = [[UIImageView alloc] init];
-        self.bgView.contentMode = UIViewContentModeScaleAspectFill;
+        self.bgView.contentMode = UIViewContentModeScaleAspectFit;
         self.bgView.userInteractionEnabled = YES;
-        self.bgView.layer.borderWidth = 0.5;
-        self.bgView.layer.borderColor = [UIColor grayColor].CGColor;
         UIImage *image = [UIImage imageNamed:@"bg_connecting"];
         self.bgView.image = image;
-        self.bgView.backgroundColor = [UIColor grayColor];
         [self addSubview:self.bgView];
         [self.bgView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self);
+            //make.edges.equalTo(self);
+            make.centerX.equalTo(self);
+            make.centerY.equalTo(self).with.offset(-5);
+            make.width.lessThanOrEqualTo(@75);
+            make.height.lessThanOrEqualTo(@75);
         }];
         
         self.statusView = [[UIImageView alloc] init];
@@ -59,14 +62,15 @@
         self.nameLabel.hidden = YES;
         
         self.nickNameLabel = [[UILabel alloc] init];
-        self.nickNameLabel.textColor = [UIColor redColor];
+        self.nickNameLabel.textColor = [UIColor whiteColor];
         self.nickNameLabel.font = [UIFont systemFontOfSize:16];
         self.nickNameLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.nickNameLabel];
         [self.nickNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.center.equalTo(self);
-            make.width.equalTo(@90);
-            make.height.equalTo(self);
+            make.centerX.equalTo(self);
+            make.top.equalTo(self.bgView.mas_bottom);
+            make.width.equalTo(self);
+            make.height.equalTo(@20);
         }];
         
         self.adminView = [[UIImageView alloc] init];
@@ -76,16 +80,19 @@
         //self.adminView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:191/255.0 blue:0/255.0 alpha:1.0].CGColor;
         [self addSubview:self.adminView];
         [self.adminView mas_makeConstraints:^(MASConstraintMaker *make) {
-            //make.left.equalTo(self).offset(5);
-            //make.top.equalTo(self).offset(45);
             make.centerX.equalTo(self).multipliedBy(0.1);
             make.centerY.equalTo(self);
             make.height.equalTo(@20);
             make.width.equalTo(@20);
-            //make.right.equalTo(self.statusView.mas_left).offset(-5);
-            //make.height.equalTo(@20);
         }];
         self.adminView.hidden = YES;
+        
+        _activity = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+        [self addSubview:_activity];
+        [_activity mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(self);
+        }];
+        _activity.hidesWhenStopped = YES;
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapAction:)];
         
@@ -124,6 +131,9 @@
         {
             if (_enableVoice) {
                 _statusView.image = nil;
+            }
+            if(_activity.isAnimating) {
+                [_activity stopAnimating];
             }
 //
 //            if (!self.isLockedBgView) {
@@ -180,6 +190,15 @@
 {
     _isAdmin = isAdmin;
     self.adminView.hidden = !isAdmin;
+}
+
+- (void)setDisplayView:(UIView *)displayView
+{
+    _displayView = displayView;
+    if([_displayView isKindOfClass:[EMCallRemoteView class]]) {
+        [self bringSubviewToFront:_activity];
+        [_activity startAnimating];
+    }
 }
 
 #pragma mark - UITapGestureRecognizer
