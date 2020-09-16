@@ -14,24 +14,21 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ConferenceViewController : UIViewController<EMConferenceManagerDelegate,EMStreamViewDelegate,UITableViewDelegate,UITableViewDataSource,UIGestureRecognizerDelegate>
 @property(nonatomic,strong) UILabel* roomNameLable;
 @property(nonatomic,strong) UILabel* timeLabel;
-@property(nonatomic,strong) UIButton* settingButton;
+
 @property (nonatomic) UIScrollView* scrollView;
 @property (nonatomic) UIButton* switchCameraButton;
-@property (nonatomic) UIButton* sharedDesktopButton;
-@property (nonatomic) UIButton* whiteBoardButton;
 @property (nonatomic, strong) UIButton *microphoneButton;
 //@property (nonatomic, strong) UIButton *startRecordButton;
 //@property (nonatomic, strong) UIButton *stopRecordButton;
 @property (nonatomic, strong) UIButton *videoButton;
 @property (nonatomic, strong) UIButton *hangupButton;
 @property (nonatomic, strong) UIButton *membersButton;
-@property (nonatomic, strong) UIButton *roleButton;
+@property (nonatomic, strong) UIButton *moreOptionButton;
 @property (nonatomic, strong) UILabel *microphoneLable;
 @property (nonatomic, strong) UILabel *videoLable;
 @property (nonatomic, strong) UILabel *hangupLable;
 @property (nonatomic, strong) UILabel *membersLable;
-@property (nonatomic, strong) UILabel *roleLable;
-
+@property (nonatomic, strong) UILabel *moreOptionLable;
 @property (nonatomic, copy) NSString* roomName;
 
 @property (nonatomic, copy) NSString *currentTime;
@@ -54,8 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAdminView;
 
--(void) wbBack;
-
+- (void)wbBack;
 - (instancetype)initWithConfence:(EMCallConference*)call role:(EMConferenceRole)role;
 @end
 

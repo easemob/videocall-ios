@@ -202,6 +202,9 @@
 		C070FA7E23FB78F900DC0F57 /* minimize_white@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = C070FA0623FB78F900DC0F57 /* minimize_white@3x.png */; };
 		C0720AE723F641FC00E1FEC3 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */; };
 		C0720AF023F6454900E1FEC3 /* EMStreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = C0720AEF23F6454900E1FEC3 /* EMStreamView.m */; };
+		C072ACEE25107AFF00F8A03F /* MoreOptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C072ACED25107AFF00F8A03F /* MoreOptionViewController.m */; };
+		C072ACF02511C07B00F8A03F /* invite.png in Resources */ = {isa = PBXBuildFile; fileRef = C072ACEF2511C07B00F8A03F /* invite.png */; };
+		C072ACF22511C08400F8A03F /* more.png in Resources */ = {isa = PBXBuildFile; fileRef = C072ACF12511C08400F8A03F /* more.png */; };
 		C077EE94250778EC006E0215 /* Hyphenate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C077EE93250778EC006E0215 /* Hyphenate.framework */; };
 		C077EE95250778EC006E0215 /* Hyphenate.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C077EE93250778EC006E0215 /* Hyphenate.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C077EE97250778F4006E0215 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C077EE96250778F4006E0215 /* WebRTC.framework */; };
@@ -545,6 +548,10 @@
 		C0720AE623F641FC00E1FEC3 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
 		C0720AEE23F6454900E1FEC3 /* EMStreamView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMStreamView.h; sourceTree = "<group>"; };
 		C0720AEF23F6454900E1FEC3 /* EMStreamView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMStreamView.m; sourceTree = "<group>"; };
+		C072ACEC25107AFF00F8A03F /* MoreOptionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MoreOptionViewController.h; sourceTree = "<group>"; };
+		C072ACED25107AFF00F8A03F /* MoreOptionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoreOptionViewController.m; sourceTree = "<group>"; };
+		C072ACEF2511C07B00F8A03F /* invite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = invite.png; sourceTree = "<group>"; };
+		C072ACF12511C08400F8A03F /* more.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = more.png; sourceTree = "<group>"; };
 		C077EE93250778EC006E0215 /* Hyphenate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Hyphenate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C077EE96250778F4006E0215 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = WebRTC.framework; sourceTree = "<group>"; };
 		C077EE992508C0E6006E0215 /* SharedDesktopViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedDesktopViewController.h; sourceTree = "<group>"; };
@@ -901,6 +908,8 @@
 				C095A2B023F14CCD00A09CAA /* AccountSettingViewController.m */,
 				C077EE992508C0E6006E0215 /* SharedDesktopViewController.h */,
 				C077EE9A2508C0E6006E0215 /* SharedDesktopViewController.m */,
+				C072ACEC25107AFF00F8A03F /* MoreOptionViewController.h */,
+				C072ACED25107AFF00F8A03F /* MoreOptionViewController.m */,
 				C06572E323F2ACA400532B27 /* RoomSettingViewController.h */,
 				C06572E423F2ACA400532B27 /* RoomSettingViewController.m */,
 				C06572E623F2BCF000532B27 /* SpeakerListViewController.h */,
@@ -1047,6 +1056,8 @@
 				C0635F7D2497546F00BB96D6 /* wb.png */,
 				C0635F7C2497546F00BB96D6 /* wb@2.png */,
 				C0635F7E2497546F00BB96D6 /* wb@3x.png */,
+				C072ACEF2511C07B00F8A03F /* invite.png */,
+				C072ACF12511C08400F8A03F /* more.png */,
 			);
 			path = res;
 			sourceTree = "<group>";
@@ -1188,6 +1199,7 @@
 			files = (
 				C0C033292436F42F003C541E /* networkinfo.png in Resources */,
 				C070FA2123FB78F900DC0F57 /* animate_00053.png in Resources */,
+				C072ACF22511C08400F8A03F /* more.png in Resources */,
 				C070FA4123FB78F900DC0F57 /* animate_00076.png in Resources */,
 				C0635F752497542100BB96D6 /* wb-interact@2x.png in Resources */,
 				C00F1FF823FFBA25007174DE /* videostatus@2x.png in Resources */,
@@ -1246,6 +1258,7 @@
 				C070FA0723FB78F900DC0F57 /* bg_micro@3x.png in Resources */,
 				C070FA5C23FB78F900DC0F57 /* recorder_gray@3x.png in Resources */,
 				C070FA3923FB78F900DC0F57 /* animate_00058.png in Resources */,
+				C072ACF02511C07B00F8A03F /* invite.png in Resources */,
 				C070FA5423FB78F900DC0F57 /* answer@2x.png in Resources */,
 				C0DB9D0423FEA9090057BA4C /* 下麦@3x.png in Resources */,
 				C0DB9D0E23FEA9090057BA4C /* cbu@2x(3).png in Resources */,
@@ -1485,6 +1498,7 @@
 				C070F98823FB78CD00DC0F57 /* EMAlertController.m in Sources */,
 				C03E6BE624221EE7002C17EE /* UpdateNicknameViewController.m in Sources */,
 				C095A2AC23F1408B00A09CAA /* ConferenceViewController.m in Sources */,
+				C072ACEE25107AFF00F8A03F /* MoreOptionViewController.m in Sources */,
 				C095A2B123F14CCD00A09CAA /* AccountSettingViewController.m in Sources */,
 				C0688C5E23F587AB004CC06D /* KickSpeakerViewController.m in Sources */,
 				C03E6BE324221675002C17EE /* ProfileViewController.m in Sources */,

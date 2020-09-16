@@ -18,11 +18,10 @@
 #import "SharedDesktopViewController.h"
 #import "AppDelegate.h"
 #import "InviteViewController.h"
+#import "MoreOptionViewController.h"
 
-@interface ConferenceViewController ()<UIScrollViewDelegate>
+@interface ConferenceViewController ()<UIScrollViewDelegate,UIPopoverPresentationControllerDelegate>
 @property (nonatomic) UIImageView* newtworkView;
-@property (nonatomic) UIImageView* showOrHideMenu;
-@property (nonatomic) UIButton* showOrHideMenuButton;
 @property (nonatomic) UIButton* selectDevice;
 @property (nonatomic) UIButton* recordButton;
 @property (nonatomic) RPBroadcastActivityViewController* broadVC;
@@ -223,44 +222,6 @@ static int gBottomMenuHeight = 60;
     [self.roomNameLable setFont:[UIFont fontWithName:@"Arial" size:16]];
     [self.view addSubview:self.roomNameLable];
     
-    self.showOrHideMenuButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.showOrHideMenuButton.tag = 11000;
-    self.showOrHideMenuButton.frame = CGRectMake(self.view.bounds.size.width - 50, 50, 40, 40);
-    [self.showOrHideMenuButton addTarget:self action:@selector(showOrHideAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.showOrHideMenuButton];
-    [self.showOrHideMenuButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@40);
-        make.height.equalTo(@40);
-        make.top.equalTo(self.view).with.offset(50);
-        make.right.equalTo(self.view).with.offset(-10);
-    }];
-    
-    self.showOrHideMenu = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 50, 50, 40, 40)];
-    //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
-    UIImage* image = [UIImage imageNamed:@"showMenu"];
-    self.showOrHideMenu.image = image;
-    [self.view addSubview:self.showOrHideMenu];
-    [self.showOrHideMenu mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@40);
-        make.height.equalTo(@40);
-        make.top.equalTo(self.view).with.offset(50);
-        make.right.equalTo(self.view).with.offset(-10);
-    }];
-    
-    self.settingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.settingButton.frame = CGRectMake(self.view.bounds.size.width - 50, 100, 40, 40);
-    //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
-    [self.settingButton setImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
-    [self.settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.settingButton setTintColor:[UIColor whiteColor]];
-    [self.view addSubview:self.settingButton];
-//    [self.settingButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.width.equalTo(@40);
-//        make.height.equalTo(@40);
-//        make.top.equalTo(self.view).with.offset(120);
-//        make.right.equalTo(self.view).with.offset(-10);
-//    }];
-    
     self.selectDevice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.selectDevice.frame = CGRectMake(self.view.bounds.size.width - 50, 150, 40, 40);
     [self.selectDevice setImage:[UIImage imageNamed:@"switchDevice"] forState:UIControlStateNormal];
@@ -317,51 +278,6 @@ static int gBottomMenuHeight = 60;
 //        make.top.equalTo(self.view).with.offset(200);
 //        make.right.equalTo(self.view).with.offset(-10);
 //    }];
-    
-    self.sharedDesktopButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.sharedDesktopButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
-    [self.sharedDesktopButton setImage:[UIImage imageNamed:@"call_screenshare"] forState:UIControlStateNormal];
-    [self.sharedDesktopButton setImage:[UIImage imageNamed:@"call_screenshare_stop"] forState:UIControlStateSelected];
-    [self.sharedDesktopButton addTarget:self action:@selector(recordAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.sharedDesktopButton setTintColor:[UIColor whiteColor]];
-    [self.view addSubview:self.sharedDesktopButton];
-    [self.sharedDesktopButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@40);
-        make.height.equalTo(@40);
-        make.top.equalTo(self.view).with.offset(50);
-        make.right.equalTo(self.view).with.offset(-60);
-    }];
-    
-    UIView *view = [[UIView alloc] init];
-    view.frame = CGRectMake(self.view.bounds.size.width - 100, 100, 40, 40);
-
-    view.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.30].CGColor;
-    view.layer.cornerRadius = 20;
-    [view setTintColor:[UIColor whiteColor]];
-    [self.view addSubview:view];
-    [view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@40);
-        make.height.equalTo(@40);
-        make.top.equalTo(self.view).with.offset(100);
-        make.right.equalTo(self.view).with.offset(-60);
-    }];
-    self.whiteBoardButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.whiteBoardButton.frame = CGRectMake(self.view.bounds.size.width - 100, 100, 40, 40);
-    [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateNormal];
-    [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateSelected];
-    [self.whiteBoardButton addTarget:self action:@selector(joinWBAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.whiteBoardButton];
-    [self.whiteBoardButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@40);
-        make.height.equalTo(@40);
-        make.top.equalTo(self.view).with.offset(100);
-        make.right.equalTo(self.view).with.offset(-60);
-    }];
-    self.inviteButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.inviteButton.frame = CGRectMake(self.view.bounds.size.width - 100, 150, 40, 40);
-    [self.view addSubview:self.inviteButton];
-    [self.inviteButton setTitle:@"邀请" forState:UIControlStateNormal];
-    [self.inviteButton addTarget:self action:@selector(inviteAction) forControlEvents:UIControlEventTouchUpInside];
     /*
     self.startRecordButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.startRecordButton.frame = CGRectMake(self.view.bounds.size.width - 100, 150, 40, 40);
@@ -396,16 +312,21 @@ static int gBottomMenuHeight = 60;
 }
 - (void)inviteAction
 {
+    if(self.presentedViewController)
+       [self.presentedViewController dismissViewControllerAnimated:YES completion:^{
+           
+       }];
     InviteViewController* vc = [[InviteViewController alloc] init];
     [self addChildViewController:vc];
     [self.view addSubview:vc.view];
     [vc.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(self.view);
-        make.height.equalTo(self.view).with.multipliedBy(0.5);
-        make.bottom.equalTo(self.view);
-        make.left.equalTo(self.view);
+        make.width.equalTo(self.view).with.multipliedBy(0.9);
+        make.height.equalTo(self.view).with.multipliedBy(0.4);
+        make.bottom.equalTo(self.view).with.offset(-10);
+        make.centerX.equalTo(self.view);
     }];
     [vc didMoveToParentViewController:self];
+    
 }
 /*
 -(void)startRecordAction
@@ -472,8 +393,11 @@ static int gBottomMenuHeight = 60;
     }
 }
 */
--(void)joinWBAction
+- (void)joinWBAction
 {
+    if(self.presentedViewController)
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:^{
+        }];
     if([self.desktopStreamId length] > 0 || self.sharedDesktopVC){
         [EMAlertController showInfoAlert:@"正在进行共享任务，不能共享白板"];
         return;
@@ -550,23 +474,6 @@ static int gBottomMenuHeight = 60;
     return 1;
 }
 
--(void)showOrHideAction:(UIButton*)button
-{
-    if(button.tag == 11000){
-        button.tag = 11001;
-        self.showOrHideMenu.image = [UIImage imageNamed:@"hideMenu"];
-        self.settingButton.hidden = YES;
-        self.switchCameraButton.hidden = YES;
-        self.selectDevice.hidden = YES;
-    }else{
-        button.tag = 11000;
-        self.showOrHideMenu.image = [UIImage imageNamed:@"showMenu"];
-        self.settingButton.hidden = NO;
-        self.switchCameraButton.hidden = NO;
-        self.selectDevice.hidden = NO;
-    }
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     NSInteger section = indexPath.section;
     static NSString *cellIdentifier = @"cellID";
@@ -580,10 +487,10 @@ static int gBottomMenuHeight = 60;
     if(section == 0){
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.backgroundColor = [UIColor colorWithRed:20/255.0 green:20/255.0 blue:20/255.0 alpha:1.0];
-        int padding = 20;
+        int padding = 10;
         int top = 5;
         int size = (self.view.bounds.size.width - 20*6)/5;
-        int iconsize = 24;
+        int iconsize = 30;
         int offset = (size-iconsize)/2;
         self.microphoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.microphoneButton.frame = CGRectMake(padding+offset, top, iconsize, iconsize);
@@ -694,47 +601,39 @@ static int gBottomMenuHeight = 60;
             make.height.equalTo(@30);
         }];
         
-        self.roleButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        self.roleButton.frame = CGRectMake(padding + (padding+size) * 4 + offset, top, iconsize, iconsize);
-        EMConferenceRole currole = [EMDemoOption sharedOptions].conference.role;
-        self.roleLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*4, top+iconsize+2, size, 20)];
-        self.roleLable.textAlignment = NSTextAlignmentCenter;
-        self.roleLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
-        [self.roleLable setFont:[UIFont fontWithName:@"Arial" size:10]];
-        [cell addSubview:self.membersLable];
-        if(currole == EMConferenceRoleAudience)
-        {
-            [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
-            [self.roleButton setTintColor:[UIColor whiteColor]];
-            self.roleLable.text = @"上麦";
-            self.microphoneButton.enabled = NO;
-            self.videoButton.enabled = NO;
-        }
-        else
-        {
-            [self.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
-            [self.roleButton setTintColor:[UIColor redColor]];
-            self.roleLable.text = @"下麦";
-            self.microphoneButton.enabled = YES;
-            self.videoButton.enabled = YES;
-        }
-        self.roleButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        //[self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
-        [self.roleButton addTarget:self action:@selector(roleChangeAction) forControlEvents:UIControlEventTouchUpInside];
-        [cell addSubview:self.roleButton];
-        [cell addSubview:self.roleLable];
-        [self.roleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        self.moreOptionButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [cell addSubview:self.moreOptionButton];
+        [self.moreOptionButton setImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+        [self.moreOptionButton addTarget:self action:@selector(moreOptionAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.moreOptionButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(cell).multipliedBy(1.8);
-            make.width.equalTo(@(iconsize));
+            make.width.equalTo(@40);
             make.top.equalTo(@5);
             make.height.equalTo(@(iconsize));
         }];
-        [self.roleLable mas_makeConstraints:^(MASConstraintMaker *make) {
+        self.moreOptionLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*4, top+iconsize+2, size, 20)];
+        self.moreOptionLable.text = @"更多";
+        self.moreOptionLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
+        self.moreOptionLable.textAlignment = NSTextAlignmentCenter;
+        [self.moreOptionLable setFont:[UIFont fontWithName:@"Arial" size:10]];
+        [cell addSubview:self.moreOptionLable];
+        [self.moreOptionLable mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(cell).multipliedBy(1.8);
             make.width.equalTo(cell).multipliedBy(0.2);
             make.top.equalTo(@30);
             make.height.equalTo(@30);
         }];
+        
+        if([EMDemoOption sharedOptions].conference.role == EMConferenceRoleAudience)
+        {
+            self.microphoneButton.enabled = NO;
+            self.videoButton.enabled = NO;
+        }
+        else
+        {
+            self.microphoneButton.enabled = YES;
+            self.videoButton.enabled = YES;
+        }
     }
     return cell;
 }
@@ -891,7 +790,7 @@ static int gBottomMenuHeight = 60;
         }
         [weakself.navigationController popViewControllerAnimated:NO];
     };
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*0.1), dispatch_get_main_queue(), ^{
         if([EMDemoOption sharedOptions].conference) {
             [[EMClient sharedClient].conferenceManager stopMonitorSpeaker:[EMDemoOption sharedOptions].conference];
             if(isDestroy)
@@ -900,6 +799,7 @@ static int gBottomMenuHeight = 60;
                 [[EMClient sharedClient].conferenceManager leaveConference:[EMDemoOption sharedOptions].conference completion:block];
         }
     });
+    
 }
 
 - (void)hangupAction
@@ -925,7 +825,7 @@ static int gBottomMenuHeight = 60;
         [self _hangup:NO];
 }
 
--(void) clearResource
+- (void) clearResource
 {
     if (_timeTimer) {
         [_timeTimer invalidate];
@@ -945,8 +845,31 @@ static int gBottomMenuHeight = 60;
     gZorder = 1;
 }
 
--(void) roleChangeAction
+- (void)moreOptionAction
 {
+    MoreOptionViewController* vc = [[MoreOptionViewController alloc] initWithConfVC:self];
+    vc.modalPresentationStyle = UIModalPresentationPopover;
+    //rect参数是以view的左上角为坐标原点（0，0）
+    vc.popoverPresentationController.sourceView = self.moreOptionButton;
+    //指定箭头所指区域的矩形框范围（位置和尺寸），以view的左上角为坐标原点
+    vc.popoverPresentationController.sourceRect = CGRectZero;
+    //箭头方向
+    vc.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionDown;
+    vc.popoverPresentationController.delegate = self;
+    vc.preferredContentSize = CGSizeMake(300, 80);
+    [self presentViewController:vc animated:YES completion:nil];
+}
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller{
+    return UIModalPresentationNone;
+}
+
+- (void)roleChangeAction
+{
+    if(self.presentedViewController)
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:^{
+            
+        }];
     if([EMDemoOption sharedOptions].conference.role >= EMConferenceRoleSpeaker) {
         if(self.streamItemDict.count == 1 && [self.pubStreamId length] > 0){
             [EMAlertController showInfoAlert:@"您是唯一主播，当前禁止下播"];
@@ -995,12 +918,16 @@ static int gBottomMenuHeight = 60;
     }
 }
 
--(void) settingAction:(UIButton* )settingButton
+- (void) settingAction:(UIButton*)button
 {
-    settingButton.enabled = NO;
+    if(self.presentedViewController)
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:^{
+            
+        }];
+    [button setEnabled:NO];
     RoomSettingViewController* roomSettingViewControler = [[RoomSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
     [self.navigationController pushViewController:roomSettingViewControler animated:YES];
-    settingButton.enabled = YES;
+    [button setEnabled:YES];
     [[[EMClient sharedClient] conferenceManager] getConference:[EMDemoOption sharedOptions].conference.confId password:[EMDemoOption sharedOptions].roomPswd completion:^(EMCallConference *aCall, EMError *aError) {
         [EMDemoOption sharedOptions].conference.adminIds = [aCall.adminIds copy];
         [EMDemoOption sharedOptions].conference.memberCount = aCall.memberCount;
@@ -1009,7 +936,6 @@ static int gBottomMenuHeight = 60;
         dispatch_async(dispatch_get_main_queue(), ^{
             [roomSettingViewControler.tableView reloadData];
         });
-        
     }];
 }
 
@@ -1995,9 +1921,13 @@ static int gBottomMenuHeight = 60;
             [self pubLocalStreamWithEnableVideo:[EMDemoOption sharedOptions].openCamera completion:^(NSString *aPubStreamId, EMError *aError) {
                 //[weakself _updateViewsAfterPubWithEnableVideo:YES error:aError];
                 //weakself.vkbpsButton.enabled = YES;
-                weakself.roleLable.text = @"下麦";
-                [weakself.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
-                [weakself.roleButton setTintColor:[UIColor redColor]];
+                if([weakself.presentedViewController isKindOfClass:[MoreOptionViewController class]]) {
+                    MoreOptionViewController*vc = (MoreOptionViewController*)weakself.presentedViewController;
+                    vc.roleLable.text = @"下麦";
+                    [vc.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
+                    [vc.roleButton setTintColor:[UIColor redColor]];
+                }
+
                 weakself.videoButton.enabled = YES;
                 weakself.microphoneButton.enabled = YES;
                 weakself.switchCameraButton.enabled = YES;
@@ -2009,19 +1939,17 @@ static int gBottomMenuHeight = 60;
         [adminIds removeObject:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid]];
         [EMDemoOption sharedOptions].conference.adminIds = [adminIds copy];
     } else if (aConference.role == EMConferenceRoleAudience) {
-        self.roleButton.selected = NO;
         self.switchCameraButton.enabled = NO;
         self.microphoneButton.enabled = NO;
         self.videoButton.enabled = NO;
         //self.vkbpsButton.enabled = NO;
-        [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
-        self.roleLable.text = @"上麦";
-        [self.roleButton setTintColor:[UIColor whiteColor]];
+//        [self.roleButton setImage:[UIImage imageNamed:@"上麦"] forState:UIControlStateNormal];
+//        self.roleLable.text = @"上麦";
+//        [self.roleButton setTintColor:[UIColor whiteColor]];
         if([self.pubStreamId length] > 0)
         {
             [[EMClient sharedClient].conferenceManager unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
                 [weakself.myStreamIds removeObjectForKey:weakself.pubStreamId];
-                weakself.roleButton.selected = NO;
                 weakself.switchCameraButton.enabled = NO;
                 weakself.microphoneButton.enabled = NO;
                 weakself.videoButton.enabled = NO;
@@ -2289,8 +2217,11 @@ static int gBottomMenuHeight = 60;
         aCompletion();
 }
 
--(void)recordAction:(UIButton*)button
+-(void)recordAction
 {
+    if(self.presentedViewController)
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:^{
+        }];
     if(self.whiteBoard || [self.desktopStreamId length] > 0){
         [EMAlertController showInfoAlert:@"正在进行共享任务，不能再共享桌面"];
         return;
