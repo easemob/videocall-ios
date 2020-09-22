@@ -40,13 +40,13 @@
     [self.recognizer setDirection:(UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight)];
     [self.view addGestureRecognizer:self.recognizer];
     
-    _activity = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
-    [self.view addSubview:_activity];
-    [_activity mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
-    }];
-    [_activity startAnimating];
-    _activity.hidesWhenStopped = YES;
+//    _activity = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+//    [self.view addSubview:_activity];
+//    [_activity mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.equalTo(self.view);
+//    }];
+//    [_activity startAnimating];
+//    _activity.hidesWhenStopped = YES;
 }
 
 - (void)handleSwipeFrom:(UISwipeGestureRecognizer*)recognizer

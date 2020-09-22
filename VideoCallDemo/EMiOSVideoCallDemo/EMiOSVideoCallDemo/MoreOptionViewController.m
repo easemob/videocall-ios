@@ -32,7 +32,7 @@
 
 -(void)setupSubViews
 {
-    self.view.backgroundColor = [UIColor grayColor];
+    self.view.backgroundColor = [UIColor blackColor];
     self.settingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.settingButton.frame = CGRectMake(20, 10, 30, 30);
     //[self.settingButton setTitle:@"设置" forState:UIControlStateNormal];
@@ -47,32 +47,13 @@
     self.settingLable.text = @"设置";
     [self.view addSubview:self.settingLable];
     
-    self.sharedDesktopButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.sharedDesktopButton.frame = CGRectMake(80, 10, 30, 30);
-    [self.sharedDesktopButton setImage:[UIImage imageNamed:@"call_screenshare"] forState:UIControlStateNormal];
-    [self.sharedDesktopButton addTarget:self.confVC action:@selector(recordAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.sharedDesktopButton setTintColor:[UIColor whiteColor]];
-    [self.view addSubview:self.sharedDesktopButton];
-    
-    
-    UIView *view = [[UIView alloc] init];
-    view.frame = CGRectMake(140, 10, 30, 30);
-
-    view.layer.backgroundColor = [UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.30].CGColor;
-    view.layer.cornerRadius = 15;
-    [view setTintColor:[UIColor whiteColor]];
-    [self.view addSubview:view];
-    self.whiteBoardButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.whiteBoardButton.frame = CGRectMake(140, 10, 30, 30);
-    [self.whiteBoardButton setImage:[UIImage imageNamed:@"wb"] forState:UIControlStateNormal];
-    [self.whiteBoardButton addTarget:self.confVC action:@selector(joinWBAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.whiteBoardButton];
     self.inviteButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.inviteButton.frame = CGRectMake(200, 10, 30, 30);
+    self.inviteButton.frame = CGRectMake(80, 10, 30, 30);
+    [self.inviteButton setTintColor:[UIColor whiteColor]];
     [self.view addSubview:self.inviteButton];
     [self.inviteButton setImage:[UIImage imageNamed:@"invite"] forState:UIControlStateNormal];
     [self.inviteButton addTarget:self.confVC action:@selector(inviteAction) forControlEvents:UIControlEventTouchUpInside];
-    self.inviteLable = [[UILabel alloc] initWithFrame:CGRectMake(190, 40, 40, 30)];
+    self.inviteLable = [[UILabel alloc] initWithFrame:CGRectMake(73, 40, 40, 30)];
     self.inviteLable.textAlignment = NSTextAlignmentCenter;
     self.inviteLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
     [self.inviteLable setFont:[UIFont fontWithName:@"Arial" size:10]];
@@ -80,9 +61,9 @@
     [self.view addSubview:self.inviteLable];
     
     self.roleButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.roleButton.frame = CGRectMake(260, 10, 30, 30);
+    self.roleButton.frame = CGRectMake(140, 10, 30, 30);
     EMConferenceRole currole = [EMDemoOption sharedOptions].conference.role;
-    self.roleLable = [[UILabel alloc] initWithFrame:CGRectMake(253, 40, 40, 30)];
+    self.roleLable = [[UILabel alloc] initWithFrame:CGRectMake(133, 40, 40, 30)];
     self.roleLable.textAlignment = NSTextAlignmentCenter;
     self.roleLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
     [self.roleLable setFont:[UIFont fontWithName:@"Arial" size:10]];

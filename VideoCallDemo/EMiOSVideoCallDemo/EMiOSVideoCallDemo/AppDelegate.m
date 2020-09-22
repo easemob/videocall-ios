@@ -34,7 +34,6 @@
     if (self.allowRotation == YES) {
         //横屏
         return UIInterfaceOrientationMaskAll;
-
     }
     return self.curOrientationMask;
 }
@@ -49,5 +48,12 @@
     [[EMClient sharedClient] applicationWillEnterForeground:application];
 }
 
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL*)url
+{
+    // 接受传过来的参数
+    NSString* params = [url query];
+    return YES;
+}
 
 @end

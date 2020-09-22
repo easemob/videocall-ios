@@ -11,8 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MoreOptionViewController : UIViewController
-@property (nonatomic) UIButton* sharedDesktopButton;
-@property (nonatomic) UIButton* whiteBoardButton;
 @property (nonatomic,strong) UIButton* settingButton;
 @property (nonatomic) UIButton* inviteButton;
 @property (nonatomic, strong) UILabel *inviteLable;

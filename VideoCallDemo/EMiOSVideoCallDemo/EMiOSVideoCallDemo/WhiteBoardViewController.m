@@ -129,7 +129,7 @@
         self.interactButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
         [self.interactButton setImage:[UIImage imageNamed:@"wb-interact"] forState:UIControlStateNormal];
         [self.interactButton addTarget:self action:@selector(interactAction) forControlEvents:UIControlEventTouchUpInside];
-        [self.interactButton setHidden:YES];
+//        [self.interactButton setHidden:YES];
         [self.view addSubview:self.interactButton];
         [self.interactButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(self.view).multipliedBy(1.9);

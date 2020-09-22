@@ -30,7 +30,6 @@ static BOOL gIsInitializedSDK = NO;
 @end
 @interface RoomJoinViewController ()
 @property (nonatomic) NSString* roomName;
-@property (nonatomic) NSString* password;
 @property (nonatomic) UILabel* versionLable;
 //@property (nonatomic) UITextField* maxVideoCount;
 //@property (nonatomic) UITextField* maxTalkerCount;
@@ -150,43 +149,6 @@ int kHeightStart = 300;
         make.bottom.equalTo(self.nameField.mas_bottom);
     }];
     
-    self.pswdField = [[UITextField alloc] initWithFrame:CGRectMake(60, kHeightStart+70, mainBounds.size.width-120, 40)];
-    self.pswdField.delegate = self;
-    self.pswdField.borderStyle = UITextBorderStyleNone;
-    self.pswdField.placeholder = @"请输入房间密码";
-    self.pswdField.font = [UIFont systemFontOfSize:17];
-    self.pswdField.returnKeyType = UIReturnKeyDone;
-    self.pswdField.rightViewMode = UITextFieldViewModeWhileEditing;
-    self.pswdField.clearButtonMode = UITextFieldViewModeWhileEditing;
-    self.pswdField.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
-    self.pswdField.leftViewMode = UITextFieldViewModeAlways;
-    self.pswdField.layer.cornerRadius = 5;
-    self.pswdField.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.pswdField.tag = 101;
-    //self.pswdField.keyboardType = UIKeyboardTypeASCIICapable;
-    self.pswdField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    [self.pswdField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:self.pswdField];
-    [self.view addSubview:self.pswdField];
-    [self.pswdField mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.equalTo(@40);
-        make.left.equalTo(self.view).with.offset(60);
-        make.right.equalTo(self.view).with.offset(-60);
-        make.top.equalTo(self.nameField.mas_bottom).with.offset(10);
-    }];
-    
-    UIView *underline2 = [[UIView alloc] init];
-    underline2.frame = CGRectMake(60, kHeightStart+109, mainBounds.size.width - 120, 1);
-
-    underline2.layer.backgroundColor = [UIColor colorWithRed:214/255.0 green:214/255.0 blue:214/255.0 alpha:1.0].CGColor;
-    [self.view addSubview:underline2];
-    [underline2 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.equalTo(@1);
-        make.left.equalTo(self.view).with.offset(60);
-        make.right.equalTo(self.view).with.offset(-60);
-        make.bottom.equalTo(self.pswdField.mas_bottom);
-    }];
-    
     self.errorLable = [[UILabel alloc] initWithFrame:CGRectMake(60, kHeightStart+110, mainBounds.size.width-120, 30)];
     [self.errorLable setTextColor:[UIColor redColor]];
     self.errorLable.text = @"";
@@ -195,7 +157,7 @@ int kHeightStart = 300;
         make.height.equalTo(@40);
         make.left.equalTo(self.view).with.offset(60);
         make.right.equalTo(self.view).with.offset(-60);
-        make.top.equalTo(self.pswdField.mas_bottom).with.offset(10);
+        make.top.equalTo(self.nameField.mas_bottom).with.offset(10);
     }];
     
     self.joinRoomButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -225,14 +187,8 @@ int kHeightStart = 300;
     [settingButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
     [settingButton addTarget:self action:@selector(settingAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:settingButton];
-    [settingButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.equalTo(@40);
-        make.left.equalTo(self.view).with.offset(60);
-        make.right.equalTo(self.view).with.offset(-60);
-        make.bottom.equalTo(self.view).with.offset(-70);
-    }];
     
-    _versionLable = [[UILabel alloc] initWithFrame:CGRectMake(100, kHeightStart+314, mainBounds.size.width-200, 30)];
+    _versionLable = [[UILabel alloc] init];
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
      // app版本
     NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
@@ -242,10 +198,16 @@ int kHeightStart = 300;
     _versionLable.textColor = [UIColor colorWithRed:51/255.0 green:51/255.0 blue:51/255.0 alpha:1.0];
     [self.view addSubview:_versionLable];
     [_versionLable mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.height.equalTo(@40);
+        make.height.equalTo(@25);
         make.left.equalTo(self.view).with.offset(60);
         make.right.equalTo(self.view).with.offset(-60);
-        make.bottom.equalTo(self.view).with.offset(-20);
+        make.bottom.equalTo(self.view).with.offset(-5);
+    }];
+    [settingButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.height.equalTo(self.view).with.multipliedBy(0.1);
+        make.left.equalTo(self.view).with.offset(60);
+        make.right.equalTo(self.view).with.offset(-60);
+        make.bottom.equalTo(self.versionLable.mas_top);
     }];
 }
 
@@ -344,8 +306,7 @@ int kHeightStart = 300;
 
 -(void)textChange:(UITextField*)field {
     _roomName = self.nameField.text;
-    _password = self.pswdField.text;
-    if([_roomName length] > 0 && [_password length] > 0)
+    if([_roomName length] > 0)
     {
         [self.joinRoomButton setEnabled:YES];
         [self.joinRoomButton setBackgroundColor:[UIColor colorWithRed:0/255.0 green:175/255.0 blue:239/255.0 alpha:1.0]];
@@ -404,7 +365,6 @@ int kHeightStart = 300;
         return;
     }
     NSString* roomName = self.nameField.text;
-    NSString* pswd = self.pswdField.text;
     if([roomName length] < 3){
         self.errorLable.text = @"房间名称不能少于3位";
         self.joinRoomButton.enabled = YES;
@@ -413,17 +373,6 @@ int kHeightStart = 300;
     if(![self validateString:roomName])
     {
         self.errorLable.text = @"房间名称不符合规范";
-        self.joinRoomButton.enabled = YES;
-        return;
-    }
-    if([pswd length] < 3 || [pswd length] > 18){
-        self.errorLable.text = @"房间密码应在3位到18位之间";
-        self.joinRoomButton.enabled = YES;
-        return;
-    }
-    if(![self validateString:pswd])
-    {
-        self.errorLable.text = @"房间密码仅允许中英文";
         self.joinRoomButton.enabled = YES;
         return;
     }
@@ -461,7 +410,7 @@ int kHeightStart = 300;
         }
         [EMDemoOption sharedOptions].conference = aCall;
         [EMDemoOption sharedOptions].roomName = roomName;
-        [EMDemoOption sharedOptions].roomPswd = pswd;
+        [EMDemoOption sharedOptions].roomPswd = roomName;
         [EMDemoOption sharedOptions].muteAll = NO;
        
         ConferenceViewController* conferenceViewControler = [[ConferenceViewController alloc] initWithConfence:aCall role:role];
@@ -511,7 +460,7 @@ int kHeightStart = 300;
         roomConfig.liveConfig = liveconfig;
     }
     
-    [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:pswd role:role roomConfig:roomConfig completion:block];
+    [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:roomName role:role roomConfig:roomConfig completion:block];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -532,8 +481,6 @@ int kHeightStart = 300;
     {
         if(textField.tag == 100)
             textField.text = _roomName;
-        else if(textField.tag == 101)
-            textField.text = _password;
     }
 }
 
