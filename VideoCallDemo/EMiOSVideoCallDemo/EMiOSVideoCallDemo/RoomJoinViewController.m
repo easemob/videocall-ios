@@ -31,6 +31,7 @@ static BOOL gIsInitializedSDK = NO;
 @interface RoomJoinViewController ()
 @property (nonatomic) NSString* roomName;
 @property (nonatomic) UILabel* versionLable;
+@property (nonatomic) UIActivityIndicatorView * activity;
 //@property (nonatomic) UITextField* maxVideoCount;
 //@property (nonatomic) UITextField* maxTalkerCount;
 @end
@@ -67,6 +68,10 @@ static BOOL g_IsLogin = NO;
 {
     [self _forcePortrait];
     [self.navigationController setNavigationBarHidden:YES];
+}
+-(void)dealloc
+{
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 int kHeightStart = 300;
 - (void)initDemo {
@@ -115,7 +120,9 @@ int kHeightStart = 300;
     self.nameField = [[UITextField alloc] initWithFrame:CGRectMake(60, kHeightStart, mainBounds.size.width - 120, 40)];
     self.nameField.delegate = self;
     self.nameField.borderStyle = UITextBorderStyleNone;
-    self.nameField.placeholder = @"请输入房间名称";
+    //self.nameField.placeholder = @"请输入房间名称";
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:@"请输入房间名称" attributes:@{NSForegroundColorAttributeName:[UIColor lightGrayColor],NSFontAttributeName:self.nameField.font}];
+    self.nameField.attributedPlaceholder = attrString;
     self.nameField.returnKeyType = UIReturnKeyDone;
     self.nameField.font = [UIFont systemFontOfSize:17];
     self.nameField.rightViewMode = UITextFieldViewModeWhileEditing;
@@ -127,6 +134,7 @@ int kHeightStart = 300;
     self.nameField.tag = 100;
     self.nameField.keyboardType = UIKeyboardTypeASCIICapable;
     self.nameField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.nameField.textColor = [UIColor blackColor];
     [self.nameField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:self.nameField];
     [self.view addSubview:self.nameField];
@@ -209,6 +217,15 @@ int kHeightStart = 300;
         make.right.equalTo(self.view).with.offset(-60);
         make.bottom.equalTo(self.versionLable.mas_top);
     }];
+    
+    _activity = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+    [self.view addSubview:_activity];
+    [_activity mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
+    _activity.hidesWhenStopped = YES;
+    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 }
 
 -(void)checkVersion
@@ -401,11 +418,14 @@ int kHeightStart = 300;
 
                 [alert addAction:defaultAction];
                 [alert addAction:cancelAction];
-                [self presentViewController:alert animated:YES completion:nil];
+                [weakself presentViewController:alert animated:YES completion:nil];
             }else{
                 weakself.errorLable.text = aError.errorDescription;
             }
-            self.joinRoomButton.enabled = YES;
+            weakself.joinRoomButton.enabled = YES;
+            if(weakself.activity.isAnimating) {
+                [weakself.activity stopAnimating];
+            }
             return ;
         }
         [EMDemoOption sharedOptions].conference = aCall;
@@ -414,6 +434,9 @@ int kHeightStart = 300;
         [EMDemoOption sharedOptions].muteAll = NO;
        
         ConferenceViewController* conferenceViewControler = [[ConferenceViewController alloc] initWithConfence:aCall role:role];
+        if(weakself.activity.isAnimating) {
+            [weakself.activity stopAnimating];
+        }
         [weakself.navigationController pushViewController:conferenceViewControler animated:NO];
         self.joinRoomButton.enabled = YES;
         [[EMClient sharedClient].conferenceManager enableStatistics:YES];
@@ -459,7 +482,7 @@ int kHeightStart = 300;
         liveconfig.recordExt = [EMDemoOption sharedOptions].recordExt;
         roomConfig.liveConfig = liveconfig;
     }
-    
+    [_activity startAnimating];
     [[[EMClient sharedClient] conferenceManager] joinRoom:roomName password:roomName role:role roomConfig:roomConfig completion:block];
 }
 

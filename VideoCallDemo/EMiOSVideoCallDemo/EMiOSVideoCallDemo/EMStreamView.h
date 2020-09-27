@@ -42,6 +42,9 @@ typedef enum {
 
 @property (nonatomic) BOOL isAdmin;
 
+@property (nonatomic) NSTimer *timeTimer;
+
+@property (nonatomic) BOOL isBigView;
 
 @end
 

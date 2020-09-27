@@ -33,7 +33,8 @@
 
 - (void)setupSubviews
 {
-    [self.view setBackgroundColor:[UIColor blackColor]];
+    [self.view setBackgroundColor:[UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1]];
+    
     self.roomNameLable = [[UILabel alloc] initWithFrame:CGRectMake(59,50, 48, 25)];
     self.roomNameLable.text = [EMDemoOption sharedOptions].roomName;
     self.roomNameLable.textColor = [UIColor whiteColor];
@@ -41,17 +42,18 @@
     [self.view addSubview:self.roomNameLable];
     self.roomNameLable.textAlignment = NSTextAlignmentCenter;
     
-    self.selectDevice = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    self.selectDevice = [UIButton buttonWithType:UIButtonTypeCustom];
     self.selectDevice.frame = CGRectMake(self.view.bounds.size.width - 50, 150, 40, 40);
-    [self.selectDevice setImage:[UIImage imageNamed:@"switchDevice"] forState:UIControlStateNormal];
-    [self.selectDevice addTarget:self.confVC action:@selector(selectDeviceAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.selectDevice setImage:[UIImage imageNamed:@"扬声器"] forState:UIControlStateNormal];
+    [self.selectDevice setImage:[UIImage imageNamed:@"听筒"] forState:UIControlStateSelected];
+    [self.selectDevice addTarget:self action:@selector(selectDeviceAction) forControlEvents:UIControlEventTouchUpInside];
     [self.selectDevice setTintColor:[UIColor whiteColor]];
     [self.view addSubview:self.selectDevice];
     [self.selectDevice mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@30);
-        make.height.equalTo(@30);
-        make.bottom.equalTo(self.view).with.offset(-5);
-        make.left.equalTo(@10);
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.bottom.equalTo(self.view);
+        make.left.equalTo(@20);
     }];
     
     self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59, 73, 40, 10)];
@@ -76,8 +78,8 @@
     self.switchCameraButton.frame = CGRectMake(self.view.bounds.size.width - 50, 200, 40, 40);
     self.switchCameraButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.switchCameraButton setTitle:@"" forState:UIControlStateNormal];
-    [self.switchCameraButton setImage:[UIImage imageNamed:@"swtichcamera"] forState:UIControlStateNormal];
-    [self.switchCameraButton setImage:[UIImage imageNamed:@"swtichcamera"] forState:UIControlStateDisabled];
+    [self.switchCameraButton setImage:[UIImage imageNamed:@"翻转镜头"] forState:UIControlStateNormal];
+    [self.switchCameraButton setImage:[UIImage imageNamed:@"翻转镜头"] forState:UIControlStateDisabled];
     //[self.switchCameraButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     //[self.switchCameraButton setTintColor:[UIColor redColor]];
     [self.switchCameraButton addTarget:self.confVC action:@selector(switchCamaraAction) forControlEvents:UIControlEventTouchUpInside];
@@ -86,31 +88,122 @@
     //设置按钮的风格颜色
     //[self.switchCameraButton setTintColor:[UIColor blueColor]];
     [self.switchCameraButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
-    [self.switchCameraButton setEnabled:NO];
     [self.switchCameraButton setTintColor:[UIColor whiteColor] ];
     [self.view addSubview:_switchCameraButton];
     [self.switchCameraButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@30);
-        make.height.equalTo(@30);
-        make.bottom.equalTo(self.view).with.offset(-5);
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.bottom.equalTo(self.view);
         make.left.equalTo(self.selectDevice.mas_right).with.offset(10);
     }];
     
     self.leaveConfrButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     self.leaveConfrButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-//    [self.leaveConfrButton setImage:[UIImage imageNamed:@"leaveconfr"] forState:UIControlStateNormal];
-    [self.leaveConfrButton setTitle:@"离开会议" forState:UIControlStateNormal];
-    [self.leaveConfrButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-    //[self.leaveConfrButton setTintColor:[UIColor whiteColor]];
+    [self.leaveConfrButton setImage:[UIImage imageNamed:@"离开"] forState:UIControlStateNormal];
+    //[self.leaveConfrButton setTitle:@"离开会议" forState:UIControlStateNormal];
+    //[self.leaveConfrButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [self.leaveConfrButton setTintColor:[UIColor redColor]];
     [self.leaveConfrButton addTarget:self.confVC action:@selector(hangupAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.leaveConfrButton];
     [self.leaveConfrButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@80);
-        make.height.equalTo(@30);
-        make.bottom.equalTo(self.view).with.offset(-5);
-        make.right.equalTo(self.view).with.offset(-10);
+        make.width.equalTo(@40);
+        make.height.equalTo(@40);
+        make.bottom.equalTo(self.view);
+        make.right.equalTo(self.view).with.offset(-20);
     }];
 }
+
+- (AVAudioSessionPortDescription*)bluetoothAudioDevice
+{
+    NSArray* bluetoothRoutes = @[AVAudioSessionPortBluetoothA2DP, AVAudioSessionPortBluetoothLE, AVAudioSessionPortBluetoothHFP];
+    return [self audioDeviceFromTypes:bluetoothRoutes];
+}
+
+- (AVAudioSessionPortDescription*)builtinAudioDevice
+{
+    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInMic];
+    return [self audioDeviceFromTypes:builtinRoutes];
+}
+
+- (AVAudioSessionPortDescription*)speakerAudioDevice
+{
+    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInSpeaker];
+    return [self audioDeviceFromTypes:builtinRoutes];
+}
+
+- (AVAudioSessionPortDescription*)audioDeviceFromTypes:(NSArray*)types
+{
+    NSArray* routes = [[AVAudioSession sharedInstance] availableInputs];
+    for(AVAudioSessionPortDescription* route in routes)
+    {
+        if ([types containsObject:route.portType])
+        {
+            return route;
+        }
+        
+    }
+    return nil;
+}
+
+- (BOOL)switchBluetooth:(BOOL)onOrOff
+{
+    NSError* audioError = nil;
+    BOOL changeResult = NO;
+    if(onOrOff)
+    {
+        AVAudioSessionPortDescription* _bluetoothPort = [self bluetoothAudioDevice];
+        if(_bluetoothPort)
+            changeResult = [[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&audioError];
+    }
+    else
+    {
+        AVAudioSessionPortDescription* builtinPort = [self builtinAudioDevice];
+        if(builtinPort)
+            changeResult = [[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&audioError];
+    }
+    return changeResult;
+}
+
+-(void)selectDeviceAction
+{
+    __weak typeof(self) weakself = self;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"切换音频设备" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *SpeakerAction = [UIAlertAction actionWithTitle:@"扬声器" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchBluetooth:NO];
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
+                            error:nil];
+        [audioSession setActive:YES error:nil];
+        self.selectDevice.selected = NO;
+    }];
+    [alertController addAction:SpeakerAction];
+
+    UIAlertAction *IphoneAction = [UIAlertAction actionWithTitle:@"iPhone内置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [weakself switchBluetooth:NO];
+        
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionAllowBluetooth
+                            error:nil];
+        [audioSession setActive:YES error:nil];
+        self.selectDevice.selected = YES;
+        
+    }];
+    [alertController addAction:IphoneAction];
+    
+    if([weakself bluetoothAudioDevice] != nil) {
+        UIAlertAction *BlueToothAction = [UIAlertAction actionWithTitle:@"蓝牙耳机" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [weakself switchBluetooth:YES];
+            self.selectDevice.selected = YES;
+        }];
+        [alertController addAction:BlueToothAction];
+    }
+
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"取消", @"Cancel") style: UIAlertActionStyleCancel handler:nil]];
+
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
 
 /*
 #pragma mark - Navigation

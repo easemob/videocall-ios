@@ -15,7 +15,6 @@
 #import "ChangeRoleView.h"
 #import "BroadcastSetupViewController.h"
 #import "WhiteBoardViewController.h"
-#import "SharedDesktopViewController.h"
 #import "AppDelegate.h"
 #import "MoreOptionViewController.h"
 #import "ConfrTopViewController.h"
@@ -33,7 +32,6 @@
 @property (nonatomic) AVAudioSessionCategoryOptions option;
 @property (nonatomic) UISwipeGestureRecognizer * recognizer;
 @property (nonatomic) EMStreamView *remoteDesktopView;
-@property (nonatomic) SharedDesktopViewController* sharedDesktopVC;
 @property (nonatomic) NSString* remoteDesktopStreamId;
 @property (nonatomic) ConfrTopViewController* topVC;
 @property (nonatomic) NSMutableDictionary* showStreamViewInScrollView;
@@ -248,7 +246,11 @@ static int gBottomMenuHeight = 60;
            
        }];
     // 1、设置分享的内容，并将内容添加到数组中
-    NSArray *activityItemsArray = @[[NSString stringWithFormat:@"https://rtc-turn4-hsb.easemob.com/rtc-ws/meeting-share-loading-page/index.html?roomName=%@&invitees=%@",[EMDemoOption sharedOptions].roomName,[EMDemoOption sharedOptions].nickName]];
+    NSString* title = [NSString stringWithFormat:@"%@邀请你加入会议",[EMDemoOption sharedOptions].nickName];
+    NSString* addr = [NSString stringWithFormat:@"https://rtc-turn4-hsb.easemob.com/rtc-ws/meeting-share-loading-page/index.html?roomName=%@&invitees=%@",[EMDemoOption sharedOptions].roomName,[EMDemoOption sharedOptions].nickName];
+    NSString *urlString = [addr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    NSURL* url = [NSURL URLWithString:urlString];
+    NSArray *activityItemsArray = @[title,url];
     NSArray *activityArray = @[];
     
     // 2、初始化控制器，添加分享内容至控制器
@@ -337,7 +339,7 @@ static int gBottomMenuHeight = 60;
     if(self.presentedViewController)
         [self.presentedViewController dismissViewControllerAnimated:YES completion:^{
         }];
-    if([self.desktopStreamId length] > 0 || self.sharedDesktopVC){
+    if([self.desktopStreamId length] > 0 || self.remoteDesktopView){
         [EMAlertController showInfoAlert:@"正在进行共享任务，不能共享白板"];
         return;
     }
@@ -423,17 +425,18 @@ static int gBottomMenuHeight = 60;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.backgroundColor = [UIColor colorWithRed:20/255.0 green:20/255.0 blue:20/255.0 alpha:1.0];
         int padding = 10;
-        int top = 5;
+        int top = 1;
         int size = (self.view.bounds.size.width - 20*6)/5;
-        int iconsize = 30;
+        int iconsize = 32;
         int offset = (size-iconsize)/2;
         self.microphoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.microphoneButton.frame = CGRectMake(padding+offset, top, iconsize, iconsize);
         //[self.microphoneButton setTitle:@"" forState:UIControlStateNormal];
         [self.microphoneButton addTarget:self action:@selector(microphoneButtonAction) forControlEvents:UIControlEventTouchUpInside];
         //[self.microphoneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [self.microphoneButton setImage:[UIImage imageNamed:@"microphoneselect"] forState:UIControlStateSelected];
-        [self.microphoneButton setImage:[UIImage imageNamed:@"microphonenclose"] forState:UIControlStateNormal];
+        [self.microphoneButton setImage:[UIImage imageNamed:@"静音"] forState:UIControlStateSelected];
+        [self.microphoneButton setImage:[UIImage imageNamed:@"解除静音"] forState:UIControlStateNormal];
+        [self.microphoneButton setTintColor:[UIColor redColor]];
         self.microphoneLable = [[UILabel alloc] initWithFrame:CGRectMake(padding, top+iconsize+2, size, 20)];
         self.microphoneLable.text = @"解除静音";
         self.microphoneLable.textAlignment = NSTextAlignmentCenter;
@@ -444,7 +447,7 @@ static int gBottomMenuHeight = 60;
         [self.microphoneButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(cell).multipliedBy(0.2);
             make.width.equalTo(@(iconsize));
-            make.top.equalTo(@5);
+            make.top.equalTo(@(top));
             make.height.equalTo(@(iconsize));
         }];
         [self.microphoneLable mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -459,8 +462,8 @@ static int gBottomMenuHeight = 60;
         [self.videoButton setTitle:@"" forState:UIControlStateNormal];
         [self.videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
         [self.videoButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.videoButton setImage:[UIImage imageNamed:@"videoopen"] forState:UIControlStateSelected];
-        [self.videoButton setImage:[UIImage imageNamed:@"videoclose"] forState:UIControlStateNormal];
+        [self.videoButton setImage:[UIImage imageNamed:@"视频"] forState:UIControlStateSelected];
+        [self.videoButton setImage:[UIImage imageNamed:@"打开视频"] forState:UIControlStateNormal];
         self.videoLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size), top+iconsize+2, size, 20)];
         self.videoLable.text = @"打开视频";
         self.videoLable.textAlignment = NSTextAlignmentCenter;
@@ -471,7 +474,7 @@ static int gBottomMenuHeight = 60;
         [self.videoButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(cell).multipliedBy(0.6);
             make.width.equalTo(@(iconsize));
-            make.top.equalTo(@5);
+            make.top.equalTo(@(top));
             make.height.equalTo(@(iconsize));
         }];
         [self.videoLable mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -485,11 +488,11 @@ static int gBottomMenuHeight = 60;
         self.sharedButton.frame = CGRectMake(padding + (padding+size) * 2 + offset, top, iconsize, iconsize);
         //[self.hangupButton setTitle:@"挂断" forState:UIControlStateNormal];
         self.sharedButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.sharedButton setImage:[UIImage imageNamed:@"call_screenshare"] forState:UIControlStateNormal];
+        [self.sharedButton setImage:[UIImage imageNamed:@"共享桌面"] forState:UIControlStateNormal];
         [self.sharedButton setTintColor:[UIColor whiteColor]];
         [self.sharedButton addTarget:self action:@selector(sharedAction) forControlEvents:UIControlEventTouchUpInside];
         self.sharedLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*2, top+iconsize+2, size, 20)];
-        self.sharedLable.text = @"共享";
+        self.sharedLable.text = @"共享桌面";
         self.sharedLable.textAlignment = NSTextAlignmentCenter;
         self.sharedLable.textColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
         [self.sharedLable setFont:[UIFont fontWithName:@"Arial" size:10]];
@@ -498,7 +501,7 @@ static int gBottomMenuHeight = 60;
         [self.sharedButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(cell);
             make.width.equalTo(@(iconsize));
-            make.top.equalTo(@5);
+            make.top.equalTo(@(top));
             make.height.equalTo(@(iconsize));
         }];
         [self.sharedLable mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -526,7 +529,7 @@ static int gBottomMenuHeight = 60;
         [self.membersButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(cell).multipliedBy(1.4);
             make.width.equalTo(@(iconsize));
-            make.top.equalTo(@5);
+            make.top.equalTo(@(top));
             make.height.equalTo(@(iconsize));
         }];
         [self.membersLable mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -538,13 +541,13 @@ static int gBottomMenuHeight = 60;
         
         self.moreOptionButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         [cell addSubview:self.moreOptionButton];
-        [self.moreOptionButton setImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+        [self.moreOptionButton setImage:[UIImage imageNamed:@"更多"] forState:UIControlStateNormal];
         [self.moreOptionButton setTintColor:[UIColor whiteColor]];
         [self.moreOptionButton addTarget:self action:@selector(moreOptionAction) forControlEvents:UIControlEventTouchUpInside];
         [self.moreOptionButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(cell).multipliedBy(1.8);
             make.width.equalTo(@40);
-            make.top.equalTo(@5);
+            make.top.equalTo(@(top));
             make.height.equalTo(@(iconsize));
         }];
         self.moreOptionLable = [[UILabel alloc] initWithFrame:CGRectMake(padding + (padding+size)*4, top+iconsize+2, size, 20)];
@@ -587,6 +590,9 @@ static int gBottomMenuHeight = 60;
     [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
                         error:nil];
     [audioSession setActive:YES error:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.topVC.selectDevice setImage:[UIImage imageNamed:@"扬声器"] forState:UIControlStateNormal];
+    });
 }
 
 - (void)videoButtonAction
@@ -598,7 +604,7 @@ static int gBottomMenuHeight = 60;
         EMStreamItem* localItem = [self.streamItemDict objectForKey:self.pubStreamId];
         if(localItem){
             localItem.videoView.enableVideo = self.videoButton.isSelected;
-            self.topVC.switchCameraButton.enabled = self.videoButton.isSelected;
+            [self.topVC.switchCameraButton setHidden:!self.videoButton.isSelected];
         }
     }
     [self updateVidelLable];
@@ -698,25 +704,22 @@ static int gBottomMenuHeight = 60;
         }];
     }
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-    [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
-    [audioSession setActive:YES error:nil];
-    for(NSString* streamId in self.streamItemDict) {
-        EMStreamItem* item = [self.streamItemDict objectForKey:streamId];
-        if(item && item.stream && [item.stream.streamId length] > 0) {
-            [[[EMClient sharedClient] conferenceManager] unsubscribeConference:[EMDemoOption sharedOptions].conference streamId:item.stream.streamId completion:^(EMError *aError) {
-                
-            }];
-        }
-    }
-    if([self.pubStreamId length] > 0)
-       [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
-        
-    }];
-    if([self.desktopStreamId length] > 0)
-       [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.desktopStreamId completion:^(EMError *aError) {
-        
-    }];
+//    for(NSString* streamId in self.streamItemDict) {
+//        EMStreamItem* item = [self.streamItemDict objectForKey:streamId];
+//        if(item && item.stream && [item.stream.streamId length] > 0) {
+//            [[[EMClient sharedClient] conferenceManager] unsubscribeConference:[EMDemoOption sharedOptions].conference streamId:item.stream.streamId completion:^(EMError *aError) {
+//
+//            }];
+//        }
+//    }
+//    if([self.pubStreamId length] > 0)
+//       [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
+//
+//    }];
+//    if([self.desktopStreamId length] > 0)
+//       [[[EMClient sharedClient] conferenceManager] unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.desktopStreamId completion:^(EMError *aError) {
+//
+//    }];
     __weak typeof(self) weakself = self;
     void(^block)(EMError*err) = ^(EMError*err){
         [weakself clearResource];
@@ -835,7 +838,7 @@ static int gBottomMenuHeight = 60;
             return;
         }
         
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"下麦后将不能发布语音视频" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"下麦后需要重新申请上麦才能进行音频或视频" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
         UIAlertAction *downAction = [UIAlertAction actionWithTitle:@"确认下麦" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [[[EMClient sharedClient] conferenceManager] changeMemberRoleWithConfId:[EMDemoOption sharedOptions].conference.confId memberName:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid] role:EMConferenceRoleAudience completion:^(EMError *aError) {
@@ -896,90 +899,6 @@ static int gBottomMenuHeight = 60;
             [roomSettingViewControler.tableView reloadData];
         });
     }];
-}
-
-- (AVAudioSessionPortDescription*)bluetoothAudioDevice
-{
-    NSArray* bluetoothRoutes = @[AVAudioSessionPortBluetoothA2DP, AVAudioSessionPortBluetoothLE, AVAudioSessionPortBluetoothHFP];
-    return [self audioDeviceFromTypes:bluetoothRoutes];
-}
-
-- (AVAudioSessionPortDescription*)builtinAudioDevice
-{
-    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInMic];
-    return [self audioDeviceFromTypes:builtinRoutes];
-}
-
-- (AVAudioSessionPortDescription*)speakerAudioDevice
-{
-    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInSpeaker];
-    return [self audioDeviceFromTypes:builtinRoutes];
-}
-
-- (AVAudioSessionPortDescription*)audioDeviceFromTypes:(NSArray*)types
-{
-    NSArray* routes = [[AVAudioSession sharedInstance] availableInputs];
-    for(AVAudioSessionPortDescription* route in routes)
-    {
-        if ([types containsObject:route.portType])
-        {
-            return route;
-        }
-        
-    }
-    return nil;
-}
-
-- (BOOL)switchBluetooth:(BOOL)onOrOff
-{
-    NSError* audioError = nil;
-    BOOL changeResult = NO;
-    if(onOrOff)
-    {
-        AVAudioSessionPortDescription* _bluetoothPort = [self bluetoothAudioDevice];
-        if(_bluetoothPort)
-            changeResult = [[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&audioError];
-    }
-    else
-    {
-        AVAudioSessionPortDescription* builtinPort = [self builtinAudioDevice];
-        if(builtinPort)
-            changeResult = [[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&audioError];
-    }
-    return changeResult;
-}
-
--(void)selectDeviceAction
-{
-    __weak typeof(self) weakself = self;
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"切换音频设备" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    UIAlertAction *SpeakerAction = [UIAlertAction actionWithTitle:@"扬声器" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self switchBluetooth:NO];
-        [weakself playWithSpeaker];
-    }];
-    [alertController addAction:SpeakerAction];
-
-    UIAlertAction *IphoneAction = [UIAlertAction actionWithTitle:@"iPhone内置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self switchBluetooth:NO];
-        
-        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionAllowBluetooth
-                            error:nil];
-        [audioSession setActive:YES error:nil];
-    }];
-    [alertController addAction:IphoneAction];
-    
-    if([self bluetoothAudioDevice] != nil) {
-        UIAlertAction *BlueToothAction = [UIAlertAction actionWithTitle:@"蓝牙耳机" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self switchBluetooth:YES];
-        }];
-        [alertController addAction:BlueToothAction];
-    }
-
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"取消", @"Cancel") style: UIAlertActionStyleCancel handler:nil]];
-
-    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showHint:(NSString *)hint
@@ -1065,12 +984,16 @@ static int gBottomMenuHeight = 60;
     if([self.streamItemDict count] == 0 || !self.curBigView)
     {
         self.curBigView = videoView;
+        videoView.isBigView = YES;
         
         [self.view addSubview:self.curBigView];
         [self.view sendSubviewToBack:self.curBigView];
         [self updateCurBigViewFrame];
     }else
+    {
         [self.scrollView addSubview:videoView];
+        videoView.isBigView = NO;
+    }
     
 //    if (CGRectGetMaxY(frame) > self.scrollView.contentSize.height) {
 //        self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, CGRectGetMaxY(frame));
@@ -1093,7 +1016,7 @@ static int gBottomMenuHeight = 60;
 {
     //上传流的过程中，不允许操作视频按钮
     self.videoButton.enabled = NO;
-    self.topVC.switchCameraButton.enabled = NO;
+    [self.topVC.switchCameraButton setHidden:YES];
     
     EMStreamParam *pubConfig = [[EMStreamParam alloc] init];
     pubConfig.streamName = [EMClient sharedClient].currentUsername;
@@ -1149,7 +1072,7 @@ static int gBottomMenuHeight = 60;
                     weakself.isSetMute = pubConfig.isMute;
                     [weakself updateMicrophoneLable];
                     [weakself updateVidelLable];
-            weakself.topVC.switchCameraButton.enabled = aEnableVideo;
+        [weakself.topVC.switchCameraButton setHidden:!aEnableVideo];
             
                     weakself.pubStreamId = aPubStreamId;
                     //设置视频界面
@@ -1191,13 +1114,20 @@ static int gBottomMenuHeight = 60;
             self.remoteDesktopStreamId = aStream.streamId;
             self.remoteDesktopView = [[EMStreamView alloc] init];
             self.remoteDesktopView.displayView = remoteView;
+            self.remoteDesktopView.delegate = self;
             [self.remoteDesktopView addSubview:remoteView];
             [remoteView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.edges.equalTo(self.remoteDesktopView);
             }];
             self.remoteDesktopView.enableVideo = YES;
-            self.sharedDesktopVC = [[SharedDesktopViewController alloc] initWithSharedDesktopView:self.remoteDesktopView];
-            [self.navigationController pushViewController:self.sharedDesktopVC animated:NO];
+            [self.view addSubview:self.remoteDesktopView];
+            [self.view sendSubviewToBack:self.remoteDesktopView];
+            [self.scrollView setHidden:YES];
+            if(self.curBigView)
+                [self.curBigView setHidden:YES];
+            [self.remoteDesktopView mas_makeConstraints:^(MASConstraintMaker *make) {
+                            make.edges.equalTo(self.view);
+            }];
             return;
         }
         if(videoItem) {
@@ -1242,6 +1172,10 @@ static int gBottomMenuHeight = 60;
     for (NSInteger i = index + 1; i < [self.streamIds count]; i++) {
         NSString *streamId = [self.streamIds objectAtIndex:i];
         EMStreamItem *item = [self.streamItemDict objectForKey:streamId];
+        if(item.videoView.timeTimer){
+            [item.videoView.timeTimer invalidate];
+            item.videoView.timeTimer = nil;
+        }
         if (self.curBigView == item.videoView) {
             self.curBigView = nil;
         } else {
@@ -1259,7 +1193,7 @@ static int gBottomMenuHeight = 60;
 
 - (void)streamViewDidTap:(EMStreamView *)aVideoView
 {
-    if (aVideoView == _curBigView) {
+    if (aVideoView == _curBigView || aVideoView == self.remoteDesktopView) {
         return;
     }
     
@@ -1272,10 +1206,12 @@ static int gBottomMenuHeight = 60;
         curbigview.frame = CGRectMake(aVideoView.frame.origin.x, aVideoView.frame.origin.y, gSmallVideoSize, gSmallVideoSize);
         //curbigview.displayView.frame = aVideoView.displayView.frame;
         [self.scrollView addSubview:curbigview];
+        curbigview.isBigView = NO;
     }
     
     [aVideoView removeFromSuperview];
     self.curBigView = aVideoView;
+    aVideoView.isBigView = YES;
     [self.view addSubview:self.curBigView];
     [self.view sendSubviewToBack:self.curBigView];
 //    [aVideoView.displayView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -1372,17 +1308,12 @@ static int gBottomMenuHeight = 60;
             
         }];
         if(aStream.type == EMStreamTypeDesktop){
-            UIViewController* curVC = [self.navigationController topViewController];
-            if(self.sharedDesktopVC){
-                [self.sharedDesktopVC dismissViewControllerAnimated:NO completion:^{
-                    
-                }];
-                if([curVC isKindOfClass:[SharedDesktopViewController class]]){
-                    [self.navigationController popViewControllerAnimated:NO];
-                }
-            }
             
             self.remoteDesktopView = nil;
+            self.remoteDesktopStreamId = nil;
+            [self.scrollView setHidden:NO];
+            if(self.curBigView)
+                [self.curBigView setHidden:NO];
             return;
         }
         [self removeStreamWithId:aStream.streamId];
@@ -1420,7 +1351,7 @@ static int gBottomMenuHeight = 60;
 //        }
         
         NSString* msg = [NSString stringWithFormat:@"%@ 成为主持人",showName ];
-        [EMAlertController showInfoAlert:msg];
+        [self showHint:msg];
         
         UIViewController* topVC = self.navigationController.topViewController;
         __weak typeof(self) weakself = self;
@@ -1463,7 +1394,7 @@ static int gBottomMenuHeight = 60;
         [adminIds removeObject:adminName];
         [EMDemoOption sharedOptions].conference.adminIds = [adminIds copy];
         NSString* msg = [NSString stringWithFormat:@"%@ 放弃主持人",showName ];
-        [EMAlertController showInfoAlert:msg];
+        [self showHint:msg];
         [self updateAdminView];
         UIViewController* topVC = self.navigationController.topViewController;
         if(topVC && ([topVC isKindOfClass:[RoomSettingViewController class]] || [topVC isKindOfClass:[SpeakerListViewController class]])) {
@@ -1478,7 +1409,7 @@ static int gBottomMenuHeight = 60;
 - (void)streamPubDidFailed:(EMCallConference *)aConference error:(EMError*)aError
 {
     if ([aConference.callId isEqualToString:[EMDemoOption sharedOptions].conference.callId]) {
-        self.topVC.switchCameraButton.enabled = NO;
+        [self.topVC.switchCameraButton setHidden:YES];
         self.microphoneButton.enabled = NO;
         self.videoButton.enabled = NO;
         
@@ -1587,14 +1518,9 @@ static int gBottomMenuHeight = 60;
         }
         if([EMDemoOption sharedOptions].conference.isCreator && [EMDemoOption sharedOptions].openCDN)
             [self _upadteLiveRegions];
-        if ([aStreamId isEqualToString:self.remoteDesktopStreamId] && self.sharedDesktopVC) {
+        if ([aStreamId isEqualToString:self.remoteDesktopStreamId]) {
             self.remoteDesktopView.status = StreamStatusConnected;
         }
-        
-//        if (!self.microphoneButton.isSelected && self.videoButton.isSelected && !self.isSetSpeaker) {
-//            self.isSetSpeaker = YES;
-//            [self playWithSpeaker];
-//        }
     }
 }
 
@@ -1804,10 +1730,6 @@ static int gBottomMenuHeight = 60;
         }
     }
      
-    
-    if (!self.microphoneButton.isSelected && self.videoButton.isSelected) {
-        [self playWithSpeaker];
-    }
     [self updateMicrophoneLable];
     UIViewController* view = [self.navigationController topViewController];
     if([view isKindOfClass:[SpeakerListViewController class]]) {
@@ -1893,12 +1815,11 @@ static int gBottomMenuHeight = 60;
                     MoreOptionViewController*vc = (MoreOptionViewController*)weakself.presentedViewController;
                     vc.roleLable.text = @"下麦";
                     [vc.roleButton setImage:[UIImage imageNamed:@"下麦"] forState:UIControlStateNormal];
-                    [vc.roleButton setTintColor:[UIColor redColor]];
                 }
 
                 weakself.videoButton.enabled = YES;
                 weakself.microphoneButton.enabled = YES;
-                weakself.topVC.switchCameraButton.enabled = YES;
+                [weakself.topVC.switchCameraButton setHidden:NO];
                 [weakself updateScrollView];
                 [weakself updateVideoSub];
             }];
@@ -1907,7 +1828,7 @@ static int gBottomMenuHeight = 60;
         [adminIds removeObject:[NSString stringWithFormat:@"%@_%@",[EMDemoOption sharedOptions].appkey,[EMDemoOption sharedOptions].userid]];
         [EMDemoOption sharedOptions].conference.adminIds = [adminIds copy];
     } else if (aConference.role == EMConferenceRoleAudience) {
-        self.topVC.switchCameraButton.enabled = NO;
+        [self.topVC.switchCameraButton setHidden:YES];
         self.microphoneButton.enabled = NO;
         self.videoButton.enabled = NO;
         //self.vkbpsButton.enabled = NO;
@@ -1918,7 +1839,7 @@ static int gBottomMenuHeight = 60;
         {
             [[EMClient sharedClient].conferenceManager unpublishConference:[EMDemoOption sharedOptions].conference streamId:self.pubStreamId completion:^(EMError *aError) {
                 [weakself.myStreamIds removeObjectForKey:weakself.pubStreamId];
-                weakself.topVC.switchCameraButton.enabled = NO;
+                [weakself.topVC.switchCameraButton setHidden:YES];
                 weakself.microphoneButton.enabled = NO;
                 weakself.videoButton.enabled = NO;
                 
@@ -2070,7 +1991,16 @@ static int gBottomMenuHeight = 60;
     [self.tableView setHidden:!self.tableView.hidden];
     [self.topVC.view setHidden:!self.topVC.view.hidden];
     [self updateScrollViewPos];
+    [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
 }
+
+- (BOOL)prefersStatusBarHidden{
+    if([UIDevice  currentDevice].orientation == UIDeviceOrientationLandscapeLeft || [UIDevice  currentDevice].orientation == UIDeviceOrientationLandscapeRight)
+        return YES;
+    if(self.topVC && self.topVC.view)
+     return self.topVC.view.isHidden;
+    return NO;
+ }
 
 
 -(CVPixelBufferRef)createCVPixelBufferRefFromNV12buffer:(unsigned char *)buffer width:(int)w height:(int)h {
@@ -2359,8 +2289,8 @@ static int gBottomMenuHeight = 60;
 {
     AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
     appDelegate.allowRotation = YES;
+    appDelegate.curOrientationMask = (1 << [UIDevice currentDevice].orientation);
     NSNumber *orientationTarget = [NSNumber numberWithInt:[UIDevice currentDevice].orientation];
-
     [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
     [UIViewController attemptRotationToDeviceOrientation];
 }
@@ -2404,13 +2334,15 @@ static int gBottomMenuHeight = 60;
     }
 }
 
-#pragma mark -
+#pragma mark - UISwipeGestureRecognizerDirectionLeft
 
 - (void)handleSwipeFrom:(UISwipeGestureRecognizer*)recognizer
 {
-    if(self.remoteDesktopView) {
-        self.sharedDesktopVC = [[SharedDesktopViewController alloc] initWithSharedDesktopView:self.remoteDesktopView];
-        [self.navigationController pushViewController:self.sharedDesktopVC animated:NO];
+    if(self.remoteDesktopView){
+        [self.remoteDesktopView setHidden:!self.remoteDesktopView.isHidden];
+        [self.scrollView setHidden:!self.scrollView.isHidden];
+        if(self.curBigView)
+           [self.curBigView setHidden:!self.curBigView.isHidden];
     }
 }
 @end

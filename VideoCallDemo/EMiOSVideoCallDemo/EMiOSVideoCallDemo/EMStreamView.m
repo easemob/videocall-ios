@@ -14,6 +14,8 @@
 
 @property (nonatomic, strong) UIImageView* adminView;
 
+@property (nonatomic) int imageCount;
+
 @end
 
 @implementation EMStreamView
@@ -25,7 +27,7 @@
         _enableVoice = YES;
         self.layer.borderWidth = 0.5;
         self.layer.borderColor = [UIColor grayColor].CGColor;
-        self.backgroundColor = [UIColor grayColor];
+        self.backgroundColor = [UIColor blackColor];
         self.bgView = [[UIImageView alloc] init];
         self.bgView.contentMode = UIViewContentModeScaleAspectFit;
         self.bgView.userInteractionEnabled = YES;
@@ -36,18 +38,14 @@
             //make.edges.equalTo(self);
             make.centerX.equalTo(self);
             make.centerY.equalTo(self).with.offset(-5);
-            make.width.lessThanOrEqualTo(@75);
-            make.height.lessThanOrEqualTo(@75);
+            make.width.lessThanOrEqualTo(@70);
+            make.height.lessThanOrEqualTo(@70);
         }];
         
         self.statusView = [[UIImageView alloc] init];
         self.statusView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:self.statusView];
-        [self.statusView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.height.equalTo(@20);
-            make.centerY.equalTo(self).multipliedBy(0.1);
-            make.centerX.multipliedBy(1.8);
-        }];
+        
         
         self.nameLabel = [[UILabel alloc] init];
         self.nameLabel.textColor = [UIColor redColor];
@@ -63,15 +61,9 @@
         
         self.nickNameLabel = [[UILabel alloc] init];
         self.nickNameLabel.textColor = [UIColor whiteColor];
-        self.nickNameLabel.font = [UIFont systemFontOfSize:16];
-        self.nickNameLabel.textAlignment = NSTextAlignmentCenter;
+        self.nickNameLabel.font = [UIFont systemFontOfSize:12];
         [self addSubview:self.nickNameLabel];
-        [self.nickNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(self);
-            make.top.equalTo(self.bgView.mas_bottom);
-            make.width.equalTo(self);
-            make.height.equalTo(@20);
-        }];
+        
         
         self.adminView = [[UIImageView alloc] init];
         self.adminView.image = [UIImage imageNamed:@"admin"];
@@ -80,12 +72,23 @@
         //self.adminView.layer.backgroundColor = [UIColor colorWithRed:255/255.0 green:191/255.0 blue:0/255.0 alpha:1.0].CGColor;
         [self addSubview:self.adminView];
         [self.adminView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(self).multipliedBy(0.1);
-            make.centerY.equalTo(self);
+            make.left.equalTo(self);
+            make.bottom.equalTo(self);
             make.height.equalTo(@20);
-            make.width.equalTo(@20);
+            make.width.equalTo(@0);
         }];
-        self.adminView.hidden = YES;
+        [self.statusView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.height.equalTo(@20);
+            make.top.equalTo(self.adminView.mas_top);
+            //make.centerX.multipliedBy(1.8);
+            make.left.equalTo(self.adminView.mas_right);
+        }];
+        [self.nickNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self.statusView.mas_right);
+            make.top.equalTo(self.adminView.mas_top);
+            make.width.equalTo(self);
+            make.height.equalTo(@20);
+        }];
         
         _activity = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
         [self addSubview:_activity];
@@ -105,6 +108,8 @@
         [self bringSubviewToFront:_adminView];
         
         _isLockedBgView = NO;
+        
+        [self updateIcons];
     }
     
     return self;
@@ -130,7 +135,7 @@
         case StreamStatusConnected:
         {
             if (_enableVoice) {
-                _statusView.image = nil;
+                _statusView.image = [UIImage imageNamed:@"静音"];
             }
             if(_activity.isAnimating) {
                 [_activity stopAnimating];
@@ -144,18 +149,31 @@
             break;
         case StreamStatusTalking:
             if (_enableVoice) {
-                _statusView.image = [UIImage imageNamed:@"talking_green"];
+                if(!self.timeTimer)
+                    self.timeTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(timeTalkingAction:) userInfo:nil repeats:YES];
             }
             break;
             
         default:
             {
                 if (_enableVoice) {
-                    _statusView.image = nil;
+                    _statusView.image = [UIImage imageNamed:@"静音"];
+                    if(self.timeTimer){
+                        [self.timeTimer invalidate];
+                        self.timeTimer = nil;
+                    }
                 }
             }
             break;
     }
+}
+
+- (void)timeTalkingAction:(id)sender
+{
+    self.imageCount++;
+    self.imageCount %= 12;
+    NSString* imageName = [NSString stringWithFormat:@"%02d",12-self.imageCount];
+    _statusView.image = [UIImage imageNamed:imageName];
 }
 
 - (void)setEnableVoice:(BOOL)enableVoice
@@ -164,10 +182,14 @@
     
     [self bringSubviewToFront:_statusView];
     if (enableVoice) {
-        _statusView.image = nil;
+        _statusView.image = [UIImage imageNamed:@"静音"];
     } else {
+        if(self.timeTimer){
+            [self.timeTimer invalidate];
+            self.timeTimer = nil;
+        }
         self.status = StreamStatusNormal;
-        _statusView.image = [UIImage imageNamed:@"mute_red"];
+        _statusView.image = [UIImage imageNamed:@"解除静音"];
     }
 }
 
@@ -178,18 +200,23 @@
     if (enableVideo) {
         //[self sendSubviewToBack:_bgView];
         _bgView.hidden = YES;
-        self.nickNameLabel.hidden = YES;
+        //self.nickNameLabel.hidden = YES;
+        if(_displayView)
+            _displayView.hidden = NO;
     } else {
         _bgView.hidden = NO;
-        [self sendSubviewToBack:_displayView];
-        self.nickNameLabel.hidden = NO;
+        if(_displayView)
+            _displayView.hidden = YES;
+        //[self sendSubviewToBack:_displayView];
+        //self.nickNameLabel.hidden = NO;
     }
+    [self updateIcons];
 }
 
 -(void)setIsAdmin:(BOOL)isAdmin
 {
     _isAdmin = isAdmin;
-    self.adminView.hidden = !isAdmin;
+    [self updateIcons];
 }
 
 - (void)setDisplayView:(UIView *)displayView
@@ -198,6 +225,85 @@
     if([_displayView isKindOfClass:[EMCallRemoteView class]]) {
         [self bringSubviewToFront:_activity];
         [_activity startAnimating];
+    }
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+}
+
+-(void)setIsBigView:(BOOL)isBigView
+{
+    _isBigView = isBigView;
+    [self updateIcons];
+}
+
+-(void)updateIcons{
+    int adminViewWidth = _isAdmin?16:0;
+    if(_isBigView){
+        if(!_enableVideo){
+            [self.adminView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(self.bgView.mas_bottom);
+                make.centerX.equalTo(self).with.offset(-30);
+                make.height.equalTo(@16);
+                make.width.equalTo(@(adminViewWidth));
+            }];
+            [self.nickNameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(self.statusView.mas_right);
+                make.top.equalTo(self.adminView.mas_top);
+                make.width.lessThanOrEqualTo(@80);
+                make.height.equalTo(@16);
+            }];
+            [self.statusView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.equalTo(@16);
+                make.height.equalTo(@16);
+                make.top.equalTo(self.adminView.mas_top);
+                //make.centerX.multipliedBy(1.8);
+                make.left.equalTo(self.adminView.mas_right);
+            }];
+            
+        }else{
+            [self.adminView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(self);
+                make.top.equalTo(self);
+                make.height.equalTo(@16);
+                make.width.equalTo(@(adminViewWidth));
+            }];
+            [self.statusView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.equalTo(@16);
+                make.height.equalTo(@16);
+                make.top.equalTo(self.adminView.mas_top);
+                //make.centerX.multipliedBy(1.8);
+                make.left.equalTo(self.adminView.mas_right);
+            }];
+            [self.nickNameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(self.statusView.mas_right);
+                make.top.equalTo(self.adminView.mas_top);
+                make.right.lessThanOrEqualTo(self);
+                make.height.equalTo(@20);
+            }];
+        }
+    }else{
+        [self.adminView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self);
+            make.bottom.equalTo(self);
+            make.height.equalTo(@16);
+            make.width.equalTo(@(adminViewWidth));
+        }];
+        [self.statusView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.width.equalTo(@16);
+            make.height.equalTo(@16);
+            make.top.equalTo(self.adminView.mas_top);
+            //make.centerX.multipliedBy(1.8);
+            make.left.equalTo(self.adminView.mas_right);
+        }];
+        [self.nickNameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self.statusView.mas_right);
+            make.top.equalTo(self.adminView.mas_top);
+            make.right.lessThanOrEqualTo(self);
+            make.height.equalTo(@20);
+        }];
     }
 }
 
