@@ -10,6 +10,7 @@
 #import "EMDemoOption.h"
 #import "ConferenceViewController.h"
 #import "EMAlertController.h"
+#import "AppDelegate.h"
 
 @interface UICustomTableViewCell : UITableViewCell
 @property (nonatomic) NSString* memName;
@@ -45,6 +46,39 @@
 -(void)backAction
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)_forcePortrait
+{
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
+    appDelegate.curOrientationMask = UIInterfaceOrientationMaskPortrait;
+    appDelegate.allowRotation = NO;
+    //调用横屏代码
+
+    NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
+
+    [[UIDevice currentDevice] setValue:resetOrientationTarget forKey:@"orientation"];
+
+    NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
+
+    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self _forcePortrait];
+    [self.navigationController setNavigationBarHidden:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
+
+    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+
+    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark - Table view data source
@@ -88,9 +122,7 @@
         cell = [[UICustomTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0) {
-        //cell.textLabel.text = @"主播列表";
-        
-        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"主播列表"];
+        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"成员列表"];
         [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:66/255.0 green:66/255.0 blue:66/255.0 alpha:1.0] range:NSMakeRange(0,4)]; //设置字体颜色
         [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial" size:18] range:NSMakeRange(0, 4)]; //设置字体字号和字体类别
         cell.textLabel.attributedText = str;
@@ -349,7 +381,12 @@
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if(section == 1){
-        NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.audiencesCount;
+        NSInteger membersCount = [EMDemoOption sharedOptions].conference.memberCount;
+        ConferenceViewController* confVC = [self getConfVC];
+        if(confVC) {
+            membersCount = [confVC.streamItemDict count];
+        }
+        
         //创建一个普通的Label
         UILabel *testLabel = [[UILabel alloc] init];
         //中央对齐
@@ -364,7 +401,7 @@
         attachment.image = [UIImage imageNamed:@"hot"];
         //这里bounds的x值并不会产生影响
         attachment.bounds = CGRectMake(-600, -5, 20, 20);
-        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前观众人数：%ld ",auduinceCount]];
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前参会人数：%ld ",membersCount]];
         [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial" size:12] range:NSMakeRange(0, attributedString.mutableString.length)];
         [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
         testLabel.attributedText = attributedString;

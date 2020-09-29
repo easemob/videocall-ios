@@ -43,6 +43,7 @@ typedef NS_ENUM(int,EMResolutionRate) {
 @property (nonatomic) BOOL muteAll;
 @property (nonatomic) BOOL livePureAudio;
 @property (nonatomic) BOOL isClarityFirst;
+@property (nonatomic) BOOL isJoinAsAudience;
 
 + (instancetype)sharedOptions;
 - (void)archive;

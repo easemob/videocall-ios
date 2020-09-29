@@ -25,52 +25,40 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self setupSubviews];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
-    appDelegate.allowRotation = YES;
+    appDelegate.curOrientationMask = UIInterfaceOrientationMaskLandscapeLeft;
+    appDelegate.allowRotation = NO;
+    //appDelegate.orientation = UIInterfaceOrientationLandscapeLeft;
     
-    [appDelegate application:[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:self.view.window];
+    //[appDelegate application:[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:self.view.window];
     //调用横屏代码
-        
+
     NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
-       
+
     [[UIDevice currentDevice] setValue:resetOrientationTarget forKey:@"orientation"];
-       
+
     NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft];
-       
+
     [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
-    
+
     [UIViewController attemptRotationToDeviceOrientation];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
-    appDelegate.allowRotation = NO;
-    
-    [appDelegate application:[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:self.view.window];
-    
-    NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
-       
-    [[UIDevice currentDevice] setValue:resetOrientationTarget forKey:@"orientation"];
-       
-    NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
-       
-    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
-    
-    [UIViewController attemptRotationToDeviceOrientation];
+    appDelegate.allowRotation = YES;
 }
 
-- (instancetype)initWithWBUrl:(EMWhiteboard*)wb WKView:(WKWebView*)wkView
+- (instancetype)initWithWBUrl:(EMWhiteboard*)wb
 {
     self = [super init];
     if(self) {
         _wb = wb;
-        _wkWebView = wkView;
     }
     return self;
 }
@@ -105,15 +93,13 @@
     config.preferences.minimumFontSize = 10;
     config.preferences.javaScriptEnabled = YES;
     config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-    
-    if(_wkWebView)
-    {
-        [_wkWebView removeFromSuperview];
-        [self.view addSubview:_wkWebView];
-        [self.wkWebView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self.view);
-        }];
-    };
+    self.wkWebView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) configuration:config];
+    [self.wkWebView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:self.wb.roomURL]]];
+    [self.view addSubview:self.wkWebView];
+    [self.wkWebView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.equalTo(self.view);
+        make.size.equalTo(self.view);
+    }];
     self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.backButton.frame = CGRectMake(self.view.bounds.size.width - 100, 50, 40, 40);
     [self.backButton setImage:[UIImage imageNamed:@"wb-back"] forState:UIControlStateNormal];
@@ -167,10 +153,6 @@
 - (void)back
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        ConferenceViewController*conVC = [self getConfVC];
-        if(conVC) {
-            [conVC wbBack];
-        }
         [self.navigationController popViewControllerAnimated:YES];
     });
 }
@@ -229,6 +211,7 @@
     }]];
     [self presentViewController:alert animated:YES completion:nil];
 }
+
 
 /*
 #pragma mark - Navigation

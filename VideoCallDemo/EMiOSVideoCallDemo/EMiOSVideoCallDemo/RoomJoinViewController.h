@@ -13,9 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RoomJoinViewController : UIViewController<UITextFieldDelegate>
 @property(nonatomic,strong) UIImageView* conferencelogo;
 @property(nonatomic,strong) UITextField* nameField;
-@property(nonatomic,strong) UITextField* pswdField;
-@property(nonatomic,strong) UIButton* joinAsSpeaker;
-@property(nonatomic,strong) UIButton* joinAsAudience;
+@property(nonatomic,strong) UIButton* joinRoomButton;
 @property(nonatomic,strong) UILabel* errorLable;
 
 @end

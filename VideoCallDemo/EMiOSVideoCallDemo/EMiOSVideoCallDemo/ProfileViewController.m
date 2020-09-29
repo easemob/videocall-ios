@@ -45,20 +45,13 @@
 
 - (void)setupViews
 {
-    UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    button.frame = CGRectMake(5, 70, 30, 30);
-    [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button];
-    
-    UILabel* lable = [[UILabel alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2-40, 70, 80, 30)];
-    lable.text = @"我的资料";
-    [self.view addSubview:lable];
-    
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(5, 100, self.view.bounds.size.width - 10, self.view.bounds.size.height - 100) style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(5, 70, self.view.bounds.size.width - 10, self.view.bounds.size.height - 70) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
 }
 
 -(void)backAction
@@ -68,17 +61,21 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(indexPath.section == 0)
+        return 40;
     return 60;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
+    if(section == 0)
+        return 1;
     return 30;
 }
 
 // Default is 1 if not implemented
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 3;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -102,6 +99,16 @@
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0){
+        UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        button.frame = CGRectMake(5, 5, 30, 30);
+        [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:button];
+        
+        cell.textLabel.text = @"我的资料";
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    if(section == 1){
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = @"头像";
         
@@ -122,7 +129,7 @@
         [opButton addTarget:self action:@selector(OperationAction:) forControlEvents:UIControlEventTouchUpInside];
         [cell addSubview:opButton];
     }
-    if(section == 1) {
+    if(section == 2) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         [[cell viewWithTag:6000] removeFromSuperview];
         cell.textLabel.text = @"我的昵称";

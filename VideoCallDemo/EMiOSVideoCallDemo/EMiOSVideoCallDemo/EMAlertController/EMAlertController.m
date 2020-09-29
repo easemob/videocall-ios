@@ -76,6 +76,7 @@
     label.numberOfLines = 5;
     label.font = [UIFont systemFontOfSize:16];
     label.text = aMessage;
+    label.textColor = [UIColor blackColor];
     [bgView addSubview:label];
     [label mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(tagView.mas_right).offset(10);

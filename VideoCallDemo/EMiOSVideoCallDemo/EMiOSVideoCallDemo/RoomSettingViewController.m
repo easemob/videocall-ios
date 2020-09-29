@@ -12,6 +12,7 @@
 #import <MessageUI/MessageUI.h>
 #import "EMAlertController/EMAlertController.h"
 #import "ConferenceViewController.h"
+#import "AppDelegate.h"
 
 @interface RoomSettingViewController ()<MFMailComposeViewControllerDelegate>
 @property (nonatomic) NSString* logPath;
@@ -37,11 +38,32 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)_forcePortrait
+{
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
+    appDelegate.curOrientationMask = UIInterfaceOrientationMaskPortrait;
+    appDelegate.allowRotation = NO;
+    //调用横屏代码
+
+    NSNumber *resetOrientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
+
+    [[UIDevice currentDevice] setValue:resetOrientationTarget forKey:@"orientation"];
+
+    NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
+
+    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self _forcePortrait];
+    [self.navigationController setNavigationBarHidden:YES];
+}
+
 
 #pragma mark - Table View Data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if(section == 1)
-        return 2;
     if(section == 2) {
         NSInteger count = [EMDemoOption sharedOptions].conference.adminIds.count;
         return count;
@@ -77,14 +99,6 @@
             username.text = [EMDemoOption sharedOptions].roomName;
             username.textAlignment = NSTextAlignmentRight;
             [cell addSubview:username];
-        }
-        if(row == 1)
-        {
-            cell.textLabel.text = @"房间密码";
-            UILabel * password = [[UILabel alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width - 250, 5, 240, 40)];
-            password.text = [EMDemoOption sharedOptions].roomPswd;
-            password.textAlignment = NSTextAlignmentRight;
-            [cell addSubview:password];
         }
 //        if(row == 2)
 //        {
@@ -142,6 +156,8 @@
 {
     if(section == 0)
         return 1;
+    if(section == 1)
+        return 10;
     return 30;//section头部高度
 }
 //section头部视图
@@ -173,7 +189,7 @@
 //section底部间距
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    return 30;
+    return 10;
 }
 //section底部视图
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section

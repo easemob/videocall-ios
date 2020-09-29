@@ -30,29 +30,13 @@
 
 - (void)setupViews
 {
-    UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    button.frame = CGRectMake(5, 70, 30, 30);
-    [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button];
-    
-    UILabel* lable = [[UILabel alloc] initWithFrame:CGRectMake(self.view.bounds.size.width/2-40, 70, 80, 30)];
-    lable.text = @"选择头像";
-    [self.view addSubview:lable];
-    
-    self.saveButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.saveButton.frame = CGRectMake(self.view.bounds.size.width - 70, 70, 60, 30);
-    [self.saveButton setTitle:@"完成" forState:UIControlStateNormal];
-    [self.saveButton setTitle:@"完成" forState:UIControlStateDisabled];
-    [self.saveButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    [self.saveButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-    [self.saveButton addTarget:self action:@selector(saveAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.saveButton];
-    
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(5, 100, self.view.bounds.size.width - 10, self.view.bounds.size.height - 100) style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(5, 5, self.view.bounds.size.width - 10, self.view.bounds.size.height) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
 }
 
 - (void)saveAction
@@ -69,10 +53,12 @@
 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if(section == 0)
+        return 1;;
     return [[EMDemoOption sharedOptions].headImageDic count];
 }
 
@@ -88,7 +74,24 @@
         cell = [[UITableViewCell alloc]initWithStyle:
         UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    if(section == 0)
+    if(section == 0){
+        UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        button.frame = CGRectMake(5, 5, 30, 30);
+        [button setImage:[UIImage imageNamed:@"goback"] forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:button];
+        cell.textLabel.text = @"选择头像";
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        self.saveButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        self.saveButton.frame = CGRectMake(self.view.bounds.size.width - 50, 5, 50, 30);
+        [self.saveButton setTitle:@"完成" forState:UIControlStateNormal];
+        [self.saveButton setTitle:@"完成" forState:UIControlStateDisabled];
+        [self.saveButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        [self.saveButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+        [self.saveButton addTarget:self action:@selector(saveAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:self.saveButton];
+    }
+    if(section == 1)
     {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         UIImageView *headimageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 10, 40, 40)];
@@ -136,6 +139,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(indexPath.section == 0)
+        return 40;
     return 60;
 }
 /*
