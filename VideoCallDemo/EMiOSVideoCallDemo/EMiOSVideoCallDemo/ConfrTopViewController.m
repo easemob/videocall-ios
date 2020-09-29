@@ -170,12 +170,12 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"切换音频设备" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
     UIAlertAction *SpeakerAction = [UIAlertAction actionWithTitle:@"扬声器" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self switchBluetooth:NO];
+        [weakself switchBluetooth:NO];
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
         [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
                             error:nil];
         [audioSession setActive:YES error:nil];
-        self.selectDevice.selected = NO;
+        weakself.selectDevice.selected = NO;
     }];
     [alertController addAction:SpeakerAction];
 
@@ -186,7 +186,7 @@
         [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionAllowBluetooth
                             error:nil];
         [audioSession setActive:YES error:nil];
-        self.selectDevice.selected = YES;
+        weakself.selectDevice.selected = YES;
         
     }];
     [alertController addAction:IphoneAction];
@@ -194,7 +194,7 @@
     if([weakself bluetoothAudioDevice] != nil) {
         UIAlertAction *BlueToothAction = [UIAlertAction actionWithTitle:@"蓝牙耳机" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [weakself switchBluetooth:YES];
-            self.selectDevice.selected = YES;
+            weakself.selectDevice.selected = YES;
         }];
         [alertController addAction:BlueToothAction];
     }

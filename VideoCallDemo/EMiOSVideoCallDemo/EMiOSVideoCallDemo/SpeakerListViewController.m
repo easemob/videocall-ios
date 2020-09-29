@@ -72,6 +72,15 @@
     [self.navigationController setNavigationBarHidden:YES];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    NSNumber *orientationTarget = [NSNumber numberWithInt:UIInterfaceOrientationUnknown];
+
+    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -374,7 +383,7 @@
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if(section == 1){
-        NSInteger auduinceCount = [EMDemoOption sharedOptions].conference.audiencesCount;
+        NSInteger membersCount = [EMDemoOption sharedOptions].conference.memberCount;
         //创建一个普通的Label
         UILabel *testLabel = [[UILabel alloc] init];
         //中央对齐
@@ -389,7 +398,7 @@
         attachment.image = [UIImage imageNamed:@"hot"];
         //这里bounds的x值并不会产生影响
         attachment.bounds = CGRectMake(-600, -5, 20, 20);
-        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前观众人数：%ld ",auduinceCount]];
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"当前参会人数：%ld ",membersCount]];
         [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial" size:12] range:NSMakeRange(0, attributedString.mutableString.length)];
         [attributedString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
         testLabel.attributedText = attributedString;

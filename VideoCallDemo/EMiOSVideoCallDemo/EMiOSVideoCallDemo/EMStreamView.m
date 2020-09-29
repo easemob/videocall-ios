@@ -202,11 +202,17 @@
         _bgView.hidden = YES;
         //self.nickNameLabel.hidden = YES;
         if(_displayView)
+        {
             _displayView.hidden = NO;
+            [self sendSubviewToBack:_bgView];
+        }
     } else {
         _bgView.hidden = NO;
         if(_displayView)
+        {
             _displayView.hidden = YES;
+            [self sendSubviewToBack:_displayView];
+        }
         //[self sendSubviewToBack:_displayView];
         //self.nickNameLabel.hidden = NO;
     }

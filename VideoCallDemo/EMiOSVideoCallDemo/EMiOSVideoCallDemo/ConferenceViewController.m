@@ -18,6 +18,7 @@
 #import "AppDelegate.h"
 #import "MoreOptionViewController.h"
 #import "ConfrTopViewController.h"
+@import CoreMotion;
 
 @interface ConferenceViewController ()<UIScrollViewDelegate,UIPopoverPresentationControllerDelegate>
 @property (nonatomic) UIButton* recordButton;
@@ -35,6 +36,7 @@
 @property (nonatomic) NSString* remoteDesktopStreamId;
 @property (nonatomic) ConfrTopViewController* topVC;
 @property (nonatomic) NSMutableDictionary* showStreamViewInScrollView;
+@property (nonatomic) CMMotionManager *motionManager;
 @end
 
 @implementation ConferenceViewController
@@ -79,6 +81,43 @@ static int gBottomMenuHeight = 60;
     
     [UIApplication sharedApplication].idleTimerDisabled = YES;
     return self;
+}
+
+-(void)starMotionManager{
+    if (_motionManager == nil) {
+        _motionManager = [CMMotionManager new];
+    }
+    if (_motionManager.deviceMotionAvailable) {
+        [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
+            [self handleDeviceMotion:motion];
+        }];
+    }
+}
+-(void)handleDeviceMotion:(CMDeviceMotion *)motion{
+    double x = motion.gravity.x;
+    double y = motion.gravity.y;
+    UIDeviceOrientation ori;
+    if (fabs(y)>=fabs(x)) {
+        if (y>=0) {
+            ori = UIDeviceOrientationPortraitUpsideDown;
+        }else{
+            ori = UIDeviceOrientationPortrait;
+        }
+    }else{
+        if (x >= 0) {
+            ori = UIDeviceOrientationLandscapeRight;
+        }else{
+            ori = UIDeviceOrientationLandscapeLeft;
+        }
+    }
+    [UIViewController attemptRotationToDeviceOrientation];
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
+    appDelegate.allowRotation = YES;
+    appDelegate.curOrientationMask = (1 << ori);
+    NSNumber *orientationTarget = [NSNumber numberWithInt:ori];
+    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
+    [UIViewController attemptRotationToDeviceOrientation];
+    [self.motionManager stopDeviceMotionUpdates];
 }
 
 -(void)keyWindowActive:(NSNotification*)param
@@ -247,7 +286,7 @@ static int gBottomMenuHeight = 60;
        }];
     // 1、设置分享的内容，并将内容添加到数组中
     NSString* title = [NSString stringWithFormat:@"%@邀请你加入会议",[EMDemoOption sharedOptions].nickName];
-    NSString* addr = [NSString stringWithFormat:@"https://rtc-turn4-hsb.easemob.com/rtc-ws/meeting-share-loading-page/index.html?roomName=%@&invitees=%@",[EMDemoOption sharedOptions].roomName,[EMDemoOption sharedOptions].nickName];
+    NSString* addr = [NSString stringWithFormat:@"https://meeting.easemob.com/invite/index.html?roomName=%@&invitees=%@",[EMDemoOption sharedOptions].roomName,[EMDemoOption sharedOptions].nickName];
     NSString *urlString = [addr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     NSURL* url = [NSURL URLWithString:urlString];
     NSArray *activityItemsArray = @[title,url];
@@ -814,7 +853,7 @@ static int gBottomMenuHeight = 60;
     //rect参数是以view的左上角为坐标原点（0，0）
     vc.popoverPresentationController.sourceView = self.moreOptionButton;
     //指定箭头所指区域的矩形框范围（位置和尺寸），以view的左上角为坐标原点
-    vc.popoverPresentationController.sourceRect = CGRectZero;
+    vc.popoverPresentationController.sourceRect = CGRectMake(10, 0, 0, 0);
     //箭头方向
     vc.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionDown;
     vc.popoverPresentationController.delegate = self;
@@ -825,6 +864,13 @@ static int gBottomMenuHeight = 60;
 - (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller{
     return UIModalPresentationNone;
 }
+
+//实现下面这个代理方法后，横屏状态下显示正常。
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller traitCollection:(UITraitCollection *)traitCollection {
+    return UIModalPresentationNone;
+}
+
+
 
 - (void)roleChangeAction
 {
@@ -2287,12 +2333,7 @@ static int gBottomMenuHeight = 60;
 }
 - (void)viewWillAppear:(BOOL)animated
 {
-    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;//允许转成横屏
-    appDelegate.allowRotation = YES;
-    appDelegate.curOrientationMask = (1 << [UIDevice currentDevice].orientation);
-    NSNumber *orientationTarget = [NSNumber numberWithInt:[UIDevice currentDevice].orientation];
-    [[UIDevice currentDevice] setValue:orientationTarget forKey:@"orientation"];
-    [UIViewController attemptRotationToDeviceOrientation];
+    [self starMotionManager];
 }
 #pragma mark - UIDeviceOrientationDidChangeNotification
 - (void)orientationDidChange:(NSNotification *)notification {

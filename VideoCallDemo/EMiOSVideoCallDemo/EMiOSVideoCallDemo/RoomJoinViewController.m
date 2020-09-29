@@ -226,6 +226,16 @@ int kHeightStart = 300;
     _activity.hidesWhenStopped = YES;
     
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(autojoin:) name:@"autojoin" object:nil];
+    NSUserDefaults* sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.easemob"];
+    NSString* autoJoinRoomName = [sharedDefaults objectForKey:@"autoJoinRoomName"];
+    [sharedDefaults removeObjectForKey:@"autoJoinRoomName"];
+    if([autoJoinRoomName length] > 0){
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*1), dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"autojoin" object:autoJoinRoomName];
+        });
+    }
 }
 
 -(void)checkVersion
@@ -438,7 +448,7 @@ int kHeightStart = 300;
             [weakself.activity stopAnimating];
         }
         [weakself.navigationController pushViewController:conferenceViewControler animated:NO];
-        self.joinRoomButton.enabled = YES;
+        weakself.joinRoomButton.enabled = YES;
         [[EMClient sharedClient].conferenceManager enableStatistics:YES];
     };
     RoomConfig* roomConfig = [[RoomConfig alloc] init];
@@ -534,6 +544,16 @@ int kHeightStart = 300;
             }
         }
     }
+}
+
+- (void)autojoin:(NSNotification *)aNotif
+{
+    NSString* roomName = [aNotif object];
+    self.nameField.text = @"";
+    [self.nameField insertText:roomName];
+    NSUserDefaults* sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.easemob"];
+    [sharedDefaults removeObjectForKey:@"autoJoinRoomName"];
+    [self joinRoomAction];
 }
 /*
 #pragma mark - Navigation
