@@ -122,9 +122,7 @@
         cell = [[UICustomTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     if(section == 0) {
-        //cell.textLabel.text = @"主播列表";
-        
-        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"主播列表"];
+        NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"成员列表"];
         [str addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:66/255.0 green:66/255.0 blue:66/255.0 alpha:1.0] range:NSMakeRange(0,4)]; //设置字体颜色
         [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial" size:18] range:NSMakeRange(0, 4)]; //设置字体字号和字体类别
         cell.textLabel.attributedText = str;
@@ -384,6 +382,11 @@
 {
     if(section == 1){
         NSInteger membersCount = [EMDemoOption sharedOptions].conference.memberCount;
+        ConferenceViewController* confVC = [self getConfVC];
+        if(confVC) {
+            membersCount = [confVC.streamItemDict count];
+        }
+        
         //创建一个普通的Label
         UILabel *testLabel = [[UILabel alloc] init];
         //中央对齐

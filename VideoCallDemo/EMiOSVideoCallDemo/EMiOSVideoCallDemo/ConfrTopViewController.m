@@ -113,95 +113,72 @@
     }];
 }
 
-- (AVAudioSessionPortDescription*)bluetoothAudioDevice
-{
-    NSArray* bluetoothRoutes = @[AVAudioSessionPortBluetoothA2DP, AVAudioSessionPortBluetoothLE, AVAudioSessionPortBluetoothHFP];
-    return [self audioDeviceFromTypes:bluetoothRoutes];
-}
-
-- (AVAudioSessionPortDescription*)builtinAudioDevice
-{
-    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInMic];
-    return [self audioDeviceFromTypes:builtinRoutes];
-}
-
-- (AVAudioSessionPortDescription*)speakerAudioDevice
-{
-    NSArray* builtinRoutes = @[AVAudioSessionPortBuiltInSpeaker];
-    return [self audioDeviceFromTypes:builtinRoutes];
-}
-
-- (AVAudioSessionPortDescription*)audioDeviceFromTypes:(NSArray*)types
-{
-    NSArray* routes = [[AVAudioSession sharedInstance] availableInputs];
-    for(AVAudioSessionPortDescription* route in routes)
-    {
-        if ([types containsObject:route.portType])
-        {
-            return route;
-        }
-        
-    }
-    return nil;
-}
-
-- (BOOL)switchBluetooth:(BOOL)onOrOff
-{
-    NSError* audioError = nil;
-    BOOL changeResult = NO;
-    if(onOrOff)
-    {
-        AVAudioSessionPortDescription* _bluetoothPort = [self bluetoothAudioDevice];
-        if(_bluetoothPort)
-            changeResult = [[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&audioError];
-    }
-    else
-    {
-        AVAudioSessionPortDescription* builtinPort = [self builtinAudioDevice];
-        if(builtinPort)
-            changeResult = [[AVAudioSession sharedInstance] setPreferredInput:builtinPort error:&audioError];
-    }
-    return changeResult;
-}
-
 -(void)selectDeviceAction
 {
     __weak typeof(self) weakself = self;
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"切换音频设备" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    UIAlertAction *SpeakerAction = [UIAlertAction actionWithTitle:@"扬声器" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [weakself switchBluetooth:NO];
-        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
-                            error:nil];
-        [audioSession setActive:YES error:nil];
-        weakself.selectDevice.selected = NO;
-    }];
-    [alertController addAction:SpeakerAction];
-
-    UIAlertAction *IphoneAction = [UIAlertAction actionWithTitle:@"iPhone内置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [weakself switchBluetooth:NO];
-        
-        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionAllowBluetooth
-                            error:nil];
-        [audioSession setActive:YES error:nil];
-        weakself.selectDevice.selected = YES;
-        
-    }];
-    [alertController addAction:IphoneAction];
-    
-    if([weakself bluetoothAudioDevice] != nil) {
-        UIAlertAction *BlueToothAction = [UIAlertAction actionWithTitle:@"蓝牙耳机" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [weakself switchBluetooth:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(weakself.selectDevice.isSelected){
+            AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+            //[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
+            NSError* error = nil;
+            [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+            if(error != nil)
+                return;
+            [audioSession setActive:YES error:&error];
+            if(error != nil)
+                return;
+            weakself.selectDevice.selected = NO;
+        }else{
+            AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+            NSError* error = nil;
+            [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionAllowBluetooth error:&error];
+            if(error != nil)
+                return;
+            //[audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+            [audioSession setActive:YES error:&error];
+            if(error != nil)
+                return;
             weakself.selectDevice.selected = YES;
-        }];
-        [alertController addAction:BlueToothAction];
-    }
-
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"取消", @"Cancel") style: UIAlertActionStyleCancel handler:nil]];
-
-    [self presentViewController:alertController animated:YES completion:nil];
+        }
+    });
+    
+    return;
+//    __weak typeof(self) weakself = self;
+//    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"切换音频设备" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+//
+//    UIAlertAction *SpeakerAction = [UIAlertAction actionWithTitle:@"扬声器" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        [weakself switchBluetooth:NO];
+//        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+//        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDefaultToSpeaker
+//                            error:nil];
+//        [audioSession setActive:YES error:nil];
+//        weakself.selectDevice.selected = NO;
+//    }];
+//    [alertController addAction:SpeakerAction];
+//
+//    UIAlertAction *IphoneAction = [UIAlertAction actionWithTitle:@"iPhone内置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        [weakself switchBluetooth:NO];
+//
+//        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+//        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionAllowBluetooth
+//                            error:nil];
+//        [audioSession setActive:YES error:nil];
+//        weakself.selectDevice.selected = YES;
+//
+//    }];
+//    [alertController addAction:IphoneAction];
+//
+//    if([weakself bluetoothAudioDevice] != nil) {
+//        UIAlertAction *BlueToothAction = [UIAlertAction actionWithTitle:@"蓝牙耳机" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//            [weakself switchBluetooth:YES];
+//            weakself.selectDevice.selected = YES;
+//        }];
+//        [alertController addAction:BlueToothAction];
+//    }
+//
+//    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"取消", @"Cancel") style: UIAlertActionStyleCancel handler:nil]];
+//
+//    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 
